@@ -13,6 +13,7 @@ endif()
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/include
