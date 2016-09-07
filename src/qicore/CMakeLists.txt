@@ -8,5 +8,9 @@ set(SRC
 
   
 add_library(qicore SHARED ${SRC})
+target_link_libraries(
+    qicore
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY} )
 
 qt5_use_modules(qicore Widgets OpenGL)

@@ -11,6 +11,7 @@ if( CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     set( CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}" )
 endif()
 
+find_package(OpenGL REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)

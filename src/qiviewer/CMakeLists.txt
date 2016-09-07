@@ -6,15 +6,18 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set (INC
   About.hpp
+  MainWindow.h
   )
   
 set (SRC
   main.cpp
+  MainWindow.cpp
   About.cpp
   )
 
 set(UI
   About.ui
+  MainWindow.ui
   )
   
 # Qt resource files
