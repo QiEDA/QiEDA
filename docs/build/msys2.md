@@ -1,1 +1,1 @@
-cmake -G "MSYS Makefiles" ..
+cmake -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=/mingw64 -DQT5_CMAKE_PATH=/mingw64/lib/cmake ..

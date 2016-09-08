@@ -42,3 +42,5 @@ add_executable(qiviewer WIN32
 target_link_libraries(qiviewer qicore)
 
 qt5_use_modules(qiviewer Widgets)
+
+install(TARGETS qiviewer RUNTIME DESTINATION ${QIEDA_BIN})

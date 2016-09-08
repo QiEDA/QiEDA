@@ -13,3 +13,5 @@ target_link_libraries( nanovg
     ${OPENGL_gl_LIBRARY}
     ${OPENGL_glu_LIBRARY}
 	${GLEW_LIBRARIES})
+
+install(TARGETS nanovg DESTINATION ${QIEDA_LIB} COMPONENT binary)

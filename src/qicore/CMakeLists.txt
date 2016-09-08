@@ -19,3 +19,5 @@ target_link_libraries(
     nanovg )
 
 qt5_use_modules(qicore Widgets OpenGL)
+
+install(TARGETS qicore DESTINATION ${QIEDA_LIB} COMPONENT binary)
