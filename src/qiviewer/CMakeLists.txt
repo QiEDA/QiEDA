@@ -1,7 +1,6 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#commented out for now
-#set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC ON)
 
 
 set (INC
