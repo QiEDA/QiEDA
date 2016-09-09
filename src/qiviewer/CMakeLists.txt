@@ -16,7 +16,6 @@ set (SRC
 
 set(UI
   About.ui
-  MainWindow.ui
   )
   
 # Qt resource files

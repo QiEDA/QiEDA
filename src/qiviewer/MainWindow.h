@@ -2,10 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-namespace Ui {
-class MainWindow;
-}
+#include "qicore/ui/GLScrollArea.hpp"
+#include "qicore/ui/GLWidget.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -17,8 +15,9 @@ public:
 protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
     bool event(QEvent *event) override;
-private:
-    Ui::MainWindow *ui;
+    
+    qicore::ui::GLWidget* glarea;
+    qicore::ui::GLScrollArea* glscrollarea;
 };
 
 #endif // MAINWINDOW_H

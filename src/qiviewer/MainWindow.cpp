@@ -1,16 +1,19 @@
+
+#include <QtWidgets/QWidget>
 #include "MainWindow.h"
-#include "ui_MainWindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)
 {
-    ui->setupUi(this);
+    glscrollarea = new qicore::ui::GLScrollArea(this);
+    
+    glarea = new qicore::ui::GLWidget(glscrollarea);
+    glscrollarea->setViewport(glarea);
+    setCentralWidget(glscrollarea);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)

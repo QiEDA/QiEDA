@@ -10,7 +10,8 @@ struct NVGcontext;
 namespace qicore {
 namespace ui {
     class QICORE_EXPORT GLWidget : public QOpenGLWidget {
-    //todo fix this once we get MOC working...
+    friend class GLScrollArea;
+        
     //Q_OBJECT
 
     public:

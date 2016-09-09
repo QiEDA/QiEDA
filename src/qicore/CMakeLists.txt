@@ -7,6 +7,7 @@ include_directories(
   )
   
 set(SRC
+	ui/GLScrollArea.cpp
 	ui/GLWidget.cpp
   )
 
