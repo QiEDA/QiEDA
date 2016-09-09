@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMenuBar>
 #include "qicore/ui/GLScrollArea.hpp"
 #include "qicore/ui/GLWidget.hpp"
 
@@ -18,6 +19,7 @@ protected:
     
     qicore::ui::GLWidget* glarea;
     qicore::ui::GLScrollArea* glscrollarea;
+    QMenuBar* menubar_;
 };
 
 #endif // MAINWINDOW_H

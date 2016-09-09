@@ -10,6 +10,13 @@ MainWindow::MainWindow(QWidget *parent) :
     glarea = new qicore::ui::GLWidget(glscrollarea);
     glscrollarea->setViewport(glarea);
     setCentralWidget(glscrollarea);
+
+    menubar_ = new QMenuBar(glscrollarea);
+    QMenu* fileMenu = new QMenu(tr("&File"));
+    fileMenu->addAction("Open file");
+    menubar_->addMenu(fileMenu);
+
+
 }
 
 MainWindow::~MainWindow()
