@@ -1,11 +1,11 @@
 
 include_directories(
-  ../../../nanovg/src
-  )
+	${PROJECT_SOURCE_DIR}/nanovg/src
+)
   
 set(SRC
-	../../../nanovg/src/nanovg.c
-  )
+	${PROJECT_SOURCE_DIR}/nanovg/src/nanovg.c
+)
 
 
 add_library(nanovg SHARED ${SRC})

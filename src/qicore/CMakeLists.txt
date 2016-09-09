@@ -3,7 +3,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 include_directories(
-  ../../nanovg/src
+  ${PROJECT_SOURCE_DIR}/nanovg/src
   )
   
 set(SRC
