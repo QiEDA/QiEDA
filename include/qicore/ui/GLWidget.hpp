@@ -13,7 +13,7 @@ namespace qicore {
 namespace ui {
     class QICORE_EXPORT GLWidget : public QOpenGLWidget {
     friend class GLScrollArea;
-        
+
     //Q_OBJECT
 
     public:
@@ -24,7 +24,10 @@ namespace ui {
         void initializeGL() override;
         void resizeGL(int width, int height) override;
         void paintGL() override;
-        
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseMoveEvent(QMouseEvent *event) override;
+
+        QPoint mouseMoveStartPos_;
         struct NVGcontext* nanovg_;
 
         std::list<qicore::graphics::GraphicItem *> graphicItems_;

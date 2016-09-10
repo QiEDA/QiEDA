@@ -61,3 +61,18 @@ void GLWidget::paintGL() {
 
     nvgEndFrame(nanovg_);
 }
+
+void GLWidget::mousePressEvent(QMouseEvent *event)
+{
+    mouseMoveStartPos_ = event->pos();
+}
+
+void GLWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    int dx = event->x() - mouseMoveStartPos_.x();
+    int dy = event->y() - mouseMoveStartPos_.y();
+
+
+
+    mouseMoveStartPos_ = event->pos();
+}
