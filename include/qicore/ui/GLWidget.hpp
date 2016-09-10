@@ -2,7 +2,9 @@
 #define GLWIDGET_H_
 
 #include <QtOpenGL>
+#include <list>
 #include "qicore/qicore.hpp"
+#include "qicore/graphics/GraphicItem.hpp"
 
 //forward decl as we dont want to expose nanovg
 struct NVGcontext;
@@ -24,6 +26,8 @@ namespace ui {
         void paintGL() override;
         
         struct NVGcontext* nanovg_;
+
+        std::list<qicore::graphics::GraphicItem *> graphicItems_;
     };
 }
 }

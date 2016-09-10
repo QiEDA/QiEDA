@@ -9,7 +9,9 @@ include_directories(
 set(SRC
 	ui/GLScrollArea.cpp
 	ui/GLWidget.cpp
-  )
+		graphics/Color.cpp
+		graphics/GraphicLine.cpp
+		graphics/GraphicRectangle.cpp)
 
 
 
