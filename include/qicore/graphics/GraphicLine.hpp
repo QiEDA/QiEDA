@@ -15,7 +15,7 @@ protected:
 	int width_;
 	Color color_;
 public:
-	GraphicLine(Point& start, Point& end, int width, Color color) : GraphicItem() {
+	GraphicLine(Point& start, Point& end, int width, const Color& color) : GraphicItem() {
 		start_ = start;
 		end_ = end;
 		width_ = width;

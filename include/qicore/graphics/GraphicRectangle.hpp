@@ -15,7 +15,7 @@ protected:
 	float height_;
     Color color_;
 public:
-	GraphicRectangle(Point& start, int width, int height, Color color) : GraphicItem() {
+	GraphicRectangle(Point& start, int width, int height, const Color& color) : GraphicItem() {
 		start_ = start;
 		width_ = width;
 		height_ = height;
