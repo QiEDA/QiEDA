@@ -12,3 +12,8 @@ void GraphicLine::draw(struct NVGcontext* nvg)
     nvgStrokeColor(nvg, nvgRGBA(color_.red(),color_.blue(),color_.blue(),color_.alpha()));
     nvgStroke(nvg);
 }
+
+BoundingBox GraphicLine::GetBoundingBox()
+{
+    return BoundingBox(start_,0,0);
+}

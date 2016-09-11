@@ -11,3 +11,11 @@ void GraphicArc::draw(struct NVGcontext* nvg)
     nvgStrokeColor(nvg, nvgRGBA(color_.red(),color_.blue(),color_.blue(),color_.alpha()));
     nvgStroke(nvg);
 }
+
+
+BoundingBox GraphicArc::GetBoundingBox()
+{
+    Point corner(radius_, radius_);
+
+    return BoundingBox(center_-corner,radius_*2,radius_*2);
+}

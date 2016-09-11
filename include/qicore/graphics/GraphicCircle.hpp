@@ -32,6 +32,7 @@ public:
 
 
 	void draw(struct NVGcontext* nvg) override;
+	BoundingBox GetBoundingBox() override;
 };
 
 }

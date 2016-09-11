@@ -33,9 +33,7 @@ GLWidget::~GLWidget() {
 void GLWidget::initializeGL() {
     glewInit();
     glClearColor(0,0,0,1);
-//    glEnable(GL_DEPTH_TEST);
-//    glEnable(GL_LIGHT0);
-//    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
     nanovg_ = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
 

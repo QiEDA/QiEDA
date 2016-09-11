@@ -10,3 +10,9 @@ void GraphicRectangle::draw(struct NVGcontext* nvg)
     nvgFillColor(nvg, nvgRGBA(color_.red(),color_.green(),color_.blue(),color_.alpha()));
     nvgFill(nvg);
 }
+
+
+BoundingBox GraphicRectangle::GetBoundingBox()
+{
+    return BoundingBox(start_,width_,height_);
+}
