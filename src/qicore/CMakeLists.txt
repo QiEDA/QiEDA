@@ -8,16 +8,21 @@ include_directories(
 
 #AUTOMOC needs us to add the header to library for it to work on the class
 set(INC
-		${PROJECT_SOURCE_DIR}/include/qicore/ui/GLWidget.hpp)
+		${PROJECT_SOURCE_DIR}/include/qicore/ui/GLWidget.hpp
+		${PROJECT_SOURCE_DIR}/include/qicore/ui/QiMainWindow.hpp
+	)
+
 
 set(SRC
-	ui/GLScrollArea.cpp
-	ui/GLWidget.cpp
+		ui/GLScrollArea.cpp
+		ui/GLWidget.cpp
 		graphics/Color.cpp
 		graphics/GraphicArc.cpp
 		graphics/GraphicCircle.cpp
 		graphics/GraphicLine.cpp
-		graphics/GraphicRectangle.cpp)
+		graphics/GraphicRectangle.cpp
+		ui/QiMainWindow.cpp
+	)
 
 
 add_library(qicore SHARED ${SRC} ${INC})

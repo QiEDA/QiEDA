@@ -2,13 +2,16 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QMenuBar>
 #include "qicore/ui/GLScrollArea.hpp"
 #include "qicore/ui/GLWidget.hpp"
+#include "qicore/ui/QiMainWindow.hpp"
 
-class MainWindow : public QMainWindow
+class MainWindow : public QiMainWindow
 {
-   // Q_OBJECT
+    Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
