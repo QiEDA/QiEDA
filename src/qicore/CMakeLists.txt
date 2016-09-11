@@ -21,6 +21,7 @@ set(SRC
 		graphics/GraphicCircle.cpp
 		graphics/GraphicLine.cpp
 		graphics/GraphicRectangle.cpp
+		graphics/GraphicText.cpp
 		ui/QiMainWindow.cpp
 	)
 

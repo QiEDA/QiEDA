@@ -1,6 +1,7 @@
-#ifndef __GRAPHIC_RECTANGLE_H
-#define __GRAPHIC_RECTANGLE_H
+#ifndef __GRAPHIC_TEXT_H
+#define __GRAPHIC_TEXT_H
 
+#include <string>
 #include "qicore/graphics/Color.hpp"
 #include "qicore/graphics/GraphicItem.hpp"
 #include "qicore/qicore.hpp"
@@ -8,18 +9,20 @@
 namespace qicore {
 namespace graphics {
 	
-class QICORE_EXPORT GraphicRectangle : public GraphicItem {
+class QICORE_EXPORT GraphicText : public GraphicItem {
 protected:
 	Point start_;
 	float width_;
 	float height_;
     Color color_;
+	std::string str_;
+    float size_;
 public:
-	GraphicRectangle(Point& start, float width, float height, const Color& color) : GraphicItem() {
+	GraphicText(Point& start, const char* str, float size, const Color& color) : GraphicItem() {
 		start_ = start;
-		width_ = width;
-		height_ = height;
+		str_.assign(str);
         color_ = color;
+        size_ = size;
 	}
 
 	const Point& GetOrigin()
@@ -30,11 +33,6 @@ public:
 	const float GetWidth()
 	{
 		return width_;
-	}
-
-	const float GetHeight()
-	{
-		return height_;
 	}
 
 	void draw(struct NVGcontext* nvg) override;

@@ -11,17 +11,18 @@
 #include "qicore/graphics/GraphicLine.hpp"
 #include "qicore/graphics/GraphicArc.hpp"
 #include "qicore/graphics/GraphicRectangle.hpp"
+#include "qicore/graphics/GraphicText.hpp"
 
 
 using namespace qicore::ui;
 using namespace qicore::graphics;
 
 GLWidget::GLWidget(QWidget *parent): QGLWidget (parent) {
-        connect(&update_timer_, SIGNAL(timeout()), this, SLOT(updateGL()));
-        panX = 0;
-        panY = 0;
+    connect(&update_timer_, SIGNAL(timeout()), this, SLOT(updateGL()));
+    panX = 0;
+    panY = 0;
     zoom_ = 10;
-        setMouseTracking(true);
+    setMouseTracking(true);
     panStarted_ = false;
 }
 
@@ -68,14 +69,22 @@ void GLWidget::initializeGL() {
     p6.y = 2;
     GraphicArc* gral5 = new GraphicArc(p6,4,0,2, Colors::Silver);
 
+    Point p7;
+    p7.x = 15;
+    p7.y = 10;
+    GraphicText* gral6 = new GraphicText(p7,"TESTING",12, Colors::Lime);
+
 
     graphicItems_.push_back(gral);
     graphicItems_.push_back(gral2);
     graphicItems_.push_back(gral3);
     graphicItems_.push_back(gral4);
     graphicItems_.push_back(gral5);
+    graphicItems_.push_back(gral6);
 
     update_timer_.start(16);
+
+    nvgCreateFont(nanovg_, "sans", "./fonts/Roboto-Regular.ttf");
 }
 
 void GLWidget::resizeGL(int width, int height) {
