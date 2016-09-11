@@ -3,7 +3,7 @@
 #include "MainWindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-        QiMainWindow(parent)
+        QiMainWindow("QiViewer",parent)
 {
    // glscrollarea = new qicore::ui::GLScrollArea(this);
 
@@ -18,12 +18,12 @@ MainWindow::MainWindow(QWidget *parent) :
     mdiArea_->addSubWindow(child);
 
     child->showMaximized();
-  //  menubar_ = new QMenuBar(glscrollarea);
-  //  QMenu* fileMenu = new QMenu(tr("&File"));
-  //  fileMenu->addAction("Open file");
-  //  menubar_->addMenu(fileMenu);
 
 
+ //   menubar_ = new QMenuBar(mdiArea_);
+ //   QMenu* fileMenu = new QMenu(tr("&File"));
+ //   fileMenu->addAction("Open file");
+ //   menubar_->addMenu(fileMenu);
 }
 
 MainWindow::~MainWindow()
@@ -32,9 +32,4 @@ MainWindow::~MainWindow()
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
-}
-
-bool MainWindow::event(QEvent *event)
-{
-    return true;
 }

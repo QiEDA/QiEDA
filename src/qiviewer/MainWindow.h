@@ -18,7 +18,6 @@ public:
     ~MainWindow();
 protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
-    bool event(QEvent *event) override;
     
     qicore::ui::GLWidget* glarea;
     qicore::ui::GLScrollArea* glscrollarea;

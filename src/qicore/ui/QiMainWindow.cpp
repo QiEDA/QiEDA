@@ -5,9 +5,11 @@
 #include "qicore/ui/QiMainWindow.hpp"
 
 
-QiMainWindow::QiMainWindow(QWidget *parent):
+QiMainWindow::QiMainWindow(QString appKey, QWidget *parent):
         QMainWindow(parent)
 {
+    appKey_ = appKey;
+
     mdiArea_ = new QMdiArea(this);
     mdiArea_->setTabPosition(QTabWidget::South);
     mdiArea_->setViewMode(QMdiArea::TabbedView);
@@ -17,9 +19,28 @@ QiMainWindow::QiMainWindow(QWidget *parent):
     mdiArea_->setOption(QMdiArea::DontMaximizeSubWindowOnActivation, false);
 
     setCentralWidget(mdiArea_);
+
+
+    readSettings();
 }
 
 
 QiMainWindow::~QiMainWindow()
 {
 }
+
+void QiMainWindow::readSettings()
+{
+    QSettings settings("QiEDA", appKey_);
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
+}
+
+void QiMainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings("QiEDA", appKey_);
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("windowState", saveState());
+    QMainWindow::closeEvent(event);
+}
+

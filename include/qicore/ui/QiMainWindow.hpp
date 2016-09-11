@@ -9,17 +9,21 @@
 #include <QMdiArea>
 #include <QMdiSubWindow>
 #include <QMenuBar>
+#include <QSettings>
 #include "qicore/qicore.hpp"
 
 class QICORE_EXPORT QiMainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit QiMainWindow(QWidget *parent = 0);
+    explicit QiMainWindow(QString appKey, QWidget *parent = 0);
     ~QiMainWindow();
 protected:
     QMdiArea* mdiArea_;
     QMenuBar* menubar_;
+    QString appKey_;
+    void closeEvent(QCloseEvent *event) override;
+    void readSettings();
 };
 
 
