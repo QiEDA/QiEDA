@@ -31,7 +31,7 @@ public:
 	}
 
 
-	void draw(struct NVGcontext* nvg) override;
+	void draw(GLPainter* painter) override;
 	BoundingBox GetBoundingBox() override;
 };
 

@@ -7,6 +7,7 @@
 #include <list>
 #include "qicore/qicore.hpp"
 #include "qicore/graphics/GraphicItem.hpp"
+#include "qicore/graphics/GLPainter.hpp"
 
 //forward decl as we dont want to expose nanovg
 struct NVGcontext;
@@ -31,13 +32,15 @@ namespace ui {
         void mouseReleaseEvent(QMouseEvent *event) override;
         void wheelEvent(QWheelEvent *event) override;
 
+        void drawGrid();
         QPoint mouseMoveStartPos_;
         struct NVGcontext* nanovg_;
+        graphics::GLPainter painter_;
 
         std::list<qicore::graphics::GraphicItem *> graphicItems_;
 
-        int panX;
-        int panY;
+        float panX_;
+        float panY_;
         float zoom_;
 
         bool panStarted_;

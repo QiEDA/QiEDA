@@ -3,15 +3,8 @@
 
 using namespace qicore::graphics;
 
-void GraphicText::draw(struct NVGcontext* nvg)
+void GraphicText::draw(GLPainter* painter)
 {
-    nvgBeginPath(nvg);
-    nvgFontSize(nvg, size_);
-    nvgFontFace(nvg, "sans");
-    nvgTextAlign(nvg, NVG_ALIGN_LEFT|NVG_ALIGN_BOTTOM);
-    nvgText(nvg,start_.x,start_.y, str_.c_str(), NULL);
-    nvgFillColor(nvg, nvgRGBA(color_.red(),color_.green(),color_.blue(),color_.alpha()));
-    nvgFill(nvg);
 }
 
 

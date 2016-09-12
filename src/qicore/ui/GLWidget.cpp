@@ -5,6 +5,7 @@
 #include <gl/GLU.h>
 #include "nanovg.h"
 #include "nanovg_gl.h"
+#include "qicore/Units.hpp"
 #include "qicore/ui/GLWidget.hpp"
 #include "qicore/graphics/Color.hpp"
 #include "qicore/graphics/GraphicCircle.hpp"
@@ -19,9 +20,9 @@ using namespace qicore::graphics;
 
 GLWidget::GLWidget(QWidget *parent): QGLWidget (parent) {
     connect(&update_timer_, SIGNAL(timeout()), this, SLOT(updateGL()));
-    panX = 0;
-    panY = 0;
-    zoom_ = 10;
+    panX_ = 0;
+    panY_ = 0;
+    zoom_ = 10000;
     setMouseTracking(true);
     panStarted_ = false;
 }
@@ -31,38 +32,44 @@ GLWidget::~GLWidget() {
     setFocusPolicy(Qt::StrongFocus);
 }
 
+#define MM(x)   (x/1000.0f)
+#define INCHES_TO_MM(x) MM(x*25.4f)
+#define MILS_TO_MM(x) MM(x*39.37f)
+
 void GLWidget::initializeGL() {
     glewInit();
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
-    nanovg_ = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+
+
+   // nanovg_ = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
 
     Point p1;
-    p1.x = 5;
-    p1.y = 5;
-    qicore::graphics::Point p2;
-    p2.x = 9;
-    p2.y = 5;
+    p1.x = 0;
+    p1.y = 0;
+    Point p2;
+    p2.x = 0;
+    p2.y = Units::InchesToInternalUnits(1.4);
 
-    GraphicLine* gral = new GraphicLine(p1,p2, 2, Colors::Red);
+    GraphicLine* gral = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40), Colors::Red);
 
 
     Point p3;
-    p3.x = 1;
-    p3.y = 2;
-    GraphicRectangle* gral2 = new GraphicRectangle(p3,3, 4, Colors::Blue);
+    p3.x = 0;
+    p3.y = 0;
+    GraphicRectangle* gral2 = new GraphicRectangle(p3, Units::InchesToInternalUnits(2), Units::InchesToInternalUnits(1), Colors::Blue);
 
 
     Point p4;
-    p4.x = 5;
-    p4.y = 2;
-    GraphicRectangle* gral3 = new GraphicRectangle(p4,2, 4, Colors::Purple);
+    p4.x = Units::InchesToInternalUnits(1.4);
+    p4.y = Units::InchesToInternalUnits(2.24);
+    GraphicRectangle* gral3 = new GraphicRectangle(p4,Units::InchesToInternalUnits(0.5), Units::InchesToInternalUnits(0.5), Colors::Purple);
 
     Point p5;
-    p4.x = 15;
-    p4.y = 2;
-    GraphicCircle* gral4 = new GraphicCircle(p5,4, Colors::Silver);
+    p4.x = INCHES_TO_MM(2)+MILS_TO_MM(100);
+    p4.y = INCHES_TO_MM(2);
+    GraphicCircle* gral4 = new GraphicCircle(p5,MILS_TO_MM(100), Colors::Silver);
 
     Point p6;
     p6.x = 20;
@@ -84,26 +91,85 @@ void GLWidget::initializeGL() {
 
     update_timer_.start(16);
 
-    nvgCreateFont(nanovg_, "sans", "./fonts/Roboto-Regular.ttf");
+   // nvgCreateFont(nanovg_, "sans", "./fonts/Roboto-Regular.ttf");
 }
 
-void GLWidget::resizeGL(int width, int height) {
-    glViewport(0,0,width,height);
+void GLWidget::resizeGL(int w, int h) {
+    glViewport(0,0,w,h);
+
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrtho(0, w, 0, h, -1, 1);
+}
+
+void GLWidget::drawGrid() {
+    int worldXMax = qicore::Units::MetersToInternalUnits(5);
+    int worldXMin = -qicore::Units::MetersToInternalUnits(5);
+    int worldYMax = qicore::Units::MetersToInternalUnits(5);
+    int worldYMin = -qicore::Units::MetersToInternalUnits(5);
+    Color gridColor = Colors::DimGray;
+
+    glLineWidth(1);
+    glColor3ub(gridColor.red(), gridColor.green(), gridColor.blue());
+    for(float x = 0;x < worldXMax; x += qicore::Units::InchesToInternalUnits(0.1)) {
+        glBegin(GL_LINES);
+        glVertex3f(x, worldYMax, -1);
+        glVertex3f(x, worldYMin, -1);
+        glEnd();
+    }
+
+    for(float x = 0;x > worldXMin; x -= qicore::Units::InchesToInternalUnits(0.1)) {
+        glBegin(GL_LINES);
+        glVertex3f(x, worldYMax, -1);
+        glVertex3f(x, worldYMin, -1);
+        glEnd();
+    }
+
+    for(float y = 0;y < worldYMax; y += qicore::Units::InchesToInternalUnits(0.1)) {
+        glBegin(GL_LINES);
+        glVertex3f(worldXMax, y, 0);
+        glVertex3f(worldXMin, y, 0);
+        glEnd();
+    }
+
+    for(float y = 0;y > worldYMin; y -= qicore::Units::InchesToInternalUnits(0.1)) {
+        glBegin(GL_LINES);
+        glVertex3f(worldXMax, y, 0);
+        glVertex3f(worldXMin, y, 0);
+        glEnd();
+    }
+
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glVertex3f(0, -qicore::Units::InchesToInternalUnits(1), 0);
+    glVertex3f(0, qicore::Units::InchesToInternalUnits(1), 0);
+    glEnd();
+
+    glBegin(GL_LINES);
+    glVertex3f(-qicore::Units::InchesToInternalUnits(1), 0, 0);
+    glVertex3f(qicore::Units::InchesToInternalUnits(1), 0, 0);
+    glEnd();
 }
 
 void GLWidget::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-    nvgBeginFrame(nanovg_, width(), height(), devicePixelRatio());
-    nvgResetTransform(nanovg_);
-    nvgTranslate(nanovg_,panX,panY);
-    nvgScale(nanovg_,zoom_,zoom_);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(panX_,panY_,0);
+    glScalef(zoom_,zoom_,0);
+    //nvgBeginFrame(nanovg_, width(), height(), devicePixelRatio());
+    //nvgResetTransform(nanovg_);
+    //nvgTranslate(nanovg_,panX,panY);
+    //nvgScale(nanovg_,zoom_,zoom_);
 
     for (std::list<qicore::graphics::GraphicItem*>::iterator it = graphicItems_.begin(); it != graphicItems_.end(); ++it) {
-        (*it)->draw(nanovg_);
+        (*it)->draw(&painter_);
     }
 
-    nvgEndFrame(nanovg_);
+    drawGrid();
+   // nvgEndFrame(nanovg_);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -124,11 +190,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if(panStarted_)
     {
-        int dx = event->x() - mouseMoveStartPos_.x();
-        int dy = event->y() - mouseMoveStartPos_.y();
+        float dx = event->x() - mouseMoveStartPos_.x();
+        float dy = event->y() - mouseMoveStartPos_.y();
 
-        panX += dx;
-        panY += dy;
+        panX_ += dx/1.0f;
+        panY_ += -dy/1.0f;
 
         mouseMoveStartPos_ = event->pos();
     }

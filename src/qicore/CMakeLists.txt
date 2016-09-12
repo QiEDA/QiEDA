@@ -23,7 +23,7 @@ set(SRC
 		graphics/GraphicRectangle.cpp
 		graphics/GraphicText.cpp
 		ui/QiMainWindow.cpp
-	)
+		../../include/qicore/Units.hpp graphics/GLPainter.cpp ../../include/qicore/graphics/GLPainter.hpp)
 
 
 add_library(qicore SHARED ${SRC} ${INC})
