@@ -35,7 +35,7 @@ namespace ui {
         void drawGrid();
         QPoint mouseMoveStartPos_;
         struct NVGcontext* nanovg_;
-        graphics::GLPainter painter_;
+        graphics::GLPainter* painter_;
 
         std::list<qicore::graphics::GraphicItem *> graphicItems_;
 

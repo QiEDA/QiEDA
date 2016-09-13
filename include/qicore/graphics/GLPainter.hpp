@@ -15,7 +15,7 @@ namespace qicore {
 namespace graphics {
     class QICORE_EXPORT GLPainter {
     public:
-        GLPainter() {}
+        GLPainter();
         void DrawRect(const Point& start_, float width, float height, const Color& color);
         void DrawLine(const Point& start, const Point& end, float width, const Color& color);
         bool CreateShader(const std::string& name, const char* vertexSrc, const char* fragmentSrc);

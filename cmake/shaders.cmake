@@ -24,7 +24,7 @@ foreach (file ${FILES})
     set(destfilename "${name}_${extension}.h")
     file(
         WRITE ${DESTINATION_DIR}/${destfilename}
-        "static const GLchar *${name}_${extension}_shader[] = {\n"
+        "static const char *${name}_${extension}_shader = {\n"
         "${source}"
         "};\n"
     )

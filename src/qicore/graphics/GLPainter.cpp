@@ -6,8 +6,20 @@
 #include <GL/glew.h>
 #include <gl/GL.h>
 #include "qicore/graphics/GLPainter.hpp"
+#include "qicore/shaders/circle_vert.h"
+#include "qicore/shaders/circle_frag.h"
 
 using namespace qicore::graphics;
+
+
+GLPainter::GLPainter() {
+    GLenum err = glewInit();
+    if(err != GLEW_OK)
+    {
+        throw std::runtime_error( "glew failed to initialize!" );
+    }
+    CreateShader("circle", circle_vert_shader, circle_frag_shader);
+}
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
     glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
@@ -64,8 +76,8 @@ bool GLPainter::CreateShader(const std::string& name, const char* vertexSrc, con
     GLuint prog = glCreateProgram();
     GLuint vert = glCreateShader(GL_VERTEX_SHADER);
     GLuint frag = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(vert, 1, &vertexSrc, 0);
-    glShaderSource(frag, 1, &fragmentSrc, 0);
+    glShaderSource(vert, 1, &vertexSrc, NULL);
+    glShaderSource(frag, 1, &fragmentSrc, NULL);
 
     glCompileShader(vert);
     glGetShaderiv(vert, GL_COMPILE_STATUS, &status);

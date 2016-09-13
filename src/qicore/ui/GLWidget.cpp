@@ -41,7 +41,7 @@ void GLWidget::initializeGL() {
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
 
-
+    painter_ = new GLPainter();
    // nanovg_ = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
 
@@ -165,7 +165,7 @@ void GLWidget::paintGL() {
     //nvgScale(nanovg_,zoom_,zoom_);
 
     for (std::list<qicore::graphics::GraphicItem*>::iterator it = graphicItems_.begin(); it != graphicItems_.end(); ++it) {
-        (*it)->draw(&painter_);
+        (*it)->draw(painter_);
     }
 
     drawGrid();
