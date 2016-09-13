@@ -82,16 +82,16 @@ bool GLPainter::CreateShader(const std::string& name, const char* vertexSrc, con
     glCompileShader(vert);
     glGetShaderiv(vert, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-        std::cerr << "Error compiling vertex shader: " << name;
-        std::cerr << getShaderLog(vert);
+        std::string err = getShaderLog(vert);
+        std::cerr << "Error compiling vertex shader: " << name << std::endl << err;
         return false;
     }
 
     glCompileShader(frag);
     glGetShaderiv(frag, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-        std::cerr << "Error compiling fragment shader: " << name;
-        std::cerr << getShaderLog(vert);
+        std::string err = getShaderLog(frag);
+        std::cerr << "Error compiling fragment shader: " << name << std::endl << err;
         return false;
     }
 
@@ -102,8 +102,8 @@ bool GLPainter::CreateShader(const std::string& name, const char* vertexSrc, con
     glLinkProgram(prog);
     glGetProgramiv(prog, GL_LINK_STATUS, &status);
     if (status != GL_TRUE) {
-        std::cerr << "Error creating shader program:" << name;
-        std::cerr << getProgramLog(vert);
+        std::string err = getProgramLog(prog);
+        std::cerr << "Errorcreating shader program: " << name << std::endl << err;
         return false;
     }
 
