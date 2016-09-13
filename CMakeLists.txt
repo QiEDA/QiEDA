@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(qieda)
 
+set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
+
 #Require C++11
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
