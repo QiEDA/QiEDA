@@ -20,7 +20,7 @@ namespace ui {
     Q_OBJECT
 
     public:
-        explicit GLWidget(QWidget *parent = 0);
+        explicit GLWidget(const QGLFormat& format, QWidget *parent = 0);
         ~GLWidget();
         
     protected:

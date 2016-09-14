@@ -3,6 +3,7 @@
 #include <gl/glew.h>
 #include <gl/GL.h>
 #include <gl/GLU.h>
+#include <QDebug>
 #include "nanovg.h"
 #include "nanovg_gl.h"
 #include "qicore/Units.hpp"
@@ -12,13 +13,13 @@
 #include "qicore/graphics/GraphicLine.hpp"
 #include "qicore/graphics/GraphicArc.hpp"
 #include "qicore/graphics/GraphicRectangle.hpp"
-#include "qicore/graphics/GraphicText.hpp"
 
+#include "qicore/graphics/GraphicText.hpp"
 
 using namespace qicore::ui;
 using namespace qicore::graphics;
 
-GLWidget::GLWidget(QWidget *parent): QGLWidget (parent) {
+GLWidget::GLWidget(const QGLFormat& format, QWidget *parent): QGLWidget (format, parent) {
     connect(&update_timer_, SIGNAL(timeout()), this, SLOT(updateGL()));
     panX_ = 0;
     panY_ = 0;
@@ -37,10 +38,18 @@ GLWidget::~GLWidget() {
 #define MILS_TO_MM(x) MM(x*39.37f)
 
 void GLWidget::initializeGL() {
-    glewInit();
+    qDebug() << "Widget OpenGl: " << format().majorVersion() << "." << format().minorVersion();
+    qDebug() << "Context valid: " << context()->isValid();
+    qDebug() << "Really used OpenGl: " << context()->format().majorVersion() << "." << context()->format().minorVersion();
+    qDebug() << "OpenGl information: VENDOR:       " << (const char*)glGetString(GL_VENDOR);
+    qDebug() << "                    RENDERDER:    " << (const char*)glGetString(GL_RENDERER);
+    qDebug() << "                    VERSION:      " << (const char*)glGetString(GL_VERSION);
+    qDebug() << "                    GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
+
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
 
+//    glewInit();
     painter_ = new GLPainter();
    // nanovg_ = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
