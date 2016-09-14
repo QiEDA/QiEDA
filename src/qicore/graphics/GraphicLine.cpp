@@ -1,5 +1,4 @@
 #include "qicore/graphics/GraphicLine.hpp"
-#include "nanovg.h"
 
 using namespace qicore::graphics;
 

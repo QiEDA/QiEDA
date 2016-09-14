@@ -1,5 +1,4 @@
 #include "qicore/graphics/Color.hpp"
-#include "nanovg.h"
 
 using namespace qicore::graphics;
 

@@ -1,7 +1,6 @@
 
 #include <gl/GL.h>
 #include "qicore/graphics/GraphicRectangle.hpp"
-#include "nanovg.h"
 
 using namespace qicore::graphics;
 

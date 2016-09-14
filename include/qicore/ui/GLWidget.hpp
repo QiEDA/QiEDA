@@ -2,6 +2,8 @@
 #define GLWIDGET_H_
 
 #include <QGLWidget>
+#include <QOpenGLWidget>
+#include <QOpenGLContext>
 #include <QMouseEvent>
 #include <QTimer>
 #include <list>
@@ -9,18 +11,15 @@
 #include "qicore/graphics/GraphicItem.hpp"
 #include "qicore/graphics/GLPainter.hpp"
 
-//forward decl as we dont want to expose nanovg
-struct NVGcontext;
-
 namespace qicore {
 namespace ui {
-    class QICORE_EXPORT GLWidget : public QGLWidget  {
+    class QICORE_EXPORT GLWidget : public QOpenGLWidget  {
     friend class GLScrollArea;
 
     Q_OBJECT
 
     public:
-        explicit GLWidget(const QGLFormat& format, QWidget *parent = 0);
+        explicit GLWidget(QWidget *parent = 0);
         ~GLWidget();
         
     protected:
@@ -34,7 +33,6 @@ namespace ui {
 
         void drawGrid();
         QPoint mouseMoveStartPos_;
-        struct NVGcontext* nanovg_;
         graphics::GLPainter* painter_;
 
         std::list<qicore::graphics::GraphicItem *> graphicItems_;

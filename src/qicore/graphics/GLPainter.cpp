@@ -6,9 +6,6 @@
 #include <GL/glew.h>
 #include <gl/GL.h>
 #include "qicore/graphics/GLPainter.hpp"
-#include "qicore/shaders/circle_vert.h"
-#include "qicore/shaders/circle_frag.h"
-
 using namespace qicore::graphics;
 
 
@@ -18,7 +15,7 @@ GLPainter::GLPainter() {
     {
         throw std::runtime_error( "glew failed to initialize!" );
     }
-    CreateShader("circle", circle_vert_shader, circle_frag_shader);
+    //CreateShader("circle", circle_vert_shader, circle_frag_shader);
 }
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {

@@ -45,8 +45,7 @@ set(SRC
 
 add_library(qicore SHARED ${SRC} ${INC})
 target_link_libraries(
-    qicore
-    nanovg )
+    qicore ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARY} )
 add_dependencies(qicore shaders)
 
 

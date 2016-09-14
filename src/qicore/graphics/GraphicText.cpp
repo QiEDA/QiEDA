@@ -1,5 +1,4 @@
 #include "qicore/graphics/GraphicText.hpp"
-#include "nanovg.h"
 
 using namespace qicore::graphics;
 

@@ -28,6 +28,11 @@ void qtMessageHandler(QtMsgType type, const QMessageLogContext& context, const Q
 
 int main(int argc, char *argv[])
 {
+    QSurfaceFormat format;
+    format.setVersion(2,0);
+    format.setProfile(QSurfaceFormat::NoProfile);
+    QSurfaceFormat::setDefaultFormat(format);
+
 	qInstallMessageHandler(qtMessageHandler);
 	QApplication app(argc, argv);
 

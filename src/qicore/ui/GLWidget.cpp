@@ -4,8 +4,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include <QDebug>
-#include "nanovg.h"
-#include "nanovg_gl.h"
 #include "qicore/Units.hpp"
 #include "qicore/ui/GLWidget.hpp"
 #include "qicore/graphics/Color.hpp"
@@ -19,8 +17,8 @@
 using namespace qicore::ui;
 using namespace qicore::graphics;
 
-GLWidget::GLWidget(const QGLFormat& format, QWidget *parent): QGLWidget (format, parent) {
-    connect(&update_timer_, SIGNAL(timeout()), this, SLOT(updateGL()));
+GLWidget::GLWidget(QWidget *parent): QOpenGLWidget (parent) {
+    connect(&update_timer_, SIGNAL(timeout()), this, SLOT(update()));
     panX_ = 0;
     panY_ = 0;
     zoom_ = 10000;
@@ -29,7 +27,6 @@ GLWidget::GLWidget(const QGLFormat& format, QWidget *parent): QGLWidget (format,
 }
 
 GLWidget::~GLWidget() {
-	nvgDeleteGL2(nanovg_);
     setFocusPolicy(Qt::StrongFocus);
 }
 
@@ -98,7 +95,7 @@ void GLWidget::initializeGL() {
     graphicItems_.push_back(gral5);
     graphicItems_.push_back(gral6);
 
-    update_timer_.start(16);
+    update_timer_.start(1000 / 60.0);
 
    // nvgCreateFont(nanovg_, "sans", "./fonts/Roboto-Regular.ttf");
 }
