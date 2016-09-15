@@ -4,6 +4,7 @@ using namespace qicore::graphics;
 
 void GraphicCircle::draw(GLPainter* painter)
 {
+    painter->DrawCircle(center_, radius_, color_);
 }
 
 BoundingBox GraphicCircle::GetBoundingBox()

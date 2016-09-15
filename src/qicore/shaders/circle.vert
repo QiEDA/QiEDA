@@ -1,8 +1,11 @@
-in vec4 color;
-out vec4 vColor;
+#version 120
 
-void main(void)
+uniform vec2 iCenter;
+
+varying vec4 circleOrigin;
+
+void main()
 {
-	gl_Position = ftransform();
-	vColor = color;
+  gl_Position = ftransform();
+  circleOrigin = vec4(iCenter,0,0) * gl_ModelViewMatrix;
 }

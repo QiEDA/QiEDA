@@ -73,9 +73,9 @@ void GLWidget::initializeGL() {
     GraphicRectangle* gral3 = new GraphicRectangle(p4,Units::InchesToInternalUnits(0.5), Units::InchesToInternalUnits(0.5), Colors::Purple);
 
     Point p5;
-    p4.x = INCHES_TO_MM(2)+MILS_TO_MM(100);
-    p4.y = INCHES_TO_MM(2);
-    GraphicCircle* gral4 = new GraphicCircle(p5,MILS_TO_MM(100), Colors::Silver);
+    p4.x = Units::InchesToInternalUnits(0);
+    p4.y = Units::InchesToInternalUnits(0);
+    GraphicCircle* gral4 = new GraphicCircle(p5,Units::MilsToInternalUnits(300), Colors::Silver);
 
     Point p6;
     p6.x = 20;

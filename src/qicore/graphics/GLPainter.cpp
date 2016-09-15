@@ -18,11 +18,13 @@ GLPainter::GLPainter() {
     {
         throw std::runtime_error( "glew failed to initialize!" );
     }
-    //CreateShader("circle", circle_vert_shader, circle_frag_shader);
+
     circleShader.Load(circle_vert_shader, circle_frag_shader);
+    circleShader.RegisterUniform("iCenter");
 }
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
+    return;
     glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
     glBegin(GL_QUADS);
     glVertex3f(start.x, start.y, 1);
@@ -36,7 +38,24 @@ void GLPainter::DrawLine(const Point& start, const Point& end, float width, cons
     glLineWidth(width);
     glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
     glBegin(GL_LINES);
-    glVertex3f(start.x, start.x, 0.0);
+    glVertex3f(start.x, start.y, 0.0);
     glVertex3f(end.x, end.y, 0);
     glEnd();
+}
+
+
+void GLPainter::DrawCircle(const Point& origin, float radius, const Color& color) {
+    circleShader.Bind();
+
+
+    glUniform2f(circleShader.GetUniformLocation("iCenter"), origin.x, origin.y);
+    glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
+    glBegin(GL_QUADS);
+    glVertex3f(origin.x-radius, origin.y-radius, 1);
+    glVertex3f(origin.x+radius, origin.y-radius, 1);
+    glVertex3f(origin.x+radius, origin.y+radius, 1);
+    glVertex3f(origin.x-radius, origin.y+radius, 1);
+    glEnd();
+
+   circleShader.Unbind();
 }
