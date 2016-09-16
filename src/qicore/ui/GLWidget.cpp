@@ -43,13 +43,7 @@ void GLWidget::initializeGL() {
     qDebug() << "                    VERSION:      " << (const char*)glGetString(GL_VERSION);
     qDebug() << "                    GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-    glClearColor(0,0,0,1);
-    glEnable(GL_DEPTH_TEST);
-
-//    glewInit();
     painter_ = new GLPainter();
-   // nanovg_ = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
-
 
     Point p1;
     p1.x = 0;
@@ -96,86 +90,18 @@ void GLWidget::initializeGL() {
     graphicItems_.push_back(gral6);
 
     update_timer_.start(1000 / 60.0);
-
-   // nvgCreateFont(nanovg_, "sans", "./fonts/Roboto-Regular.ttf");
 }
 
 void GLWidget::resizeGL(int w, int h) {
-    glViewport(0,0,w,h);
 
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho(0, w, 0, h, -1, 1);
-}
-
-void GLWidget::drawGrid() {
-    int worldXMax = qicore::Units::MetersToInternalUnits(5);
-    int worldXMin = -qicore::Units::MetersToInternalUnits(5);
-    int worldYMax = qicore::Units::MetersToInternalUnits(5);
-    int worldYMin = -qicore::Units::MetersToInternalUnits(5);
-    Color gridColor = Colors::DimGray;
-
-    glLineWidth(1);
-    glColor3ub(gridColor.red(), gridColor.green(), gridColor.blue());
-    for(float x = 0;x < worldXMax; x += qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(x, worldYMax, -1);
-        glVertex3f(x, worldYMin, -1);
-        glEnd();
-    }
-
-    for(float x = 0;x > worldXMin; x -= qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(x, worldYMax, -1);
-        glVertex3f(x, worldYMin, -1);
-        glEnd();
-    }
-
-    for(float y = 0;y < worldYMax; y += qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(worldXMax, y, 0);
-        glVertex3f(worldXMin, y, 0);
-        glEnd();
-    }
-
-    for(float y = 0;y > worldYMin; y -= qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(worldXMax, y, 0);
-        glVertex3f(worldXMin, y, 0);
-        glEnd();
-    }
-
-    glLineWidth(3);
-    glBegin(GL_LINES);
-    glVertex3f(0, -qicore::Units::InchesToInternalUnits(1), 0);
-    glVertex3f(0, qicore::Units::InchesToInternalUnits(1), 0);
-    glEnd();
-
-    glBegin(GL_LINES);
-    glVertex3f(-qicore::Units::InchesToInternalUnits(1), 0, 0);
-    glVertex3f(qicore::Units::InchesToInternalUnits(1), 0, 0);
-    glEnd();
+    painter_->Resize(w,h);
 }
 
 void GLWidget::paintGL() {
 
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    painter_->PrepareDraw(panX_,panY_, zoom_);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(panX_,panY_,0);
-    glScalef(zoom_,zoom_,0);
-    //nvgBeginFrame(nanovg_, width(), height(), devicePixelRatio());
-    //nvgResetTransform(nanovg_);
-    //nvgTranslate(nanovg_,panX,panY);
-    //nvgScale(nanovg_,zoom_,zoom_);
-
-    for (std::list<qicore::graphics::GraphicItem*>::iterator it = graphicItems_.begin(); it != graphicItems_.end(); ++it) {
-        (*it)->draw(painter_);
-    }
-
-    drawGrid();
-   // nvgEndFrame(nanovg_);
+    painter_->Draw(graphicItems_);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

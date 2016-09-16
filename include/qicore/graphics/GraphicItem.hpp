@@ -5,10 +5,11 @@
 #include "qicore/graphics/GLPainter.hpp"
 #include "qicore/graphics/BoundingBox.hpp"
 
-struct NVGcontext;
 
 namespace qicore {
 namespace graphics {
+
+class GLPainter;
 
 class QICORE_EXPORT GraphicItem {
 public:
