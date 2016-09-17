@@ -100,6 +100,10 @@ void GLShader::Unbind() const{
     glUseProgram(0);
 }
 
+void GLShader::BindAttributeLocation(const char* attribute, unsigned int location) {
+    glBindAttribLocation(programId, location, attribute);
+}
+
 
 void GLShader::RegisterAttribute(const char* attribute){
     attributeList_[attribute] = glGetAttribLocation(programId, attribute);

@@ -26,6 +26,7 @@ namespace graphics {
         void RegisterUniform(const char* uniform);
         unsigned int GetAttribLocation(const char* attribute);
         unsigned int GetUniformLocation(const char* uniform);
+        void BindAttributeLocation(const char* attribute, unsigned int location);
 
         unsigned int ProgramId() const {
             return programId;

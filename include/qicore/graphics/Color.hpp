@@ -42,6 +42,26 @@ public:
     {
         return a_;
     }
+
+    float greenf() const
+    {
+        return g_/255.0f;
+    }
+
+    float redf() const
+    {
+        return r_/255.0f;
+    }
+
+    float bluef() const
+    {
+        return b_/255.0f;
+    }
+
+    float alphaf() const
+    {
+        return a_/255.0f;
+    }
 };
 
 namespace Colors {

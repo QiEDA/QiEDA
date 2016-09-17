@@ -20,8 +20,18 @@ add_custom_command(
         -DDESTINATION_DIR="${PROJECT_SOURCE_DIR}/include/qicore/shaders/"
 		-P ${CMAKE_MODULE_PATH}/shaders.cmake
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-  
 
+
+
+add_custom_command(
+		TARGET shaders
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND}
+		-DSOURCE_DIR="${PROJECT_SOURCE_DIR}/src/qicore/shaders/"
+		-DFILES="shader.vert;shader.frag"
+		-DDESTINATION_DIR="${PROJECT_SOURCE_DIR}/include/qicore/shaders/"
+		-P ${CMAKE_MODULE_PATH}/shaders.cmake
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     
 #AUTOMOC needs us to add the header to library for it to work on the class
 set(INC

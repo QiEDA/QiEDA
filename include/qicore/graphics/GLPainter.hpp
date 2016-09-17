@@ -8,6 +8,9 @@
 #include <string>
 #include <map>
 #include <list>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include "qicore/graphics/GLShader.hpp"
 #include "qicore/graphics/GraphicItem.hpp"
 #include "qicore/graphics/Point.hpp"
@@ -30,7 +33,11 @@ namespace graphics {
         void Resize(int w, int h);
     private:
         GLShader circleShader;
+        GLShader generalShader;
         void drawGrid();
+        glm::mat4 projectionMatrix; // Store the projection matrix
+        glm::mat4 viewMatrix; // Store the view matrix
+        glm::mat4 modelMatrix; // Store the model matrix
     };
 }
 }

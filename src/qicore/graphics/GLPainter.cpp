@@ -9,6 +9,8 @@
 #include "qicore/graphics/GLPainter.hpp"
 #include "qicore/shaders/circle_vert.h"
 #include "qicore/shaders/circle_frag.h"
+#include "qicore/shaders/shader_vert.h"
+#include "qicore/shaders/shader_frag.h"
 
 using namespace qicore::graphics;
 
@@ -26,6 +28,13 @@ GLPainter::GLPainter() {
     circleShader.Load(circle_vert_shader, circle_frag_shader);
     circleShader.RegisterUniform("iCenter");
 
+    generalShader.Load(shader_vert_shader, shader_frag_shader);
+    generalShader.BindAttributeLocation("vi_VertexPos",0);
+ //   generalShader.BindAttributeLocation("vi_Color",1);
+    generalShader.RegisterUniform("projectionMatrix");
+    generalShader.RegisterUniform("viewMatrix");
+    generalShader.RegisterUniform("modelMatrix");
+    generalShader.RegisterUniform("vi_Color");
 }
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
@@ -41,7 +50,7 @@ void GLPainter::DrawRect(const Point& start, float width, float height, const Co
 
 void GLPainter::DrawLine(const Point& start, const Point& end, float width, const Color& color) {
     glLineWidth(width);
-    glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
+    glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
     glBegin(GL_LINES);
     glVertex3f(start.x, start.y, 0.0);
     glVertex3f(end.x, end.y, 0);
@@ -50,19 +59,22 @@ void GLPainter::DrawLine(const Point& start, const Point& end, float width, cons
 
 
 void GLPainter::DrawCircle(const Point& origin, float radius, const Color& color) {
+
+    generalShader.Unbind();
     circleShader.Bind();
 
 
     glUniform2f(circleShader.GetUniformLocation("iCenter"), origin.x, origin.y);
-    glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
+    glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
     glBegin(GL_QUADS);
-    glVertex3f(origin.x-radius, origin.y-radius, 1);
-    glVertex3f(origin.x+radius, origin.y-radius, 1);
-    glVertex3f(origin.x+radius, origin.y+radius, 1);
-    glVertex3f(origin.x-radius, origin.y+radius, 1);
+    glVertex3f(origin.x-radius, origin.y-radius, 0);
+    glVertex3f(origin.x+radius, origin.y-radius, 0);
+    glVertex3f(origin.x+radius, origin.y+radius, 0);
+    glVertex3f(origin.x-radius, origin.y+radius, 0);
     glEnd();
 
    circleShader.Unbind();
+    generalShader.Bind();
 }
 
 
@@ -77,11 +89,23 @@ void GLPainter::Draw(std::list<GraphicItem*>& items) {
 void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    //glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
 
-    glTranslatef(panX,panY,0);
-    glScalef(zoom,zoom,0);
+    //glTranslatef(panX,panY,0);
+    //glScalef(zoom,zoom,0);
+
+
+    viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
+    modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom));
+
+    generalShader.Bind();
+    glUniformMatrix4fv(generalShader.GetUniformLocation("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
+    glUniformMatrix4fv(generalShader.GetUniformLocation("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
+    glUniformMatrix4fv(generalShader.GetUniformLocation("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
+
+
+    glUniform4f(generalShader.GetUniformLocation("vi_Color"), 1.0, 0.0, 0.0, 1.0);
 }
 
 void GLPainter::drawGrid() {
@@ -92,18 +116,18 @@ void GLPainter::drawGrid() {
     Color gridColor = Colors::DimGray;
 
     glLineWidth(1);
-    glColor3ub(gridColor.red(), gridColor.green(), gridColor.blue());
+    glUniform4f(generalShader.GetUniformLocation("vi_Color"), gridColor.redf(), gridColor.greenf(), gridColor.bluef(), gridColor.alphaf());
     for(float x = 0;x < worldXMax; x += qicore::Units::InchesToInternalUnits(0.1)) {
         glBegin(GL_LINES);
-        glVertex3f(x, worldYMax, -1);
-        glVertex3f(x, worldYMin, -1);
+        glVertex3f(x, worldYMax, 0);
+        glVertex3f(x, worldYMin, 0);
         glEnd();
     }
 
     for(float x = 0;x > worldXMin; x -= qicore::Units::InchesToInternalUnits(0.1)) {
         glBegin(GL_LINES);
-        glVertex3f(x, worldYMax, -1);
-        glVertex3f(x, worldYMin, -1);
+        glVertex3f(x, worldYMax, 0);
+        glVertex3f(x, worldYMin, 0);
         glEnd();
     }
 
@@ -137,7 +161,9 @@ void GLPainter::Resize(int w, int h)
 {
     glViewport(0,0,w,h);
 
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho(0, w, 0, h, -1, 1);
+    //glMatrixMode( GL_PROJECTION );
+   // glLoadIdentity();
+    // glOrtho(0, w, 0, h, -1, 1);
+
+    projectionMatrix = glm::ortho(0.0f, (float)w, 0.0f, (float)h, -1.0f, 1.0f);
 }
