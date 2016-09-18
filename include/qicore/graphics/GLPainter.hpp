@@ -35,9 +35,17 @@ namespace graphics {
         GLShader circleShader;
         GLShader generalShader;
         void drawGrid();
+        void gridCleanup();
+        void prepareGrid();
         glm::mat4 projectionMatrix; // Store the projection matrix
         glm::mat4 viewMatrix; // Store the view matrix
         glm::mat4 modelMatrix; // Store the model matrix
+
+        unsigned int gridVbo;
+        unsigned int gridVao;
+
+
+        long totalGridVerts_;
     };
 }
 }

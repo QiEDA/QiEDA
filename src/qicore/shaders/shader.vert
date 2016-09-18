@@ -11,6 +11,6 @@ out vec4 vo_Color;
 
 void main(void)
 {
-     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vi_VertexPos,1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vi_VertexPos,1.0);
     vo_Color = vi_Color;
 }

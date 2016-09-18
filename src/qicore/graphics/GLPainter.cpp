@@ -2,6 +2,7 @@
 // Created by mroszko on 9/11/2016.
 //
 
+#include <vector>
 #include <iostream>
 #include <GL/glew.h>
 #include <gl/GL.h>
@@ -35,6 +36,9 @@ GLPainter::GLPainter() {
     generalShader.RegisterUniform("viewMatrix");
     generalShader.RegisterUniform("modelMatrix");
     generalShader.RegisterUniform("vi_Color");
+
+
+    prepareGrid();
 }
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
@@ -108,62 +112,96 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glUniform4f(generalShader.GetUniformLocation("vi_Color"), 1.0, 0.0, 0.0, 1.0);
 }
 
+void GLPainter::gridCleanup() {
+    if(gridVbo != 0)
+    {
+        glDeleteBuffers(1, &gridVbo);
+    }
+
+    if(gridVao != 0)
+    {
+        glDeleteVertexArrays(1, &gridVao);
+    }
+}
+
+void GLPainter::prepareGrid() {
+    gridCleanup();
+
+    /* square grid so min and max are identical for X and Y */
+    float max = qicore::Units::MetersToInternalUnits(1);
+    float majorIncrement  = qicore::Units::MillimetersToInternalUnits(10);
+
+    //total lines
+    long axisHalfLines =  std::floor(max/majorIncrement);
+    long axisHalfVerts = axisHalfLines*2;
+    long totalVerts = axisHalfVerts*4;
+
+    glGenVertexArrays(1, &gridVao);
+    glBindVertexArray(gridVao);
+
+    std::vector<GLfloat> verts;
+    verts.reserve(totalVerts);
+
+    max -= majorIncrement;  //decrement the max by the increment to "cap" off the ends
+    for(int i = 0;i < axisHalfLines; i++) {
+        GLfloat pos = i*majorIncrement;
+        verts.push_back(pos);
+        verts.push_back(max);
+        verts.push_back(0);
+
+        verts.push_back(pos);
+        verts.push_back(-max);
+        verts.push_back(0);
+
+        verts.push_back(-pos);
+        verts.push_back(max);
+        verts.push_back(0);
+
+        verts.push_back(-pos);
+        verts.push_back(-max);
+        verts.push_back(0);
+
+        verts.push_back(max);
+        verts.push_back(pos);
+        verts.push_back(0);
+
+        verts.push_back(-max);
+        verts.push_back(pos);
+        verts.push_back(0);
+
+        verts.push_back(max);
+        verts.push_back(-pos);
+        verts.push_back(0);
+
+        verts.push_back(-max);
+        verts.push_back(-pos);
+        verts.push_back(0);
+    }
+
+
+    glGenBuffers(1, &gridVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, gridVbo);
+    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLfloat), &verts[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);;
+
+    glBindVertexArray(0);
+
+    totalGridVerts_ = totalVerts;
+}
+
 void GLPainter::drawGrid() {
-    int worldXMax = qicore::Units::MetersToInternalUnits(5);
-    int worldXMin = -qicore::Units::MetersToInternalUnits(5);
-    int worldYMax = qicore::Units::MetersToInternalUnits(5);
-    int worldYMin = -qicore::Units::MetersToInternalUnits(5);
     Color gridColor = Colors::DimGray;
-
-    glLineWidth(1);
     glUniform4f(generalShader.GetUniformLocation("vi_Color"), gridColor.redf(), gridColor.greenf(), gridColor.bluef(), gridColor.alphaf());
-    for(float x = 0;x < worldXMax; x += qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(x, worldYMax, 0);
-        glVertex3f(x, worldYMin, 0);
-        glEnd();
-    }
-
-    for(float x = 0;x > worldXMin; x -= qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(x, worldYMax, 0);
-        glVertex3f(x, worldYMin, 0);
-        glEnd();
-    }
-
-    for(float y = 0;y < worldYMax; y += qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(worldXMax, y, 0);
-        glVertex3f(worldXMin, y, 0);
-        glEnd();
-    }
-
-    for(float y = 0;y > worldYMin; y -= qicore::Units::InchesToInternalUnits(0.1)) {
-        glBegin(GL_LINES);
-        glVertex3f(worldXMax, y, 0);
-        glVertex3f(worldXMin, y, 0);
-        glEnd();
-    }
-
-    glLineWidth(3);
-    glBegin(GL_LINES);
-    glVertex3f(0, -qicore::Units::InchesToInternalUnits(1), 0);
-    glVertex3f(0, qicore::Units::InchesToInternalUnits(1), 0);
-    glEnd();
-
-    glBegin(GL_LINES);
-    glVertex3f(-qicore::Units::InchesToInternalUnits(1), 0, 0);
-    glVertex3f(qicore::Units::InchesToInternalUnits(1), 0, 0);
-    glEnd();
+    glBindVertexArray (gridVao);
+    glDrawArrays (GL_LINES, 0, totalGridVerts_);
+    glBindVertexArray(0);
+    return;
 }
 
 void GLPainter::Resize(int w, int h)
 {
     glViewport(0,0,w,h);
-
-    //glMatrixMode( GL_PROJECTION );
-   // glLoadIdentity();
-    // glOrtho(0, w, 0, h, -1, 1);
 
     projectionMatrix = glm::ortho(0.0f, (float)w, 0.0f, (float)h, -1.0f, 1.0f);
 }
