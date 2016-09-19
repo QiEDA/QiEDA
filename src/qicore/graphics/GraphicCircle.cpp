@@ -2,9 +2,9 @@
 
 using namespace qicore::graphics;
 
-void GraphicCircle::draw(GLPainter* painter)
+void GraphicCircle::Draw(GLPainter* painter, const Color& color)
 {
-    painter->DrawCircle(center_, radius_, color_);
+    painter->DrawCircle(center_, radius_, color);
 }
 
 BoundingBox GraphicCircle::GetBoundingBox()

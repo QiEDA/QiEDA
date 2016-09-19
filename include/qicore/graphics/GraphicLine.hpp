@@ -13,13 +13,11 @@ protected:
 	Point start_;
 	Point end_;
 	int width_;
-	Color color_;
 public:
-	GraphicLine(Point& start, Point& end, int width, const Color& color) : GraphicItem() {
+	GraphicLine(Point& start, Point& end, int width) : GraphicItem() {
 		start_ = start;
 		end_ = end;
 		width_ = width;
-		color_ = color;
 	}
 
 	const Point& GetStart()
@@ -37,7 +35,7 @@ public:
 		return width_;
 	}
 
-	void draw(GLPainter* painter) override;
+	void Draw(GLPainter* painter, const Color& color) override;
 
 	BoundingBox GetBoundingBox() override;
 };

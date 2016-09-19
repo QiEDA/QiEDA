@@ -4,7 +4,7 @@
 
 using namespace qicore::graphics;
 
-void GraphicRectangle::draw(GLPainter* painter)
+void GraphicRectangle::Draw(GLPainter* painter, const Color& color)
 {
     //nvgBeginPath(nvg);
     //nvgRect(nvg,start_.x,start_.y,width_,height_);

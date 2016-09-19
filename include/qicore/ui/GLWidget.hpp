@@ -35,7 +35,7 @@ namespace ui {
         QPoint mouseMoveStartPos_;
         graphics::GLPainter* painter_;
 
-        std::list<qicore::graphics::GraphicItem *> graphicItems_;
+        std::list<qicore::graphics::GraphicLayer *> layers_;
 
         float panX_;
         float panY_;

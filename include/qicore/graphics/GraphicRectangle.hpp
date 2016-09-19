@@ -15,11 +15,10 @@ protected:
 	float height_;
     Color color_;
 public:
-	GraphicRectangle(Point& start, float width, float height, const Color& color) : GraphicItem() {
+	GraphicRectangle(Point& start, float width, float height) : GraphicItem() {
 		start_ = start;
 		width_ = width;
 		height_ = height;
-        color_ = color;
 	}
 
 	const Point& GetOrigin()
@@ -37,7 +36,7 @@ public:
 		return height_;
 	}
 
-	void draw(GLPainter* painter) override;
+	void Draw(GLPainter* painter, const Color& color) override;
 	BoundingBox GetBoundingBox() override;
 };
 

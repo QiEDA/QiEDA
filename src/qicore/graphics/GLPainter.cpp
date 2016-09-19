@@ -42,8 +42,8 @@ GLPainter::GLPainter() {
 }
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
-    return;
-    glColor4ub(color.red(), color.green(), color.blue(),color.alpha());
+    glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
+
     glBegin(GL_QUADS);
     glVertex3f(start.x, start.y, 1);
     glVertex3f(start.x+width, start.y, 1);
@@ -67,7 +67,6 @@ void GLPainter::DrawCircle(const Point& origin, float radius, const Color& color
     generalShader.Unbind();
     circleShader.Bind();
 
-
     glUniform2f(circleShader.GetUniformLocation("iCenter"), origin.x, origin.y);
     glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
     glBegin(GL_QUADS);
@@ -77,39 +76,30 @@ void GLPainter::DrawCircle(const Point& origin, float radius, const Color& color
     glVertex3f(origin.x-radius, origin.y+radius, 0);
     glEnd();
 
-   circleShader.Unbind();
+    circleShader.Unbind();
     generalShader.Bind();
 }
 
 
-void GLPainter::Draw(std::list<GraphicItem*>& items) {
+void GLPainter::Draw(std::list<GraphicLayer*>& items) {
     drawGrid();
 
     for (auto it = items.begin(); it != items.end(); ++it) {
-        (*it)->draw(this);
+        (*it)->Draw(this);
     }
 }
 
 void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-
-    //glTranslatef(panX,panY,0);
-    //glScalef(zoom,zoom,0);
-
-
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom));
 
     generalShader.Bind();
+    //push the transformation matrices into the general shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
-
-
-    glUniform4f(generalShader.GetUniformLocation("vi_Color"), 1.0, 0.0, 0.0, 1.0);
 }
 
 void GLPainter::gridCleanup() {

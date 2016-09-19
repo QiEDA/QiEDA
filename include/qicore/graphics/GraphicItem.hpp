@@ -2,6 +2,7 @@
 #define __GRAPHIC_ITEM_HPP
 
 #include "qicore/qicore.hpp"
+#include "qicore/graphics/Color.hpp"
 #include "qicore/graphics/GLPainter.hpp"
 #include "qicore/graphics/BoundingBox.hpp"
 
@@ -18,9 +19,10 @@ public:
 
 	virtual ~GraphicItem() {}
 
-	virtual void draw(GLPainter* painter)  = 0;
+	virtual void Draw(GLPainter* painter, const Color& color)  = 0;
 
 	virtual BoundingBox GetBoundingBox() = 0;
+protected:
 };
 
 }

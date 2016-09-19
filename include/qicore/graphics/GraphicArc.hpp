@@ -12,14 +12,12 @@ class QICORE_EXPORT GraphicArc : public GraphicItem {
 protected:
 	Point center_;
 	float radius_;
-    Color color_;
     float angle0_;
     float angle1_;
 public:
-	GraphicArc(Point& center, float radius, float angle0, float angle1, const Color& color) : GraphicItem() {
+	GraphicArc(Point& center, float radius, float angle0, float angle1) : GraphicItem() {
 		center_ = center;
 		radius_ = radius;
-		color_ = color;
         angle0_ = angle0;
         angle1_ = angle1;
 	}
@@ -35,7 +33,7 @@ public:
 	}
 
 
-	void draw(GLPainter* painter) override;
+	void Draw(GLPainter* painter, const Color& color) override;
 	BoundingBox GetBoundingBox() override;
 };
 

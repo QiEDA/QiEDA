@@ -14,14 +14,12 @@ protected:
 	Point start_;
 	float width_;
 	float height_;
-    Color color_;
 	std::string str_;
     float size_;
 public:
-	GraphicText(Point& start, const char* str, float size, const Color& color) : GraphicItem() {
+	GraphicText(Point& start, const char* str, float size) : GraphicItem() {
 		start_ = start;
 		str_.assign(str);
-        color_ = color;
         size_ = size;
 	}
 
@@ -35,7 +33,7 @@ public:
 		return width_;
 	}
 
-	void draw(GLPainter* painter) override;
+	void Draw(GLPainter* painter, const Color& color) override;
 	BoundingBox GetBoundingBox() override;
 };
 

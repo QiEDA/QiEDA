@@ -13,6 +13,7 @@
 #include <glm/gtx/transform.hpp>
 #include "qicore/graphics/GLShader.hpp"
 #include "qicore/graphics/GraphicItem.hpp"
+#include "qicore/graphics/GraphicLayer.hpp"
 #include "qicore/graphics/Point.hpp"
 #include "qicore/graphics/Color.hpp"
 #include "qicore/qicore.hpp"
@@ -20,6 +21,7 @@
 namespace qicore {
 namespace graphics {
     class GraphicItem;
+    class GraphicLayer;
 
     class QICORE_EXPORT GLPainter {
     public:
@@ -28,7 +30,7 @@ namespace graphics {
         void DrawLine(const Point& start, const Point& end, float width, const Color& color);
         void DrawCircle(const Point& origin, float radius, const Color& color);
 
-        void Draw(std::list<GraphicItem*>& items);
+        void Draw(std::list<GraphicLayer*>& items) ;
         void PrepareDraw(float panX, float panY, float zoom);
         void Resize(int w, int h);
     private:

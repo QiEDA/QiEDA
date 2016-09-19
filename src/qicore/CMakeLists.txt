@@ -52,6 +52,7 @@ set(SRC
 		ui/QiMainWindow.cpp
 		graphics/GLPainter.cpp
 		graphics/GLShader.cpp
+		graphics/GraphicLayer.cpp
 	)
 
 

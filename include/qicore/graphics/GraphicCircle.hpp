@@ -12,12 +12,10 @@ class QICORE_EXPORT GraphicCircle : public GraphicItem {
 protected:
 	Point center_;
 	float radius_;
-    Color color_;
 public:
-    GraphicCircle(Point& center, float radius, const Color& color) : GraphicItem() {
+    GraphicCircle(Point& center, float radius) : GraphicItem() {
 		center_ = center;
 		radius_ = radius;
-		color_ = color;
 	}
 
 	const Point& GetCenter()
@@ -31,7 +29,7 @@ public:
 	}
 
 
-	void draw(GLPainter* painter) override;
+	void Draw(GLPainter* painter, const Color& color) override;
 	BoundingBox GetBoundingBox() override;
 };
 
