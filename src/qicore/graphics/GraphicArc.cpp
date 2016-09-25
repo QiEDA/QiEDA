@@ -2,7 +2,7 @@
 
 using namespace qicore::graphics;
 
-void GraphicArc::Draw(GLPainter* painter, const Color& color)
+void GraphicArc::Draw(GraphicLayer* layer)
 {
 }
 

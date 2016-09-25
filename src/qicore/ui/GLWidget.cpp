@@ -52,7 +52,7 @@ void GLWidget::initializeGL() {
     p1.y = 0;
     Point p2;
     p2.x = 0;
-    p2.y = Units::InchesToInternalUnits(1.4);
+    p2.y = Units::InchesToInternalUnits(8);
 
     GraphicLine* gral = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
 
@@ -92,6 +92,8 @@ void GLWidget::initializeGL() {
     layer->AddItem(gral6);
 
     layers_.push_back(layer);
+
+    painter_->RegisterGraphicLayer(layer);
 
     update_timer_.start(1000 / 60.0);
 }

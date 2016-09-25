@@ -44,12 +44,27 @@ GLPainter::GLPainter() {
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
     glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
 
+   /*
     glBegin(GL_QUADS);
     glVertex3f(start.x, start.y, 1);
     glVertex3f(start.x+width, start.y, 1);
     glVertex3f(start.x+width, start.y+height, 1);
     glVertex3f(start.x, start.y+height, 1);
     glEnd();
+    */
+    GLfloat verts[4][3]  = {
+            {start.x,start.y,0},
+            {start.x+width, start.y, 0},
+            {start.x+width, start.y+height, 0},
+            {start.x, start.y+height, 0}
+    };
+
+    unsigned int rectVbo;
+    glGenBuffers(1, &rectVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, rectVbo);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), &verts[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);;
 }
 
 void GLPainter::DrawLine(const Point& start, const Point& end, float width, const Color& color) {
@@ -85,8 +100,45 @@ void GLPainter::Draw(std::list<GraphicLayer*>& items) {
     drawGrid();
 
     for (auto it = items.begin(); it != items.end(); ++it) {
-        (*it)->Draw(this);
+        DrawLayer((*it));
     }
+}
+
+void GLPainter::DrawLayer(GraphicLayer* layer) {
+
+    GLLayerMeta* meta = &registeredLayers_[layer];
+
+    glBindVertexArray(meta->arrayName);
+    glBindBuffer(GL_ARRAY_BUFFER, meta->bufferName);
+
+    if(layer->Prepare(this))
+    {
+        auto verts = layer->GetVertices();
+        glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLfloat), &verts[0], GL_STREAM_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);;
+    }
+
+    glEnableVertexAttribArray(0);
+
+    auto paintOperations = layer->GetPaintOperations();
+    for(auto cmd : paintOperations)
+    {
+        glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
+        if(cmd.type == GraphicPaintOperationLine)
+        {
+            glLineWidth(4);
+            glDrawArrays(GL_LINES, cmd.offset, cmd.vertexCount);
+        }
+        else if(cmd.type == GraphicPaintOperationQuad)
+        {
+            glDrawArrays(GL_QUADS, cmd.offset, cmd.vertexCount);
+        }
+    }
+
+    layer->Unprepare();
+
+    glDisableVertexAttribArray(0);
+    glBindVertexArray(0);
 }
 
 void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
@@ -184,6 +236,7 @@ void GLPainter::drawGrid() {
     Color gridColor = Colors::DimGray;
     glUniform4f(generalShader.GetUniformLocation("vi_Color"), gridColor.redf(), gridColor.greenf(), gridColor.bluef(), gridColor.alphaf());
     glBindVertexArray (gridVao);
+    glLineWidth(1);
     glDrawArrays (GL_LINES, 0, totalGridVerts_);
     glBindVertexArray(0);
     return;
@@ -194,4 +247,18 @@ void GLPainter::Resize(int w, int h)
     glViewport(0,0,w,h);
 
     projectionMatrix = glm::ortho(0.0f, (float)w, 0.0f, (float)h, -1.0f, 1.0f);
+}
+
+
+void GLPainter::RegisterGraphicLayer(GraphicLayer* layer)
+{
+    auto l = registeredLayers_.find(layer);
+
+    if(l == registeredLayers_.end()) {
+        GLLayerMeta meta;
+        glGenVertexArrays(1, &meta.arrayName);
+        glGenBuffers(1, &meta.bufferName);
+
+        registeredLayers_[layer] = meta;
+    }
 }

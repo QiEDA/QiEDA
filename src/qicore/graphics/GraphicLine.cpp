@@ -2,9 +2,11 @@
 
 using namespace qicore::graphics;
 
-void GraphicLine::Draw(GLPainter* painter, const Color& color)
+void GraphicLine::Draw(GraphicLayer* layer)
 {
-    painter->DrawLine(start_, end_, width_, color);
+    layer->AddOperation(GraphicPaintOperationLine, 2);
+    layer->AddVertex(start_.x,start_.y,0);
+    layer->AddVertex(end_.x, end_.y, 0);
 }
 
 BoundingBox GraphicLine::GetBoundingBox()

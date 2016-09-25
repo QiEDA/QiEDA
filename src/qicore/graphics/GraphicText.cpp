@@ -2,7 +2,7 @@
 
 using namespace qicore::graphics;
 
-void GraphicText::Draw(GLPainter* painter, const Color& color)
+void GraphicText::Draw(GraphicLayer* layer)
 {
 }
 

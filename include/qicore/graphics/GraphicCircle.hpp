@@ -29,7 +29,7 @@ public:
 	}
 
 
-	void Draw(GLPainter* painter, const Color& color) override;
+	void Draw(GraphicLayer* layer) override;
 	BoundingBox GetBoundingBox() override;
 };
 

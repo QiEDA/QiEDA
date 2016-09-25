@@ -11,6 +11,7 @@ namespace qicore {
 namespace graphics {
 
 class GLPainter;
+class GraphicLayer;
 
 class QICORE_EXPORT GraphicItem {
 public:
@@ -19,7 +20,7 @@ public:
 
 	virtual ~GraphicItem() {}
 
-	virtual void Draw(GLPainter* painter, const Color& color)  = 0;
+	virtual void Draw(GraphicLayer* layer)  = 0;
 
 	virtual BoundingBox GetBoundingBox() = 0;
 protected:

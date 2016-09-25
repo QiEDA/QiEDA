@@ -1,18 +1,33 @@
 
-
+#include <GL/glew.h>
+#include <gl/GL.h>
 #include "qicore/graphics/GraphicLayer.hpp"
 using namespace qicore::graphics;
+
+GraphicLayer::GraphicLayer(const Color& color)
+{
+    color_ = color;
+    dirty_ = true;
+}
 
 void GraphicLayer::SetColor(const Color& color)
 {
     color_ = color;
 }
 
-void GraphicLayer::Draw(GLPainter* painter)
+bool GraphicLayer::Prepare(GLPainter* painter)
 {
-    for (auto it = items_.begin(); it != items_.end(); ++it) {
-        (*it)->Draw(painter, color_);
+    if(dirty_)
+    {
+        for (auto it = items_.begin(); it != items_.end(); ++it) {
+            (*it)->Draw(this);
+        }
+
+        dirty_ = false;
+        return true;
     }
+
+    return false;
 }
 
 void GraphicLayer::AddItem(GraphicItem* item)
