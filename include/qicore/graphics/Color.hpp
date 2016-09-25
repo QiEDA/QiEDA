@@ -70,6 +70,7 @@ namespace Colors {
     const Color Silver(192,192,192);
     const Color Gray(128,128,128);
     const Color DimGray(105,105,105);
+    const Color DarkGray(39,39,39);
 
     const Color Maroon(128,0,0);
     const Color Crimson(220,20,60);

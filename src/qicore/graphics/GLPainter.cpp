@@ -36,9 +36,13 @@ GLPainter::GLPainter() {
     generalShader.RegisterUniform("viewMatrix");
     generalShader.RegisterUniform("modelMatrix");
     generalShader.RegisterUniform("vi_Color");
+}
 
-
-    prepareGrid();
+GLPainter::~GLPainter()
+{
+    for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
+        UnregisterGraphicLayer(it->first);
+    }
 }
 
 void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
@@ -96,11 +100,9 @@ void GLPainter::DrawCircle(const Point& origin, float radius, const Color& color
 }
 
 
-void GLPainter::Draw(std::list<GraphicLayer*>& items) {
-    drawGrid();
-
-    for (auto it = items.begin(); it != items.end(); ++it) {
-        DrawLayer((*it));
+void GLPainter::Draw() {
+    for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
+        DrawLayer(it->first);
     }
 }
 
@@ -126,7 +128,7 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
         glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
         if(cmd.type == GraphicPaintOperationLine)
         {
-            glLineWidth(4);
+            glLineWidth(cmd.lineWidth);
             glDrawArrays(GL_LINES, cmd.offset, cmd.vertexCount);
         }
         else if(cmd.type == GraphicPaintOperationQuad)
@@ -154,93 +156,6 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glUniformMatrix4fv(generalShader.GetUniformLocation("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
 }
 
-void GLPainter::gridCleanup() {
-    if(gridVbo != 0)
-    {
-        glDeleteBuffers(1, &gridVbo);
-    }
-
-    if(gridVao != 0)
-    {
-        glDeleteVertexArrays(1, &gridVao);
-    }
-}
-
-void GLPainter::prepareGrid() {
-    gridCleanup();
-
-    /* square grid so min and max are identical for X and Y */
-    float max = qicore::Units::MetersToInternalUnits(1);
-    float majorIncrement  = qicore::Units::MillimetersToInternalUnits(10);
-
-    //total lines
-    long axisHalfLines =  std::floor(max/majorIncrement);
-    long axisHalfVerts = axisHalfLines*2;
-    long totalVerts = axisHalfVerts*4;
-
-    glGenVertexArrays(1, &gridVao);
-    glBindVertexArray(gridVao);
-
-    std::vector<GLfloat> verts;
-    verts.reserve(totalVerts);
-
-    max -= majorIncrement;  //decrement the max by the increment to "cap" off the ends
-    for(int i = 0;i < axisHalfLines; i++) {
-        GLfloat pos = i*majorIncrement;
-        verts.push_back(pos);
-        verts.push_back(max);
-        verts.push_back(0);
-
-        verts.push_back(pos);
-        verts.push_back(-max);
-        verts.push_back(0);
-
-        verts.push_back(-pos);
-        verts.push_back(max);
-        verts.push_back(0);
-
-        verts.push_back(-pos);
-        verts.push_back(-max);
-        verts.push_back(0);
-
-        verts.push_back(max);
-        verts.push_back(pos);
-        verts.push_back(0);
-
-        verts.push_back(-max);
-        verts.push_back(pos);
-        verts.push_back(0);
-
-        verts.push_back(max);
-        verts.push_back(-pos);
-        verts.push_back(0);
-
-        verts.push_back(-max);
-        verts.push_back(-pos);
-        verts.push_back(0);
-    }
-
-
-    glGenBuffers(1, &gridVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, gridVbo);
-    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLfloat), &verts[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);;
-
-    glBindVertexArray(0);
-
-    totalGridVerts_ = totalVerts;
-}
-
-void GLPainter::drawGrid() {
-    Color gridColor = Colors::DimGray;
-    glUniform4f(generalShader.GetUniformLocation("vi_Color"), gridColor.redf(), gridColor.greenf(), gridColor.bluef(), gridColor.alphaf());
-    glBindVertexArray (gridVao);
-    glLineWidth(1);
-    glDrawArrays (GL_LINES, 0, totalGridVerts_);
-    glBindVertexArray(0);
-    return;
-}
 
 void GLPainter::Resize(int w, int h)
 {
@@ -261,4 +176,20 @@ void GLPainter::RegisterGraphicLayer(GraphicLayer* layer)
 
         registeredLayers_[layer] = meta;
     }
+}
+
+void GLPainter::UnregisterGraphicLayer(GraphicLayer* layer)
+{
+    GLLayerMeta* meta = &registeredLayers_[layer];
+    if(meta->bufferName != 0)
+    {
+        glDeleteBuffers(1, &meta->bufferName);
+    }
+
+    if(meta->arrayName != 0)
+    {
+        glDeleteVertexArrays(1, &meta->arrayName);
+    }
+
+    registeredLayers_.erase(layer);
 }

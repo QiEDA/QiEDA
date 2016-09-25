@@ -8,6 +8,7 @@ GraphicLayer::GraphicLayer(const Color& color)
 {
     color_ = color;
     dirty_ = true;
+    depth_ = 0;
 }
 
 void GraphicLayer::SetColor(const Color& color)

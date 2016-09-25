@@ -11,6 +11,7 @@
 #include "qicore/graphics/GraphicLine.hpp"
 #include "qicore/graphics/GraphicArc.hpp"
 #include "qicore/graphics/GraphicRectangle.hpp"
+#include "qicore/graphics/GridLayer.hpp"
 
 #include "qicore/graphics/GraphicText.hpp"
 
@@ -42,6 +43,8 @@ void GLWidget::initializeGL() {
     qDebug() << "                    RENDERDER:    " << (const char*)glGetString(GL_RENDERER);
     qDebug() << "                    VERSION:      " << (const char*)glGetString(GL_VERSION);
     qDebug() << "                    GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+    auto test = new GridLayer();
 
     painter_ = new GLPainter();
 
@@ -94,6 +97,7 @@ void GLWidget::initializeGL() {
     layers_.push_back(layer);
 
     painter_->RegisterGraphicLayer(layer);
+    painter_->RegisterGraphicLayer(test);
 
     update_timer_.start(1000 / 60.0);
 }
@@ -107,7 +111,7 @@ void GLWidget::paintGL() {
 
     painter_->PrepareDraw(panX_,panY_, zoom_);
 
-    painter_->Draw(layers_);
+    painter_->Draw();
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

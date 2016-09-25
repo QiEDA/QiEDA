@@ -31,32 +31,25 @@ namespace graphics {
     class QICORE_EXPORT GLPainter {
     public:
         GLPainter();
+        ~GLPainter();
         void DrawRect(const Point& start_, float width, float height, const Color& color);
         void DrawLine(const Point& start, const Point& end, float width, const Color& color);
         void DrawCircle(const Point& origin, float radius, const Color& color);
         void DrawLayer(GraphicLayer* layer);
 
-        void Draw(std::list<GraphicLayer*>& items) ;
+        void Draw() ;
         void PrepareDraw(float panX, float panY, float zoom);
         void Resize(int w, int h);
 
         void RegisterGraphicLayer(GraphicLayer* layer);
+        void UnregisterGraphicLayer(GraphicLayer* layer);
     private:
         std::map<GraphicLayer*,GLLayerMeta> registeredLayers_;
         GLShader circleShader;
         GLShader generalShader;
-        void drawGrid();
-        void gridCleanup();
-        void prepareGrid();
         glm::mat4 projectionMatrix; // Store the projection matrix
         glm::mat4 viewMatrix; // Store the view matrix
         glm::mat4 modelMatrix; // Store the model matrix
-
-        unsigned int gridVbo;
-        unsigned int gridVao;
-
-
-        long totalGridVerts_;
     };
 }
 }

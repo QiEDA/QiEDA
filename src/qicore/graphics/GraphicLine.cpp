@@ -4,9 +4,9 @@ using namespace qicore::graphics;
 
 void GraphicLine::Draw(GraphicLayer* layer)
 {
-    layer->AddOperation(GraphicPaintOperationLine, 2);
-    layer->AddVertex(start_.x,start_.y,0);
-    layer->AddVertex(end_.x, end_.y, 0);
+    layer->AddOperation(GraphicPaintOperationLine, 2, width_);
+    layer->AddVertex(start_.x,start_.y);
+    layer->AddVertex(end_.x, end_.y);
 }
 
 BoundingBox GraphicLine::GetBoundingBox()

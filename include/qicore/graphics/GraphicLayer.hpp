@@ -30,6 +30,7 @@ namespace graphics {
         long offset;
         long vertexCount;
         Color fillColor;
+        float lineWidth;
     };
 
 
@@ -42,43 +43,43 @@ namespace graphics {
             return color_;
         }
         void SetColor(const Color& color);
-     //   void Draw(GLPainter* painter);
         void AddItem(GraphicItem* item);
 
-        void AddVertex(float x, float y, float z)
+        void AddVertex(float x, float y)
         {
-            vertBuffer.push_back(x);
-            vertBuffer.push_back(y);
-            vertBuffer.push_back(z);
+            vertBuffer_.push_back(x);
+            vertBuffer_.push_back(y);
+            vertBuffer_.push_back(depth_);
         }
 
-        void AddOperation(GraphicPaintOperationType operation, int vertexCount)
+        void AddOperation(GraphicPaintOperationType operation, int vertexCount, float lineWidth = 1)
         {
-            long offset = vertBuffer.size() / 3;
-            paintOperations.push_back({operation, offset, vertexCount, color_});
+            long offset = vertBuffer_.size() / 3;
+            paintOperations.push_back({operation, offset, vertexCount, color_, lineWidth});
         }
 
         void Unprepare() {
-            vertBuffer.clear();
+            vertBuffer_.clear();
         }
 
         const std::vector<float>& GetVertices()
         {
-            return vertBuffer;
+            return vertBuffer_;
         }
 
         const std::vector<GraphicPaintOperation>& GetPaintOperations()
         {
             return paintOperations;
         }
-        bool Prepare(GLPainter* painter);
-    private:
-        std::vector<float> vertBuffer;
+        virtual bool Prepare(GLPainter* painter);
+    protected:
+        std::vector<float> vertBuffer_;
         std::vector<GraphicPaintOperation> paintOperations;
 
         bool dirty_;
         Color color_;
         std::list<GraphicItem*> items_;
+        float depth_;
     };
 }
 }
