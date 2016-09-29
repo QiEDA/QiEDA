@@ -37,7 +37,7 @@ add_executable(qiviewer WIN32
   ${QM}
 )
 
-target_link_libraries(qiviewer qicore)
+target_link_libraries(qiviewer qicore qigerber)
 
 qt5_use_modules(qiviewer Widgets)
 

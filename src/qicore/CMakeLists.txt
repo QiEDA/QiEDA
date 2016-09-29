@@ -2,10 +2,6 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-include_directories(
-  ${PROJECT_SOURCE_DIR}/nanovg/src
-  )
-
 #add shader precompile as a custom target + "post-build" of the target
 add_custom_target(
     shaders ALL
