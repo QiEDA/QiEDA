@@ -22,7 +22,8 @@ int main(int argc, char *argv[]) {
             "X000100Y006700D01*\n"
             "X000100Y000200D01*\n"
             "X004100Y000200D01*\n"
-            "M02*";
+            "M02*\n"
+            "%MOMM*%";
 
     gerber.Parse(str);
 

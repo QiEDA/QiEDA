@@ -88,7 +88,7 @@ void Gerber::parseExtended(const std::string& file, std::string::const_iterator&
 }
 
 //Simple optimization to switch case on the first two string chars
-#define BLOCK_NAME(x,y)   (x << 8 | y)
+#define BLOCK_NAME(x,y)   ((uint32_t)((((uint32_t)x) << 8) | ((uint32_t)y)))
 
 void Gerber::parseExtendedBlocks(std::queue<std::string>& blocks)
 {
@@ -99,14 +99,141 @@ void Gerber::parseExtendedBlocks(std::queue<std::string>& blocks)
         switch(BLOCK_NAME(block[0],block[1]))
         {
             case BLOCK_NAME('F','S'):
+                parseFormatBlock(block);
                 break;
             case BLOCK_NAME('M','O'):
+                parseUnitBlock(block);
                 break;
             case BLOCK_NAME('A','M'):
+                break;
+            case BLOCK_NAME('A','D'):
+                break;
+            case BLOCK_NAME('L','P'):
+                parseLoadPolarityBlock(block);
+                break;
+            case BLOCK_NAME('I','P'):
+                parseImagePolarityBlock(block);
                 break;
         }
 
         blocks.pop();
+    }
+}
+
+void Gerber::parseLoadPolarityBlock(std::string& block)
+{
+    switch(block[2])
+    {
+        case 'C':
+            //clear
+            break;
+        case 'D':
+            //dark
+            break;
+        default:
+            //invalid
+            break;
+    }
+}
+
+void Gerber::parseImagePolarityBlock(std::string& block)
+{
+    if(block.find("IPPOS") != std::string::npos )
+    {
+        GerberCommand* cmd = new UnitCommand(GerberUnitMode::Millimeters);
+
+        commands.push_back(cmd);
+    }
+    else if(block.find("IPNEG") != std::string::npos )
+    {
+        GerberCommand* cmd = new UnitCommand(GerberUnitMode::Inches);
+
+        commands.push_back(cmd);
+    }
+    else
+    {
+        //error
+    }
+}
+
+
+void Gerber::parseFormatBlock(std::string& block)
+{
+    GerberZeroOmission zo;
+    switch(block[2])
+    {
+        case 'L':
+            zo = GerberZeroOmission::Leading;
+            //leading
+            break;
+        case 'T':
+            zo = GerberZeroOmission::Trailing;
+            //trailing
+            break;
+        default:
+            //invalid
+            break;
+    }
+
+    GerberCoordinateNotation cn;
+    switch(block[3])
+    {
+        case 'A':
+            cn = GerberCoordinateNotation::Absolute;
+            break;
+        case 'I':
+            cn = GerberCoordinateNotation::Incremental;
+            break;
+        default:
+            //invalid
+            break;
+    }
+
+    if(block[4] != 'X')
+    {
+        //invalid
+        return;
+    }
+
+    int xIntegerPositions = block[5]  - '0';
+    int xDecimalPositions = block[6]  - '0';
+
+    if(block[7] != 'Y')
+    {
+        //invalid
+        return;
+    }
+
+    int yIntegerPositions = block[8]  - '0';
+    int yDecimalPositions = block[9]  - '0';
+
+    FormatStatement* cmd = new FormatStatement(zo,cn,xIntegerPositions, xDecimalPositions, yIntegerPositions, yDecimalPositions);
+    commands.push_back(cmd);
+}
+
+void Gerber::parseUnitBlock(std::string& block)
+{
+    if(block.length() != 4)
+    {
+        //error
+        return;
+    }
+
+    if(block.find("MOMM") != std::string::npos )
+    {
+        GerberCommand* cmd = new UnitCommand(GerberUnitMode::Millimeters);
+
+        commands.push_back(cmd);
+    }
+    else if(block.find("MOIN") != std::string::npos )
+    {
+        GerberCommand* cmd = new UnitCommand(GerberUnitMode::Inches);
+
+        commands.push_back(cmd);
+    }
+    else
+    {
+        //error
     }
 }
 
