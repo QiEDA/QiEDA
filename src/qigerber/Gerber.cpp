@@ -69,7 +69,7 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 	std::string block = file.substr(startPos, endPos-startPos);
 	std::advance(it, endPos-startPos+1);
 
-
+	//capture DXX codes blindly because there can be variable number of leading zeros or no leading zeros
 	std::regex regexCurrentAperture("^D(\\d+)$");
 	std::regex regexCommand("^((?:[XYIJ][+-]?\\d+){1,4})D?(\\d+)?$");
 	std::regex regexXCoord("X([+-]?[\\d\\.]+)");
@@ -82,6 +82,17 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 		int c = matches.size();
 		if(matches.size() == 2) {
 			int num = std::stoi(matches[1], nullptr);
+
+			if(num >= 10)
+			{
+				ApertureSelection* ap = new ApertureSelection(num);
+				commands.push_back(ap);
+			}
+			else
+			{
+				//invalid, aps are only >= 10
+			}
+
 		}
 	}
 	else if (std::regex_search(block, matches, regexCommand)) {

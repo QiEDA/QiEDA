@@ -20,7 +20,8 @@ enum GerberCommandType {
 	Mode,
 	Unit,
 	Format,
-	Aperture
+	Aperture,
+	AperatureSelection
 };
 
 enum GerberUnitMode {
@@ -152,6 +153,21 @@ private:
 	int yDecimalPositions_;
 	GerberZeroOmission zeroOmission_;
 	GerberCoordinateNotation coordinateNotation_;
+};
+
+class QIGERBER_EXPORT ApertureSelection : public GerberCommand {
+public:
+	ApertureSelection(int aperture) : GerberCommand(GerberCommandType::AperatureSelection)
+	{
+		aperture_ = aperture;
+	}
+
+	int GetAperture() const
+	{
+		return aperture_;
+	}
+private:
+	int aperture_;
 };
 
 class QIGERBER_EXPORT UnitCommand : public GerberCommand {
