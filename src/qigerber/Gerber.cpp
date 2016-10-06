@@ -2,6 +2,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <string.h>
+#include <regex>
 #include "qigerber/Gerber.hpp"
 
 using namespace qigerber;
@@ -45,11 +46,92 @@ void Gerber::Parse(std::string& file)
                 parseExtended(file, it);
 				break;
             default:
-                parseCommand();
+                parseCommand(file, it);
 				break;
 		}
 	}
 	
+}
+
+
+void Gerber::parseCommand(const std::string& file, std::string::const_iterator& it)
+{
+	size_t startPos = std::distance(file.begin(), it);
+	size_t endPos = file.find_first_of('*', startPos);
+
+
+	if (endPos == std::string::npos)
+	{
+		throw std::logic_error("malformed gerber, missing block closure");
+	}
+
+
+	std::string block = file.substr(startPos, endPos-startPos);
+	std::advance(it, endPos-startPos+1);
+
+
+	std::regex regexCurrentAperture("^D(\\d+)$");
+	std::regex regexCommand("^((?:[XYIJ][+-]?\\d+){1,4})D?(\\d+)?$");
+	std::regex regexXCoord("X([+-]?[\\d\\.]+)");
+	std::regex regexYCoord("Y([+-]?[\\d\\.]+)");
+	std::regex regexICoord("I([+-]?[\\d\\.]+)");
+	std::regex regexJCoord("J([+-]?[\\d\\.]+)");
+
+	std::smatch matches;
+	if (std::regex_search(block, matches, regexCurrentAperture)) {
+		int c = matches.size();
+		if(matches.size() == 2) {
+			int num = std::stoi(matches[1], nullptr);
+		}
+	}
+	else if (std::regex_search(block, matches, regexCommand)) {
+		GerberOperationType type = GerberOperationType::Undefined;
+		std::string xCoord;
+		std::string yCoord;
+		std::string jCoord;
+		std::string iCoord;
+		if(matches.size() >= 2) {
+			std::string coords = matches[1];
+			std::smatch coordMatches;
+
+			if (std::regex_search(coords, coordMatches, regexXCoord)) {
+				if(coordMatches.size() == 2) {
+					xCoord = coordMatches[1];
+				}
+			}
+
+			if (std::regex_search(coords, coordMatches, regexYCoord)) {
+				if(coordMatches.size() == 2) {
+					yCoord = coordMatches[1];
+				}
+			}
+
+			if (std::regex_search(coords, coordMatches, regexJCoord)) {
+				if(coordMatches.size() == 2) {
+					jCoord = coordMatches[1];
+				}
+			}
+
+			if (std::regex_search(coords, coordMatches, regexICoord)) {
+				if(coordMatches.size() == 2) {
+					iCoord = coordMatches[1];
+				}
+			}
+		}
+
+		if(matches.size() >= 3) {
+			int dcode = std::stoi(matches[2], nullptr);
+
+			if(dcode <= 3 && dcode >= 1)
+			{
+				type = (GerberOperationType)dcode;
+			}
+		}
+
+
+		OperationStatement* operation = new OperationStatement(type, xCoord, yCoord, jCoord, iCoord);
+		commands.push_back(operation);
+	}
 }
 
 void Gerber::parseExtended(const std::string& file, std::string::const_iterator& it)
@@ -107,6 +189,7 @@ void Gerber::parseExtendedBlocks(std::queue<std::string>& blocks)
             case BLOCK_NAME('A','M'):
                 break;
             case BLOCK_NAME('A','D'):
+				parseApertureBlock(block);
                 break;
             case BLOCK_NAME('L','P'):
                 parseLoadPolarityBlock(block);
@@ -118,6 +201,76 @@ void Gerber::parseExtendedBlocks(std::queue<std::string>& blocks)
 
         blocks.pop();
     }
+}
+
+std::vector<std::string> Gerber::splitString(std::string str, char delimiter) {
+	std::vector<std::string> internal;
+	std::stringstream ss(str);
+	std::string tok;
+
+	while(std::getline(ss, tok, delimiter)) {
+		internal.push_back(tok);
+	}
+
+	return internal;
+}
+
+
+void Gerber::parseApertureBlock(std::string& block)
+{
+	if(block[2] != 'D')
+	{
+		return;
+	}
+
+	int num = 0;
+	char type = 'A';
+
+	std::regex ap("^ADD0*(\\d{2,})([A-Za-z_\\$][\\w\\-\\.]*)(?:,((?:X?[\\d.]+)*))?");
+	std::smatch apMatch;
+	if (std::regex_search(block, apMatch, ap)) {
+		int matches = apMatch.size();
+		if(apMatch.size() >= 4) {
+			num = std::stoi(apMatch[1], nullptr);
+			type = apMatch[2].str()[0];
+		}
+	}
+	else {
+		//invalid format?
+	}
+
+	ApertureDefinition* app = nullptr;
+
+	switch(type) {
+		case 'C': {
+			if(apMatch.size() >= 4)
+			{
+				float circleDiameter = 0.0f;
+				float holeDiameter = 0.0f;
+				std::vector<std::string> dims = splitString(apMatch[3],'X');
+
+				if(dims.size() >= 1)
+				{
+					circleDiameter = std::stof(dims[0], nullptr);
+				}
+
+				if(dims.size() >= 2)
+				{
+					holeDiameter = std::stof(dims[1], nullptr);
+				}
+
+				app = new CircleApertureDefinition(num, circleDiameter, holeDiameter);
+			}
+		}
+			break;
+		case 'R':
+			break;
+	}
+
+	if(app != nullptr)
+	{
+		commands.push_back(app);
+	}
 }
 
 void Gerber::parseLoadPolarityBlock(std::string& block)
@@ -235,10 +388,4 @@ void Gerber::parseUnitBlock(std::string& block)
     {
         //error
     }
-}
-
-
-void Gerber::parseCommand()
-{
-
 }

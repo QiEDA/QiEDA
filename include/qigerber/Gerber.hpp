@@ -7,11 +7,20 @@
 #include "qigerber/qigerber.hpp"
 
 namespace qigerber {
+
+enum GerberOperationType {
+	Undefined = 0,
+	Interpolate = 1,
+	Move = 2,
+	Flash = 3
+};
+
 enum GerberCommandType {
 	Operation,
 	Mode,
 	Unit,
-	Format
+	Format,
+	Aperture
 };
 
 enum GerberUnitMode {
@@ -29,6 +38,13 @@ enum GerberCoordinateNotation {
 	Incremental
 };
 
+enum GerberAperatureType {
+	Circle,
+	Rectangle,
+	Oval,
+	Polygon
+};
+
 class QIGERBER_EXPORT GerberCommand {
 	GerberCommandType Type;
 public:
@@ -36,6 +52,30 @@ public:
 	{
 		Type = type;
 	}
+};
+
+
+class QIGERBER_EXPORT ApertureDefinition : public GerberCommand {
+public:
+	ApertureDefinition(int number) : GerberCommand(GerberCommandType::Aperture)
+	{
+		number_ = number;
+	}
+
+protected:
+	int number_;
+};
+
+class QIGERBER_EXPORT CircleApertureDefinition : public ApertureDefinition {
+public:
+	CircleApertureDefinition(int number, float diameter, float holeDiameter) : ApertureDefinition(number)
+	{
+		diameter_ = diameter;
+		holeDiameter_ = holeDiameter;
+	}
+private:
+	int diameter_;
+	int holeDiameter_;
 };
 
 /*
@@ -46,14 +86,24 @@ public:
  */
 class QIGERBER_EXPORT OperationStatement : public GerberCommand {
 public:
-	float x;	//x coord
-	float y;	//y coord
-	float i;	//distance or offset in x/y, circular interpolate only
-	float j;
 
-	OperationStatement() : GerberCommand(GerberCommandType::Operation)
+	OperationStatement(GerberOperationType operation,
+					   const std::string& rawX, const std::string& rawY,
+					   const std::string& rawI, const std::string& rawJ )
+			: GerberCommand(GerberCommandType::Operation)
 	{
+		rawX_ = rawX;
+		rawY_ = rawY;
+		rawI_ = rawI;
+		rawJ_ = rawJ;
+		operation_ = operation;
 	}
+private:
+	GerberOperationType operation_;
+	std::string rawX_;
+	std::string rawY_;
+	std::string rawI_;
+	std::string rawJ_;
 };
 
 class QIGERBER_EXPORT ModeStatement : public GerberCommand {
@@ -119,15 +169,6 @@ private:
 	GerberUnitMode units_;
 };
 
-/*
- * D## codes are known as operation codes
- */
-enum OperationType
-{
-	Interpolate,	//D01
-	Move,			//D02
-	Flash			//D03
-};
 
 enum ModeType {
 	LinearInterpolation = 1,	//G01
@@ -156,13 +197,16 @@ public:
 	bool Load(std::string path);
 	void Parse(std::string& file);
 private:
+	std::vector<std::string> splitString(std::string str, char delimiter);
 	void parseExtended(const std::string& file, std::string::const_iterator& it);
 	void parseExtendedBlocks(std::queue<std::string>& blocks);
-	void parseCommand();
+	void parseCommand(const std::string& file, std::string::const_iterator& it);
 	void parseFormatBlock(std::string& block);
 	void parseUnitBlock(std::string& block);
 	void parseImagePolarityBlock(std::string& block);
 	void parseLoadPolarityBlock(std::string& block);
+	void parseApertureBlock(std::string& block);
+
 
 	std::vector<GerberCommand*> commands;
 };
