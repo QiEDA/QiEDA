@@ -20,7 +20,8 @@ enum struct GerberCommandType {
 	Mode,
 	Unit,
 	Format,
-	Aperture,
+	ApertureDefinition,
+	ApertureMacro,
 	AperatureSelection
 };
 
@@ -58,7 +59,7 @@ public:
 
 class QIGERBER_EXPORT ApertureDefinition : public GerberCommand {
 public:
-	ApertureDefinition(int number) : GerberCommand(GerberCommandType::Aperture)
+	ApertureDefinition(int number) : GerberCommand(GerberCommandType::ApertureDefinition)
 	{
 		number_ = number;
 	}
