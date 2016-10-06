@@ -8,14 +8,14 @@
 
 namespace qigerber {
 
-enum GerberOperationType {
+enum struct GerberOperationType {
 	Undefined = 0,
 	Interpolate = 1,
 	Move = 2,
 	Flash = 3
 };
 
-enum GerberCommandType {
+enum struct GerberCommandType {
 	Operation,
 	Mode,
 	Unit,
@@ -24,22 +24,22 @@ enum GerberCommandType {
 	AperatureSelection
 };
 
-enum GerberUnitMode {
+enum struct GerberUnitMode {
 	Inches,
 	Millimeters
 };
 
-enum GerberZeroOmission {
+enum struct GerberZeroOmission {
 	Leading,
 	Trailing
 };
 
-enum GerberCoordinateNotation {
+enum struct GerberCoordinateNotation {
 	Absolute,
 	Incremental
 };
 
-enum GerberAperatureType {
+enum struct GerberAperatureType {
 	Circle,
 	Rectangle,
 	Oval,

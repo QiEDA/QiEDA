@@ -97,6 +97,7 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 	}
 	else if (std::regex_search(block, matches, regexCommand)) {
 		GerberOperationType type = GerberOperationType::Undefined;
+
 		std::string xCoord;
 		std::string yCoord;
 		std::string jCoord;
@@ -139,7 +140,6 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 			}
 		}
 
-
 		OperationStatement* operation = new OperationStatement(type, xCoord, yCoord, jCoord, iCoord);
 		commands.push_back(operation);
 	}
@@ -152,10 +152,8 @@ void Gerber::parseExtended(const std::string& file, std::string::const_iterator&
         throw std::logic_error("unexpected beginning character for parameter");
     }
 
-
     size_t startPos = std::distance(file.begin(), it) + 1;
     size_t extendedEndPos = file.find_first_of('%', startPos);
-
 
     if (extendedEndPos == std::string::npos)
     {
