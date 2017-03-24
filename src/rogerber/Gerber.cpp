@@ -1,7 +1,5 @@
 #include <fstream>
 #include <sstream>
-#include <cstdlib>
-#include <string.h>
 #include <regex>
 #include "rogerber/Gerber.hpp"
 
@@ -80,6 +78,7 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 	std::advance(it, endPos-startPos+1);
 
 	//capture DXX codes blindly because there can be variable number of leading zeros or no leading zeros
+	std::regex regexGCode("^G(\\d{1,2})$");
 	std::regex regexCurrentAperture("^D(\\d+)$");
 	std::regex regexCommand("^((?:[XYIJ][+-]?\\d+){1,4})D?(\\d+)?$");
 	std::regex regexXCoord("X([+-]?[\\d\\.]+)");
@@ -88,7 +87,34 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 	std::regex regexJCoord("J([+-]?[\\d\\.]+)");
 
 	std::smatch matches;
-	if (std::regex_search(block, matches, regexCurrentAperture)) {
+	if (std::regex_search(block, matches, regexGCode)) {
+		int c = matches.size();
+		if(matches.size() == 2) {
+			int num = std::stoi(matches[1], nullptr);
+
+			GerberCommand* result = nullptr;
+			switch(num) {
+				case 2:
+				case 3:
+				case 74:
+				case 75:
+					result = new InterpolationMode((GerberInterpolationState)num);
+					break;
+				case 70:
+					result = new LegacyUnitInchCommand();
+					break;
+				case 71:
+					result= new LegacyUnitMillimetersCommand();
+					break;
+			}
+
+			if(result != nullptr)
+			{
+				commands.push_back(result);
+			}
+		}
+	}
+	else if (std::regex_search(block, matches, regexCurrentAperture)) {
 		int c = matches.size();
 		if(matches.size() == 2) {
 			int num = std::stoi(matches[1], nullptr);

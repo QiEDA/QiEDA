@@ -16,6 +16,14 @@ enum struct GerberOperationType {
 	Flash = 3
 };
 
+enum struct GerberInterpolationState {
+	Linear = 1,
+	Clockwise = 2,
+	CounterClockwise = 3,
+	Single = 74,
+	Multi = 75
+};
+
 enum struct GerberCommandType {
 	Operation,
 	Mode,
@@ -23,7 +31,8 @@ enum struct GerberCommandType {
 	Format,
 	ApertureDefinition,
 	ApertureMacro,
-	AperatureSelection
+	AperatureSelection,
+	Interpolation
 };
 
 enum struct GerberUnitMode {
@@ -71,6 +80,17 @@ public:
 	virtual std::string Dump() = 0;
 };
 
+class ROGERBER_EXPORT InterpolationMode : public GerberCommand {
+public:
+	InterpolationMode(GerberInterpolationState state) : GerberCommand(GerberCommandType::Interpolation)
+	{
+		state_ = state;
+	}
+
+	std::string Dump() override;
+protected:
+	GerberInterpolationState state_;
+};
 
 class ROGERBER_EXPORT ApertureDefinition : public GerberCommand {
 public:
@@ -79,12 +99,7 @@ public:
 		number_ = number;
 	}
 
-	std::string Dump() override
-	{
-		std::ostringstream out;
-		out << "Type: AperatureDefinition Number: " << number_;
-		return out.str();
-	}
+	std::string Dump() override;
 protected:
 	int number_;
 };
@@ -123,12 +138,7 @@ public:
 		operation_ = operation;
 	}
 
-	std::string Dump() override
-	{
-		std::ostringstream out;
-		out << "Type: Operation " << "RawX: " << rawX_ << "RawY: " << rawY_ << "RawI: " << rawI_ << "RawJ" << rawJ_;
-		return out.str();
-	}
+	std::string Dump() override;
 private:
 	GerberOperationType operation_;
 	std::string rawX_;
@@ -143,10 +153,7 @@ public:
 	{
 	}
 
-	std::string Dump() override
-	{
-		return "Type: Mode";
-	}
+	std::string Dump() override;
 };
 
 class ROGERBER_EXPORT FormatStatement : public GerberCommand {
@@ -182,12 +189,7 @@ public:
 		return yDecimalPositions_;
 	}
 
-	std::string Dump() override
-	{
-		std::ostringstream out;
-		out << "[Format]";
-		return out.str();
-	}
+	std::string Dump() override;
 private:
 	int xIntegerPositions_;
 	int xDecimalPositions_;
@@ -209,12 +211,7 @@ public:
 		return aperture_;
 	}
 
-	std::string Dump() override
-	{
-		std::ostringstream out;
-		out << "Type: Aperature " << "Aperature: " << aperture_;
-		return out.str();
-	}
+	std::string Dump() override;
 private:
 	int aperture_;
 };
@@ -231,16 +228,28 @@ public:
 		return units_;
 	}
 
-	std::string Dump() override
-	{
-		std::ostringstream out;
-		out << "Type: Unit " << "Units: " << (int)units_;
-		return out.str();
-	}
-private:
+	std::string Dump() override;
+protected:
 	GerberUnitMode units_;
 };
 
+class ROGERBER_EXPORT LegacyUnitInchCommand : public UnitCommand {
+public:
+	LegacyUnitInchCommand() : UnitCommand(GerberUnitMode::Inches)
+	{
+	}
+
+	std::string Dump() override;
+};
+
+class ROGERBER_EXPORT LegacyUnitMillimetersCommand : public UnitCommand {
+public:
+	LegacyUnitMillimetersCommand() : UnitCommand(GerberUnitMode::Millimeters)
+	{
+	}
+
+	std::string Dump() override;
+};
 
 enum ModeType {
 	LinearInterpolation = 1,	//G01
