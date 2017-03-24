@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <sstream>
 #include "rogerber/rogerber.hpp"
 
 namespace rogerber {
@@ -47,13 +48,27 @@ enum struct GerberAperatureType {
 	Polygon
 };
 
+const std::string GerberAperatureTypeStrings[] = {
+		__STRINGIFY(GerberAperatureType.Circle),
+		__STRINGIFY(GerberAperatureType.Rectangle),
+		__STRINGIFY(GerberAperatureType.Oval),
+		__STRINGIFY(GerberAperatureType.Polygon),
+};
+
 class ROGERBER_EXPORT GerberCommand {
-	GerberCommandType Type;
+	GerberCommandType type_;
 public:
 	GerberCommand( GerberCommandType type )
 	{
-		Type = type;
+		type_ = type;
 	}
+
+	GerberCommandType GetType()
+	{
+		return type_;
+	}
+
+	virtual std::string Dump() = 0;
 };
 
 
@@ -64,6 +79,12 @@ public:
 		number_ = number;
 	}
 
+	std::string Dump() override
+	{
+		std::ostringstream out;
+		out << "Type: AperatureDefinition Number: " << number_;
+		return out.str();
+	}
 protected:
 	int number_;
 };
@@ -75,6 +96,7 @@ public:
 		diameter_ = diameter;
 		holeDiameter_ = holeDiameter;
 	}
+
 private:
 	int diameter_;
 	int holeDiameter_;
@@ -100,6 +122,13 @@ public:
 		rawJ_ = rawJ;
 		operation_ = operation;
 	}
+
+	std::string Dump() override
+	{
+		std::ostringstream out;
+		out << "Type: Operation " << "RawX: " << rawX_ << "RawY: " << rawY_ << "RawI: " << rawI_ << "RawJ" << rawJ_;
+		return out.str();
+	}
 private:
 	GerberOperationType operation_;
 	std::string rawX_;
@@ -112,6 +141,11 @@ class ROGERBER_EXPORT ModeStatement : public GerberCommand {
 public:
 	ModeStatement() : GerberCommand(GerberCommandType::Mode)
 	{
+	}
+
+	std::string Dump() override
+	{
+		return "Type: Mode";
 	}
 };
 
@@ -147,6 +181,13 @@ public:
 	{
 		return yDecimalPositions_;
 	}
+
+	std::string Dump() override
+	{
+		std::ostringstream out;
+		out << "[Format]";
+		return out.str();
+	}
 private:
 	int xIntegerPositions_;
 	int xDecimalPositions_;
@@ -167,6 +208,13 @@ public:
 	{
 		return aperture_;
 	}
+
+	std::string Dump() override
+	{
+		std::ostringstream out;
+		out << "Type: Aperature " << "Aperature: " << aperture_;
+		return out.str();
+	}
 private:
 	int aperture_;
 };
@@ -181,6 +229,13 @@ public:
 	GerberUnitMode GetUnits() const
 	{
 		return units_;
+	}
+
+	std::string Dump() override
+	{
+		std::ostringstream out;
+		out << "Type: Unit " << "Units: " << (int)units_;
+		return out.str();
 	}
 private:
 	GerberUnitMode units_;
@@ -213,6 +268,7 @@ public:
 	Gerber();
 	bool Load(std::string path);
 	void Parse(std::string& file);
+	std::string Dump();
 private:
 	std::vector<std::string> splitString(std::string str, char delimiter);
 	void parseExtended(const std::string& file, std::string::const_iterator& it);

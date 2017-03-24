@@ -53,6 +53,16 @@ void Gerber::Parse(std::string& file)
 	
 }
 
+std::string Gerber::Dump()
+{
+	std::stringstream ss;
+	for (auto it = commands.begin(); it != commands.end(); ++it) {
+		ss << (*it)->Dump() << std::endl;
+	}
+
+	return ss.str();
+}
+
 
 void Gerber::parseCommand(const std::string& file, std::string::const_iterator& it)
 {
