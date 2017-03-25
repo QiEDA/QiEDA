@@ -49,7 +49,7 @@ set(SRC
 		graphics/GLPainter.cpp
 		graphics/GLShader.cpp
 		graphics/GraphicLayer.cpp
-        graphics/GridLayer.cpp )
+        graphics/GridLayer.cpp ../../include/rogerber/GerberException.hpp)
 
 
 add_library(rocore SHARED ${SRC} ${INC})

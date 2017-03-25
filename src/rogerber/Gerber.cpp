@@ -2,6 +2,7 @@
 #include <sstream>
 #include <regex>
 #include "rogerber/Gerber.hpp"
+#include "rogerber/GerberException.hpp"
 
 using namespace rogerber;
 
@@ -94,18 +95,22 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 
 			GerberCommand* result = nullptr;
 			switch(num) {
-				case 2:
-				case 3:
-				case 74:
-				case 75:
-					result = new InterpolationMode((GerberInterpolationState)num);
+				case 2:	//clockwise circular linear
+				case 3:	//counterclockwise circular
+					result = new QuadrantMode((GerberQuadrantMode)num);
 					break;
-				case 70:
+				case 74:	//single quad
+				case 75:	//multi quad
+					result = new InterpolationMode((GerberInterpolationMode)num);
+					break;
+				case 70:	//
 					result = new LegacyUnitInchCommand();
 					break;
 				case 71:
 					result= new LegacyUnitMillimetersCommand();
 					break;
+				default:
+					throw GerberException("Unknown G## code encountered");
 			}
 
 			if(result != nullptr)

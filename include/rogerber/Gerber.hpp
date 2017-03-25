@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <queue>
-#include <sstream>
 #include "rogerber/rogerber.hpp"
 
 namespace rogerber {
@@ -16,10 +15,15 @@ enum struct GerberOperationType {
 	Flash = 3
 };
 
-enum struct GerberInterpolationState {
+enum struct GerberInterpolationMode {
 	Linear = 1,
 	Clockwise = 2,
 	CounterClockwise = 3,
+	Single = 74,
+	Multi = 75
+};
+
+enum struct GerberQuadrantMode {
 	Single = 74,
 	Multi = 75
 };
@@ -32,12 +36,14 @@ enum struct GerberCommandType {
 	ApertureDefinition,
 	ApertureMacro,
 	AperatureSelection,
-	Interpolation
+	Interpolation,
+	Quadrant
 };
 
 enum struct GerberUnitMode {
 	Inches,
-	Millimeters
+	Millimeters,
+	Unknown
 };
 
 enum struct GerberZeroOmission {
@@ -72,7 +78,7 @@ public:
 		type_ = type;
 	}
 
-	GerberCommandType GetType()
+	GerberCommandType GetType() const
 	{
 		return type_;
 	}
@@ -82,14 +88,36 @@ public:
 
 class ROGERBER_EXPORT InterpolationMode : public GerberCommand {
 public:
-	InterpolationMode(GerberInterpolationState state) : GerberCommand(GerberCommandType::Interpolation)
+	InterpolationMode(GerberInterpolationMode mode) : GerberCommand(GerberCommandType::Interpolation)
 	{
-		state_ = state;
+		mode_ = mode;
+	}
+
+	GerberInterpolationMode GetMode() const
+	{
+		return mode_;
 	}
 
 	std::string Dump() override;
 protected:
-	GerberInterpolationState state_;
+	GerberInterpolationMode mode_;
+};
+
+class ROGERBER_EXPORT QuadrantMode : public GerberCommand {
+public:
+	QuadrantMode(GerberQuadrantMode mode) : GerberCommand(GerberCommandType::Quadrant)
+	{
+		mode_ = mode;
+	}
+
+	GerberQuadrantMode GetMode() const
+	{
+		return mode_;
+	}
+
+	std::string Dump() override;
+protected:
+	GerberQuadrantMode mode_;
 };
 
 class ROGERBER_EXPORT ApertureDefinition : public GerberCommand {
@@ -189,6 +217,16 @@ public:
 		return yDecimalPositions_;
 	}
 
+	bool IsAbsoluteNotation() const
+	{
+		return coordinateNotation_ == GerberCoordinateNotation::Absolute;
+	}
+
+	bool IsLeadingZeroOmission() const
+	{
+		return zeroOmission_ == GerberZeroOmission::Leading;
+	}
+
 	std::string Dump() override;
 private:
 	int xIntegerPositions_;
@@ -278,6 +316,11 @@ public:
 	bool Load(std::string path);
 	void Parse(std::string& file);
 	std::string Dump();
+
+	const std::vector<GerberCommand*>& GetCommands() const
+	{
+		return commands;
+	}
 private:
 	std::vector<std::string> splitString(std::string str, char delimiter);
 	void parseExtended(const std::string& file, std::string::const_iterator& it);
@@ -292,6 +335,7 @@ private:
 
 	std::vector<GerberCommand*> commands;
 };
+
 }
 
 #endif

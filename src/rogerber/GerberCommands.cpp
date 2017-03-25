@@ -45,9 +45,14 @@ std::string UnitCommand::Dump()
 	return fmt::format("[Unit]Units={0}", (int)units_);
 }
 
+std::string QuadrantMode::Dump()
+{
+	return fmt::format("[QuadrantMode]State={0}", (int)mode_);
+}
+
 std::string InterpolationMode::Dump()
 {
-	return fmt::format("[InterpolationMode]State={0}", (int)state_);
+	return fmt::format("[InterpolationMode]State={0}", (int)mode_);
 }
 
 std::string LegacyUnitMillimetersCommand::Dump()

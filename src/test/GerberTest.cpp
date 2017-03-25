@@ -1,4 +1,5 @@
 #include "rogerber/Gerber.hpp"
+#include "rogerber/GerberExecutor.hpp"
 #include <iostream>
 
 using namespace rogerber;
@@ -27,6 +28,9 @@ int main(int argc, char *argv[]) {
             "%MOMM*%";
 
     gerber.Parse(str);
+
+    GerberExecutor executor(gerber);
+
 
     std::cout << gerber.Dump();
 
