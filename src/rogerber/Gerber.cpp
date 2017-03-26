@@ -89,7 +89,6 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 
 	std::smatch matches;
 	if (std::regex_search(block, matches, regexGCode)) {
-		int c = matches.size();
 		if(matches.size() == 2) {
 			int num = std::stoi(matches[1], nullptr);
 
@@ -120,7 +119,6 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 		}
 	}
 	else if (std::regex_search(block, matches, regexCurrentAperture)) {
-		int c = matches.size();
 		if(matches.size() == 2) {
 			int num = std::stoi(matches[1], nullptr);
 
@@ -279,7 +277,6 @@ void Gerber::parseApertureBlock(std::string& block)
 	std::regex ap("^ADD0*(\\d{2,})([A-Za-z_\\$][\\w\\-\\.]*)(?:,((?:X?[\\d.]+)*))?");
 	std::smatch apMatch;
 	if (std::regex_search(block, apMatch, ap)) {
-		int matches = apMatch.size();
 		if(apMatch.size() >= 4) {
 			num = std::stoi(apMatch[1], nullptr);
 			type = apMatch[2].str()[0];

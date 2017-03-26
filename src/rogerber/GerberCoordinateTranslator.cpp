@@ -21,7 +21,7 @@ void GerberCoordinateTranslator::SetYFormat(unsigned int integerPositions, unsig
 	yDecimalPositions_ = decimalPositions;
 }
 
-double GerberCoordinateTranslator::baseTranslation(std::string raw, unsigned int integerPositions, unsigned int decimalPositions)
+double GerberCoordinateTranslator::baseTranslation(std::string raw, unsigned int integerPositions, unsigned int decimalPositions, double& previous)
 {
 	//leading zeros can be ommited, ensure we are at least big enough as the decimal positions defines
 	std::string decimalPortion;
@@ -57,17 +57,24 @@ double GerberCoordinateTranslator::baseTranslation(std::string raw, unsigned int
 
 	ret += decimal;
 
+	if(!absoluteNotation_)
+	{
+		//relative notation, we want to return the real absolute so
+		ret += previous;
+		previous = ret;
+	}
+
 	return ret;
 }
 
 double GerberCoordinateTranslator::TranslateX(std::string rawX)
 {
-	return baseTranslation(rawX, xIntegerPositions_, xDecimalPositions_);
+	return baseTranslation(rawX, xIntegerPositions_, xDecimalPositions_, previous_.X);
 }
 
 double GerberCoordinateTranslator::TranslateY(std::string rawY)
 {
-	return baseTranslation(rawY, yIntegerPositions_, yDecimalPositions_);
+	return baseTranslation(rawY, yIntegerPositions_, yDecimalPositions_, previous_.Y);
 }
 
 void GerberCoordinateTranslator::SetLeadingZeroOmission(bool yes)

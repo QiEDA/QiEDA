@@ -46,7 +46,7 @@ private:
 	 */
 	GerberCoordinate previous_ = {0.0,0.0};
 
-	double baseTranslation(std::string raw, unsigned int integerPositions, unsigned int decimalPositions);
+	double baseTranslation(std::string raw, unsigned int integerPositions, unsigned int decimalPositions, double& previous);
 };
 
 }

@@ -22,8 +22,23 @@ public:
 	}
 
 	void Execute();
+private:
+	void processOperation(OperationStatement* op);
+	void processOperationInsideRegion(OperationStatement* op);
 
 protected:
+	void EmitLine(unsigned int aperature,
+				  GerberCoordinate& start,
+				  GerberCoordinate& stop,
+				  int width);
+	void EmitArc(unsigned int aperature,
+								 GerberCoordinate& start,
+								 GerberCoordinate& stop,
+								 GerberCoordinate& center,
+								 bool clockwise,
+								 bool multiQuadrant,
+								 int width);
+
 	const Gerber &gerber_;
 
 	//graphic state
@@ -31,6 +46,12 @@ protected:
 	GerberInterpolationMode interpolationMode_;
 	GerberQuadrantMode quadrantMode_;
 	GerberCoordinateTranslator coordinateTranslator_;
+	bool insideRegion_ = false;
+	bool exposureOn_ = true;
+
+	unsigned int currentAperature = 0;
+
+	GerberCoordinate previousPos_;
 };
 
 class GerberExecutorUnexpectedCommandException : public GerberException {

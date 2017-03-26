@@ -59,7 +59,13 @@ std::string LegacyUnitMillimetersCommand::Dump()
 {
 	return "[LegacySetMillimeters]";
 }
+
 std::string LegacyUnitInchCommand::Dump()
 {
 	return "[LegacySetInches]";
+}
+
+std::string RegionStatement::Dump()
+{
+	return fmt::format("[RegionStatement]Start=",start_);
 }

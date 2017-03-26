@@ -18,9 +18,7 @@ enum struct GerberOperationType {
 enum struct GerberInterpolationMode {
 	Linear = 1,
 	Clockwise = 2,
-	CounterClockwise = 3,
-	Single = 74,
-	Multi = 75
+	CounterClockwise = 3
 };
 
 enum struct GerberQuadrantMode {
@@ -37,7 +35,8 @@ enum struct GerberCommandType {
 	ApertureMacro,
 	AperatureSelection,
 	Interpolation,
-	Quadrant
+	Quadrant,
+	Region
 };
 
 enum struct GerberUnitMode {
@@ -85,6 +84,7 @@ public:
 
 	virtual std::string Dump() = 0;
 };
+
 
 class ROGERBER_EXPORT InterpolationMode : public GerberCommand {
 public:
@@ -145,6 +145,28 @@ private:
 	int holeDiameter_;
 };
 
+class ROGERBER_EXPORT RegionStatement : public GerberCommand {
+public:
+	RegionStatement(bool start) : GerberCommand(GerberCommandType::Region)
+	{
+		start_ = start;
+	}
+
+	std::string Dump() override;
+
+	bool IsStart() const
+	{
+		return start_;
+	}
+
+	bool IsStop() const
+	{
+		return !start_;
+	}
+private:
+	bool start_;
+};
+
 /*
  *	Operations can exist in two formats
  * = [X<Number>][Y<Number>][I<Number>][J<Number>]D01*, where the D-code is explicit
@@ -164,6 +186,31 @@ public:
 		rawI_ = rawI;
 		rawJ_ = rawJ;
 		operation_ = operation;
+	}
+
+	GerberOperationType GetOperationType() const
+	{
+		return operation_;
+	}
+
+	const std::string& GetRawX() const
+	{
+		return rawX_;
+	}
+
+	const std::string& GetRawY() const
+	{
+		return rawY_;
+	}
+
+	const std::string& GetRawI() const
+	{
+		return rawI_;
+	}
+
+	const std::string& GetRawJ() const
+	{
+		return rawJ_;
 	}
 
 	std::string Dump() override;
