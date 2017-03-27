@@ -24,9 +24,9 @@ struct AperatureProperties
 };
 
 
-class ROGERBER_EXPORT GerberExecutor {
+class ROGERBER_EXPORT GerberProcessor {
 public:
-	GerberExecutor(const Gerber &gerber) : gerber_(gerber) {
+	GerberProcessor(const Gerber &gerber) : gerber_(gerber) {
 	}
 
 	const Gerber &GetGerber() const {

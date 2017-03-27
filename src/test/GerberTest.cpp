@@ -1,5 +1,5 @@
 #include "rogerber/Gerber.hpp"
-#include "rogerber/GerberExecutor.hpp"
+#include "rogerber/GerberProcessor.hpp"
 #include <iostream>
 
 using namespace rogerber;
@@ -9,7 +9,6 @@ int main(int argc, char *argv[]) {
 
     std::string str = "G75*\n"
             "G70*\n"
-			"G01*\n"
             "%OFA0B0*%\n"
             "%FSLAX24Y24*%\n"
             "%IPPOS*%\n"
@@ -30,7 +29,7 @@ int main(int argc, char *argv[]) {
 
     gerber.Parse(str);
 
-    GerberExecutor executor(gerber);
+	GerberProcessor executor(gerber);
 
 
     std::cout << gerber.Dump() << std::flush;

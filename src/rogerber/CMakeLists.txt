@@ -1,6 +1,6 @@
 set(SRC
 		Gerber.cpp
-		GerberCommands.cpp GerberExecutor.cpp)
+		GerberCommands.cpp GerberProcessor.cpp)
 
 include_directories(fmt)
 

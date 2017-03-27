@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include <iostream>
-#include "rogerber/GerberExecutor.hpp"
+#include "rogerber/GerberProcessor.hpp"
 #include "fmt/format.h"
 #include "fmt/ostream.h"
 
@@ -15,19 +15,19 @@ using namespace rogerber;
 #define IS_APERTURE_LOADED() (currentAperture_ > 0)
 
 
-void GerberExecutor::EmitLine(unsigned int aperture,
+void GerberProcessor::EmitLine(unsigned int aperture,
 		                      GerberCoordinate& start,
 							  GerberCoordinate& stop,
 							  int width)
 {
 #ifdef ROGERBER_DEBUG
-	std::cout << fmt::format("[Executor][Emit][Line]aperature={0},start.x={1},start.y={2},stop.x={3},stop.y={4},width={5}",
+	std::cout << fmt::format("[Processor][Emit][Line]aperature={0},start.x={1},start.y={2},stop.x={3},stop.y={4},width={5}",
 									aperture, start.X, start.Y, stop.X, stop.Y, width) << std::endl;
 #endif
 
 }
 
-void GerberExecutor::EmitArc(unsigned int aperture,
+void GerberProcessor::EmitArc(unsigned int aperture,
 							  GerberCoordinate& start,
 							  GerberCoordinate& stop,
 							  GerberCoordinate& center,
@@ -38,7 +38,7 @@ void GerberExecutor::EmitArc(unsigned int aperture,
 
 }
 
-void GerberExecutor::processOperationInsideRegion(OperationStatement* op, GerberCoordinate& xyCoordinate)
+void GerberProcessor::processOperationInsideRegion(OperationStatement* op, GerberCoordinate& xyCoordinate)
 {
 	switch(op->GetOperationType())
 	{
@@ -53,7 +53,7 @@ void GerberExecutor::processOperationInsideRegion(OperationStatement* op, Gerber
 	}
 }
 
-ApertureDefinition* GerberExecutor::getApertureDefinition(unsigned int aperture)
+ApertureDefinition* GerberProcessor::getApertureDefinition(unsigned int aperture)
 {
 	if(aperture == 0)
 	{
@@ -70,19 +70,19 @@ ApertureDefinition* GerberExecutor::getApertureDefinition(unsigned int aperture)
 	return nullptr;
 }
 
-void GerberExecutor::registerAperture(ApertureDefinition* def)
+void GerberProcessor::registerAperture(ApertureDefinition* def)
 {
 	currentApertures_[def->GetNumber()] = def;
 }
 
-void GerberExecutor::processOperation(OperationStatement* op, GerberCoordinate& operationCoordinate)
+void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate& operationCoordinate)
 {
 	switch(op->GetOperationType())
 	{
 		case GerberOperationType::Interpolate:
 			{
 #ifdef ROGERBER_DEBUG
-			std::cout << fmt::format("[Executor][Operation][Interpolate]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
+				std::cout << fmt::format("[Processor][Operation][Interpolate]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
 #endif
 				exposureOn_ = true;
 
@@ -126,12 +126,12 @@ void GerberExecutor::processOperation(OperationStatement* op, GerberCoordinate& 
 			exposureOn_ = false;
 			previousPosition_ = operationCoordinate;
 #ifdef ROGERBER_DEBUG
-			std::cout << fmt::format("[Executor][Operation][Move]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
+			std::cout << fmt::format("[Processor][Operation][Move]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
 #endif
 			break;
 		case GerberOperationType::Flash:
 #ifdef ROGERBER_DEBUG
-			std::cout << fmt::format("[Executor][Operation][Flash]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
+			std::cout << fmt::format("[Processor][Operation][Flash]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
 #endif
 			break;
 		default:
@@ -139,7 +139,7 @@ void GerberExecutor::processOperation(OperationStatement* op, GerberCoordinate& 
 	}
 }
 
-void GerberExecutor::Execute()
+void GerberProcessor::Execute()
 {
 	for (auto it = gerber_.GetCommands().begin(); it != gerber_.GetCommands().end(); ++it) {
 		auto cmd = (*it);
@@ -202,19 +202,19 @@ void GerberExecutor::Execute()
 	}
 }
 
-void GerberExecutor::setXCoordinateFormat(unsigned int integerPositions, unsigned int decimalPositions)
+void GerberProcessor::setXCoordinateFormat(unsigned int integerPositions, unsigned int decimalPositions)
 {
 	coordinateSettings_.xIntegerPositions_ = integerPositions;
 	coordinateSettings_.xDecimalPositions_ = decimalPositions;
 }
 
-void GerberExecutor::setYCoordinateFormat(unsigned int integerPositions, unsigned int decimalPositions)
+void GerberProcessor::setYCoordinateFormat(unsigned int integerPositions, unsigned int decimalPositions)
 {
 	coordinateSettings_.yIntegerPositions_ = integerPositions;
 	coordinateSettings_.yDecimalPositions_ = decimalPositions;
 }
 
-double GerberExecutor::convertXCoordinate(const std::string& raw, double* previous)
+double GerberProcessor::convertXCoordinate(const std::string& raw, double* previous)
 {
 	if(raw.empty())
 	{
@@ -224,7 +224,7 @@ double GerberExecutor::convertXCoordinate(const std::string& raw, double* previo
 	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xIntegerPositions_, coordinateSettings_.absoluteNotation_, previous);
 }
 
-double GerberExecutor::convertICoordinate(const std::string& raw)
+double GerberProcessor::convertICoordinate(const std::string& raw)
 {
 	if(raw.empty())
 	{
@@ -236,7 +236,7 @@ double GerberExecutor::convertICoordinate(const std::string& raw)
 									nullptr);
 }
 
-double GerberExecutor::convertYCoordinate(const std::string& raw, double* previous)
+double GerberProcessor::convertYCoordinate(const std::string& raw, double* previous)
 {
 	if(raw.empty())
 	{
@@ -246,7 +246,7 @@ double GerberExecutor::convertYCoordinate(const std::string& raw, double* previo
 	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yIntegerPositions_, coordinateSettings_.absoluteNotation_, previous);
 }
 
-double GerberExecutor::convertJCoordinate(const std::string& raw)
+double GerberProcessor::convertJCoordinate(const std::string& raw)
 {
 	if(raw.empty())
 	{
@@ -258,12 +258,18 @@ double GerberExecutor::convertJCoordinate(const std::string& raw)
 									nullptr);
 }
 
-double GerberExecutor::baseCoordinateConversion(const std::string& raw,
+double GerberProcessor::baseCoordinateConversion(const std::string& raw,
 												unsigned int integerPositions,
 												unsigned int decimalPositions,
 												bool absolute,
 												double* previous)
 {
+
+	if(units_ == GerberUnitMode::Unknown)
+	{
+		throw GerberException("Unknown unit mode");
+	}
+
 	//leading zeros can be ommited, ensure we are at least big enough as the decimal positions defines
 	std::string decimalPortion;
 	std::string integerPortion;
@@ -296,6 +302,12 @@ double GerberExecutor::baseCoordinateConversion(const std::string& raw,
 	decimal /= std::pow((double)10.0,(double)decimalPortion.length());	//now shift the decimal over to the correct position 2 => 0.2 , 312 => .312
 
 	ret += decimal;
+
+
+	if(units_ == GerberUnitMode::Inches)
+	{
+		ret *= 25.4;	//internally we treat everything as millimeters
+	}
 
 	if(!absolute && previous != nullptr)
 	{
