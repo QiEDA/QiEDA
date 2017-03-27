@@ -11,15 +11,24 @@ namespace rogerber {
 
 enum struct GerberOperationType {
 	Undefined = 0,
+	/**
+	 * Interpoalates from "current point" to the provided coordinate pair in the operation" to create an object
+	 */
 	Interpolate = 1,
+	/**
+	 * Moves the current point
+	 */
 	Move = 2,
+	/**
+	 * Replicates the current aperature, origin at the given coordinate pair. Results in creation of object
+	 */
 	Flash = 3
 };
 
 enum struct GerberInterpolationMode {
 	Linear = 1,
-	Clockwise = 2,
-	CounterClockwise = 3
+	ArcClockwise = 2,
+	ArcCounterClockwise = 3
 };
 
 enum struct GerberQuadrantMode {
@@ -56,7 +65,7 @@ enum struct GerberCoordinateNotation {
 	Incremental
 };
 
-enum struct GerberAperatureType {
+enum struct GerberAperturePrimitive {
 	Circle,
 	Rectangle,
 	Oval,
@@ -116,19 +125,33 @@ protected:
 
 class ROGERBER_EXPORT ApertureDefinition : public GerberCommand {
 public:
-	ApertureDefinition(int number) : GerberCommand(GerberCommandType::ApertureDefinition)
+	ApertureDefinition(unsigned int number, GerberAperturePrimitive primitive) : GerberCommand(GerberCommandType::ApertureDefinition)
 	{
 		number_ = number;
+		primitive_ = primitive;
 	}
 
 	std::string Dump() override;
+
+	GerberAperturePrimitive GetPrimitive() const
+	{
+		return primitive_;
+	}
+
+	unsigned int GetNumber() const
+	{
+		return number_;
+	}
+
 protected:
-	int number_;
+	unsigned int number_;
+
+	GerberAperturePrimitive primitive_;
 };
 
 class ROGERBER_EXPORT CircleApertureDefinition : public ApertureDefinition {
 public:
-	CircleApertureDefinition(int number, float diameter, float holeDiameter) : ApertureDefinition(number)
+	CircleApertureDefinition(int number, float diameter, float holeDiameter) : ApertureDefinition(number, GerberAperturePrimitive::Circle)
 	{
 		diameter_ = diameter;
 		holeDiameter_ = holeDiameter;
@@ -280,19 +303,19 @@ private:
 
 class ROGERBER_EXPORT ApertureSelection : public GerberCommand {
 public:
-	ApertureSelection(int aperture) : GerberCommand(GerberCommandType::AperatureSelection)
+	ApertureSelection(unsigned int aperture) : GerberCommand(GerberCommandType::AperatureSelection)
 	{
 		aperture_ = aperture;
 	}
 
-	int GetAperture() const
+	unsigned int GetAperture() const
 	{
 		return aperture_;
 	}
 
 	std::string Dump() override;
 private:
-	int aperture_;
+	unsigned int aperture_;
 };
 
 class ROGERBER_EXPORT UnitCommand : public GerberCommand {

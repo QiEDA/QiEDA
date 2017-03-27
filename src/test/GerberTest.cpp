@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
 
     std::string str = "G75*\n"
             "G70*\n"
+			"G01*\n"
             "%OFA0B0*%\n"
             "%FSLAX24Y24*%\n"
             "%IPPOS*%\n"
@@ -32,7 +33,17 @@ int main(int argc, char *argv[]) {
     GerberExecutor executor(gerber);
 
 
-    std::cout << gerber.Dump();
+    std::cout << gerber.Dump() << std::flush;
+
+	try
+	{
+		executor.Execute();
+	}
+	catch(GerberException e)
+	{
+		std::cerr << "Parsing error encountered: " << e.what() << std::endl;
+	}
+
 
     return 0;
 }

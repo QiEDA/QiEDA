@@ -94,13 +94,14 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 
 			GerberCommand* result = nullptr;
 			switch(num) {
-				case 2:	//clockwise circular linear
+				case 1:	//linear
+				case 2:	//clockwise circular
 				case 3:	//counterclockwise circular
-					result = new QuadrantMode((GerberQuadrantMode)num);
+					result = new InterpolationMode((GerberInterpolationMode)num);
 					break;
 				case 74:	//single quad
 				case 75:	//multi quad
-					result = new InterpolationMode((GerberInterpolationMode)num);
+					result = new QuadrantMode((GerberQuadrantMode)num);
 					break;
 				case 70:	//
 					result = new LegacyUnitInchCommand();
