@@ -174,7 +174,7 @@ void GerberExecutor::Execute()
 					GerberCoordinate coord;
 
 					coord.X = convertXCoordinate(op->GetRawX(), &previousPosition_.X);
-					coord.Y = convertXCoordinate(op->GetRawY(), &previousPosition_.Y);
+					coord.Y = convertYCoordinate(op->GetRawY(), &previousPosition_.Y);
 
 					if(insideRegion_)
 					{
@@ -216,6 +216,11 @@ void GerberExecutor::setYCoordinateFormat(unsigned int integerPositions, unsigne
 
 double GerberExecutor::convertXCoordinate(const std::string& raw, double* previous)
 {
+	if(raw.empty())
+	{
+		return *previous;	//per 4.9.1, if ommited, return the previous point
+	}
+
 	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xIntegerPositions_, coordinateSettings_.absoluteNotation_, previous);
 }
 
@@ -233,6 +238,11 @@ double GerberExecutor::convertICoordinate(const std::string& raw)
 
 double GerberExecutor::convertYCoordinate(const std::string& raw, double* previous)
 {
+	if(raw.empty())
+	{
+		return *previous;	//per 4.9.1, if ommited, return the previous point
+	}
+
 	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yIntegerPositions_, coordinateSettings_.absoluteNotation_, previous);
 }
 
