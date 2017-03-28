@@ -9,11 +9,11 @@
 
 namespace rocore {
 namespace graphics {
-struct ROCORE_EXPORT Point{
-        float x;
-        float y;
+    struct ROCORE_EXPORT Point{
+        double x;
+        double y;
 
-        Point(float a, float b)
+        Point(double a, double b)
         {
             x = a;
             y = b;
@@ -38,7 +38,7 @@ struct ROCORE_EXPORT Point{
         {
             return Point(x * s, y * s);
         }
-};
+    };
 
 }
 }

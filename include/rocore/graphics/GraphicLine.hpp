@@ -12,9 +12,9 @@ class ROCORE_EXPORT GraphicLine : public GraphicItem {
 protected:
 	Point start_;
 	Point end_;
-	int width_;
+	double width_;
 public:
-	GraphicLine(Point& start, Point& end, int width) : GraphicItem() {
+	GraphicLine(Point& start, Point& end, double width) : GraphicItem() {
 		start_ = start;
 		end_ = end;
 		width_ = width;

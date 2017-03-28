@@ -45,7 +45,7 @@ namespace graphics {
         void SetColor(const Color& color);
         void AddItem(GraphicItem* item);
 
-        void AddVertex(float x, float y)
+        void AddVertex(double x, double y)
         {
             vertBuffer_.push_back(x);
             vertBuffer_.push_back(y);
@@ -62,7 +62,7 @@ namespace graphics {
             vertBuffer_.clear();
         }
 
-        const std::vector<float>& GetVertices()
+        const std::vector<double>& GetVertices()
         {
             return vertBuffer_;
         }
@@ -73,13 +73,13 @@ namespace graphics {
         }
         virtual bool Prepare(GLPainter* painter);
     protected:
-        std::vector<float> vertBuffer_;
+        std::vector<double> vertBuffer_;
         std::vector<GraphicPaintOperation> paintOperations;
 
         bool dirty_;
         Color color_;
         std::list<GraphicItem*> items_;
-        float depth_;
+        double depth_;
     };
 }
 }

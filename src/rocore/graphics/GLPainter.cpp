@@ -45,61 +45,6 @@ GLPainter::~GLPainter()
     }
 }
 
-void GLPainter::DrawRect(const Point& start, float width, float height, const Color& color) {
-    glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
-
-   /*
-    glBegin(GL_QUADS);
-    glVertex3f(start.x, start.y, 1);
-    glVertex3f(start.x+width, start.y, 1);
-    glVertex3f(start.x+width, start.y+height, 1);
-    glVertex3f(start.x, start.y+height, 1);
-    glEnd();
-    */
-    GLfloat verts[4][3]  = {
-            {start.x,start.y,0},
-            {start.x+width, start.y, 0},
-            {start.x+width, start.y+height, 0},
-            {start.x, start.y+height, 0}
-    };
-
-    unsigned int rectVbo;
-    glGenBuffers(1, &rectVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, rectVbo);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), &verts[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);;
-}
-
-void GLPainter::DrawLine(const Point& start, const Point& end, float width, const Color& color) {
-    glLineWidth(width);
-    glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
-    glBegin(GL_LINES);
-    glVertex3f(start.x, start.y, 0.0);
-    glVertex3f(end.x, end.y, 0);
-    glEnd();
-}
-
-
-void GLPainter::DrawCircle(const Point& origin, float radius, const Color& color) {
-
-    generalShader.Unbind();
-    circleShader.Bind();
-
-    glUniform2f(circleShader.GetUniformLocation("iCenter"), origin.x, origin.y);
-    glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
-    glBegin(GL_QUADS);
-    glVertex3f(origin.x-radius, origin.y-radius, 0);
-    glVertex3f(origin.x+radius, origin.y-radius, 0);
-    glVertex3f(origin.x+radius, origin.y+radius, 0);
-    glVertex3f(origin.x-radius, origin.y+radius, 0);
-    glEnd();
-
-    circleShader.Unbind();
-    generalShader.Bind();
-}
-
-
 void GLPainter::Draw() {
     for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
         DrawLayer(it->first);
@@ -116,8 +61,8 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
     if(layer->Prepare(this))
     {
         auto verts = layer->GetVertices();
-        glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLfloat), &verts[0], GL_STREAM_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);;
+        glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLdouble), &verts[0], GL_STREAM_DRAW);
+        glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 0, 0);;
     }
 
     glEnableVertexAttribArray(0);

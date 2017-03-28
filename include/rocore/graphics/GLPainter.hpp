@@ -32,9 +32,6 @@ namespace graphics {
     public:
         GLPainter();
         ~GLPainter();
-        void DrawRect(const Point& start_, float width, float height, const Color& color);
-        void DrawLine(const Point& start, const Point& end, float width, const Color& color);
-        void DrawCircle(const Point& origin, float radius, const Color& color);
         void DrawLayer(GraphicLayer* layer);
 
         void Draw() ;
