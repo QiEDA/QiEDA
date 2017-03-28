@@ -5,23 +5,16 @@
 #include <QtWidgets/QWidget>
 #include "About.hpp"
 #include "MainWindow.h"
+#include "rogerber/Gerber.hpp"
+#include "rogerber/GerberProcessor.hpp"
+#include "rocore/ui/DocumentView.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
         QiMainWindow("QiViewer",parent)
 {
-   // glscrollarea = new rocore::ui::GLScrollArea(this);
+	rocore::ui::DocumentView* doc = new rocore::ui::DocumentView(mdiArea_->viewport());
+	mdiArea_->addSubWindow(doc);
 
-   // glscrollarea->setViewport(glarea);
-
-    QMdiSubWindow* child = new QMdiSubWindow(mdiArea_->viewport());
-    child->setAttribute(Qt::WA_DeleteOnClose);
-
-    glarea = new rocore::ui::GLWidget(child);
-    child->setWidget(glarea);
-
-    mdiArea_->addSubWindow(child);
-
-    child->showMaximized();
 
     setupMenubar();
 }
@@ -78,12 +71,14 @@ void MainWindow::open()
 
 bool MainWindow::save()
 {
-
+	return false;
 }
 
 bool MainWindow::saveAs()
 {
+	return false;
 }
+
 void MainWindow::about()
 {
     About about;
@@ -103,7 +98,6 @@ void MainWindow::LoadFile(const QString &fileName)
 
     QTextStream in(&file);
     QString inStr = in.readAll();
-
 
 }
 

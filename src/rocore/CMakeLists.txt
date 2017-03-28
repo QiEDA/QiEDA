@@ -33,12 +33,14 @@ add_custom_command(
 set(INC
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/GLWidget.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/QiMainWindow.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/ui/DocumentView.hpp
 	)
 
 
 set(SRC
 		ui/GLScrollArea.cpp
 		ui/GLWidget.cpp
+		ui/DocumentView.cpp
 		graphics/Color.cpp
 		graphics/GraphicArc.cpp
 		graphics/GraphicCircle.cpp
@@ -49,7 +51,9 @@ set(SRC
 		graphics/GLPainter.cpp
 		graphics/GLShader.cpp
 		graphics/GraphicLayer.cpp
-        graphics/GridLayer.cpp ../../include/rogerber/GerberException.hpp graphics/GraphicPoly.cpp graphics/GraphicPoly.hpp)
+		graphics/GridLayer.cpp 
+		graphics/GraphicPoly.cpp
+)
 
 
 add_library(rocore SHARED ${SRC} ${INC})
