@@ -80,6 +80,10 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
         {
             glDrawArrays(GL_QUADS, cmd.offset, cmd.vertexCount);
         }
+		else if(cmd.type == GraphicPaintOperationPoly)
+		{
+			glDrawArrays(GL_POLYGON, cmd.offset, cmd.vertexCount);
+		}
     }
 
     layer->Unprepare();

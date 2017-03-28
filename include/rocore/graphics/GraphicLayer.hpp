@@ -21,6 +21,7 @@ namespace graphics {
     class GraphicItem;
 
     enum GraphicPaintOperationType {
+		GraphicPaintOperationPoly,
         GraphicPaintOperationQuad,
         GraphicPaintOperationLine
     };
