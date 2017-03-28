@@ -16,12 +16,21 @@ class MainWindow : public QiMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+	void LoadFile(const QString &fileName);
+
 protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
     
     rocore::ui::GLWidget* glarea;
     rocore::ui::GLScrollArea* glscrollarea;
-    QMenuBar* menubar_;
+
+	void setupMenubar();
+
+private slots:
+	void open();
+	bool save();
+	bool saveAs();
+	void about();
 };
 
 #endif // MAINWINDOW_H

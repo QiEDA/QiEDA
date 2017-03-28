@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About QiEDA</string>
+   <string>About roEDA</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -65,7 +65,7 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
-  <include location="qiviewer.qrc"/>
+  <include location="roviewer.qrc"/>
  </resources>
  <connections>
   <connection>
