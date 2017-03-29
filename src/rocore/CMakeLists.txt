@@ -34,6 +34,7 @@ set(INC
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/GLWidget.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/QiMainWindow.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/DocumentView.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/projects/Base.hpp
 	)
 
 
@@ -53,10 +54,14 @@ set(SRC
 		graphics/GraphicLayer.cpp
 		graphics/GridLayer.cpp 
 		graphics/GraphicPoly.cpp
+		projects/Base.cpp
+		projects/Viewer.cpp
 )
 
 
+include_directories(${PROJECT_SOURCE_DIR}/deps/rapidjson/include)
 add_library(rocore SHARED ${SRC} ${INC})
+
 target_link_libraries(
     rocore ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARY} )
 add_dependencies(rocore shaders)

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <QtDebug>
 #include <QApplication>
-#include "MainWindow.h"
+#include "MainWindow.hpp"
 
 void qtMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString &message)
 {

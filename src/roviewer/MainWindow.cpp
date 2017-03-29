@@ -4,19 +4,30 @@
 #include <QTextStream>
 #include <QtWidgets/QWidget>
 #include "About.hpp"
-#include "MainWindow.h"
+#include "MainWindow.hpp"
 #include "rogerber/Gerber.hpp"
 #include "rogerber/GerberProcessor.hpp"
 #include "rocore/ui/DocumentView.hpp"
+#include "util/make_unique.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
-        QiMainWindow("QiViewer",parent)
+        QiMainWindow("roviewer",parent)
 {
 	rocore::ui::DocumentView* doc = new rocore::ui::DocumentView(mdiArea_->viewport());
 	mdiArea_->addSubWindow(doc);
 
-
     setupMenubar();
+
+	project_ = std::make_unique<rocore::projects::Viewer>("");
+
+	QObject::connect(project_.get(), &rocore::projects::Viewer::NameChanged,
+					 this, &MainWindow::projectNameChanged);
+
+	project_->SetName("untitled");
+}
+
+void MainWindow::projectNameChanged(QString name) {
+    setWindowTitle("roviewer - " + name);
 }
 
 void MainWindow::setupMenubar()
@@ -31,14 +42,14 @@ void MainWindow::setupMenubar()
 
     QAction *saveAct = new QAction(tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
-    saveAct->setStatusTip(tr("Save the document to disk"));
+    saveAct->setStatusTip(tr("Save the project to disk"));
     connect(saveAct, &QAction::triggered, this, &MainWindow::save);
     fileMenu->addAction(saveAct);
 
 
     QAction *saveAsAct = fileMenu->addAction(tr("Save &As..."), this, &MainWindow::saveAs);
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
-    saveAsAct->setStatusTip(tr("Save the document under a new name"));
+    saveAsAct->setStatusTip(tr("Save the project under a new name"));
 
     fileMenu->addSeparator();
 

@@ -5,14 +5,14 @@ set(CMAKE_AUTOMOC ON)
 
 set (INC
   About.hpp
-  MainWindow.h
+        MainWindow.hpp
   )
   
 set (SRC
   main.cpp
   MainWindow.cpp
   About.cpp
-  )
+        )
 
 set(UI
   About.ui
@@ -37,6 +37,7 @@ add_executable(roviewer WIN32
   ${QM}
 )
 
+include_directories(${PROJECT_SOURCE_DIR}/deps/rapidjson/include)
 target_link_libraries(roviewer rocore rogerber)
 
 qt5_use_modules(roviewer Widgets)
