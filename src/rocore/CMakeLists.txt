@@ -34,7 +34,12 @@ set(INC
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/GLWidget.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/QiMainWindow.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/DocumentView.hpp
-		${PROJECT_SOURCE_DIR}/include/rocore/projects/Base.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/ui/ProjectView.hpp
+        ${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerView.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItem.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItemModel.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/projects/Project.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/projects/ProjectViewItemModel.hpp
 	)
 
 
@@ -42,20 +47,26 @@ set(SRC
 		ui/GLScrollArea.cpp
 		ui/GLWidget.cpp
 		ui/DocumentView.cpp
+        ui/QiMainWindow.cpp
+		ui/ProjectView.cpp
+		ui/LayerView.cpp
+		ui/LayerViewItem.cpp
+		ui/LayerViewItemModel.cpp
 		graphics/Color.cpp
 		graphics/GraphicArc.cpp
 		graphics/GraphicCircle.cpp
 		graphics/GraphicLine.cpp
 		graphics/GraphicRectangle.cpp
 		graphics/GraphicText.cpp
-		ui/QiMainWindow.cpp
 		graphics/GLPainter.cpp
 		graphics/GLShader.cpp
 		graphics/GraphicLayer.cpp
 		graphics/GridLayer.cpp 
 		graphics/GraphicPoly.cpp
-		projects/Base.cpp
+		projects/Project.cpp
 		projects/Viewer.cpp
+		projects/ProjectViewItem.cpp
+		projects/ProjectViewItemModel.cpp
 )
 
 

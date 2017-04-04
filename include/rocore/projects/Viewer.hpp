@@ -7,14 +7,14 @@
 
 #include <string>
 #include "rocore/rocore.hpp"
-#include "rocore/projects/Base.hpp"
+#include "rocore/projects/Project.hpp"
 
 namespace rocore {
 namespace projects {
 
-class ROCORE_EXPORT Viewer: public Base {
+class ROCORE_EXPORT Viewer: public Project {
 public:
-	Viewer(QString name) : Base(name)
+	Viewer(QString name) : Project(name)
 	{
 
 	}

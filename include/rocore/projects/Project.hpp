@@ -2,8 +2,8 @@
 // Created by mroszko on 3/28/2017.
 //
 
-#ifndef ROEDA_PROJECTBASE_HPP
-#define ROEDA_PROJECTBASE_HPP
+#ifndef ROEDA_PROJECT_HPP
+#define ROEDA_PROJECT_HPP
 
 #include <string>
 #include <QObject>
@@ -11,7 +11,7 @@
 
 namespace rocore {
 namespace projects {
-class ROCORE_EXPORT Base : public QObject {
+class ROCORE_EXPORT Project : public QObject {
 Q_OBJECT
 
 private:
@@ -24,7 +24,7 @@ signals:
 	void NameChanged(QString name);
 
 public:
-	Base(QString name = "");
+	Project(QString name = "");
 
 	void SetName(QString name) {
 		name_ = name;

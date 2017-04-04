@@ -2,32 +2,64 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QTreeView>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QDirModel>
 #include "About.hpp"
 #include "MainWindow.hpp"
 #include "rogerber/Gerber.hpp"
 #include "rogerber/GerberProcessor.hpp"
 #include "rocore/ui/DocumentView.hpp"
+#include "rocore/ui/ProjectView.hpp"
+#include "rocore/ui/LayerView.hpp"
 #include "util/make_unique.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
         QiMainWindow("roviewer",parent)
 {
+	setupMenubar();
+
+    setCentralWidget(mdiArea_);
 	rocore::ui::DocumentView* doc = new rocore::ui::DocumentView(mdiArea_->viewport());
 	mdiArea_->addSubWindow(doc);
 
-    setupMenubar();
+	project_ = std::make_shared<rocore::projects::Viewer>("");
 
-	project_ = std::make_unique<rocore::projects::Viewer>("");
-
+	setupProjectView();
+	setupLayerView();
 	QObject::connect(project_.get(), &rocore::projects::Viewer::NameChanged,
 					 this, &MainWindow::projectNameChanged);
 
 	project_->SetName("untitled");
+
 }
 
 void MainWindow::projectNameChanged(QString name) {
     setWindowTitle("roviewer - " + name);
+}
+
+void MainWindow::setupProjectView()
+{
+	QDockWidget *dock = new QDockWidget(tr("Project"), this);
+	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	auto projView = new rocore::ui::ProjectView(project_,dock);
+
+	dock->setWidget(projView);
+	addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+	QObject::connect(project_.get(), &rocore::projects::Viewer::NameChanged,
+					 projView, &rocore::ui::ProjectView::projectNameChanged);
+}
+
+void MainWindow::setupLayerView()
+{
+	QDockWidget *dock = new QDockWidget(tr("Layers"), this);
+	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	auto projView = new rocore::ui::LayerView(project_,dock);
+
+	dock->setWidget(projView);
+	addDockWidget(Qt::RightDockWidgetArea, dock);
 }
 
 void MainWindow::setupMenubar()

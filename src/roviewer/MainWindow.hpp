@@ -38,7 +38,9 @@ public slots:
 	void projectNameChanged(QString name);
 
 private:
-	std::unique_ptr<rocore::projects::Viewer> project_;
+	std::shared_ptr<rocore::projects::Viewer> project_;
+	void setupProjectView();
+	void setupLayerView();
 };
 
 #endif // MAINWINDOW_H
