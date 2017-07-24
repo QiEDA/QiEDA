@@ -68,8 +68,9 @@ enum struct GerberCoordinateNotation {
 enum struct GerberAperturePrimitive {
 	Circle,
 	Rectangle,
-	Oval,
-	Polygon
+	Obround,
+	Polygon,
+	Macro
 };
 
 class ROGERBER_EXPORT GerberCommand {
@@ -149,6 +150,20 @@ protected:
 	GerberAperturePrimitive primitive_;
 };
 
+
+class ROGERBER_EXPORT MacroApertureDefinition : public ApertureDefinition {
+public:
+	MacroApertureDefinition(int number, std::string macroName, std::vector<std::string>& modifiers) : ApertureDefinition(number, GerberAperturePrimitive::Macro),
+																									  modifiers_(modifiers)
+	{
+		macroName_ = macroName;
+	}
+
+private:
+	std::string macroName_;
+	std::vector<std::string> modifiers_;
+};
+
 class ROGERBER_EXPORT CircleApertureDefinition : public ApertureDefinition {
 public:
 	CircleApertureDefinition(int number, float diameter, float holeDiameter) : ApertureDefinition(number, GerberAperturePrimitive::Circle)
@@ -158,8 +173,56 @@ public:
 	}
 
 private:
-	int diameter_;
-	int holeDiameter_;
+	float diameter_;
+	float holeDiameter_;
+};
+
+
+class ROGERBER_EXPORT PolygonAperatureDefinition : public ApertureDefinition {
+public:
+	PolygonAperatureDefinition(int number, float outerDiameter, unsigned int numberVerts, float rotationAngle, float holeDiameter) : ApertureDefinition(number, GerberAperturePrimitive::Polygon)
+	{
+		outerDiameter_ = outerDiameter;
+		numberVerts_ = numberVerts;
+		rotationAngle_ = rotationAngle;
+		holeDiameter_ = holeDiameter;
+	}
+
+private:
+	float outerDiameter_;
+	unsigned int numberVerts_;
+	float rotationAngle_;
+	float holeDiameter_;
+};
+
+class ROGERBER_EXPORT ObroundApertureDefinition : public ApertureDefinition {
+public:
+	ObroundApertureDefinition(int number, float xSize, float ySize, float holeDiameter) : ApertureDefinition(number, GerberAperturePrimitive::Obround)
+	{
+		xSize_ = xSize;
+		ySize_ = ySize;
+		holeDiameter_ = holeDiameter;
+	}
+
+private:
+	float xSize_;
+	float ySize_;
+	float holeDiameter_;
+};
+
+class ROGERBER_EXPORT RectangleApertureDefinition : public ApertureDefinition {
+public:
+	RectangleApertureDefinition(int number, float xSize, float ySize, float holeDiameter) : ApertureDefinition(number, GerberAperturePrimitive::Rectangle)
+	{
+		xSize_ = xSize;
+		ySize_ = ySize;
+		holeDiameter_ = holeDiameter;
+	}
+
+private:
+	float xSize_;
+	float ySize_;
+	float holeDiameter_;
 };
 
 class ROGERBER_EXPORT RegionStatement : public GerberCommand {

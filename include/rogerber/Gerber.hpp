@@ -34,7 +34,7 @@ private:
 	std::vector<std::string> splitString(std::string str, char delimiter);
 	void parseExtended(const std::string& file, std::string::const_iterator& it);
 	void parseExtendedBlocks(std::queue<std::string>& blocks);
-	void parseCommand(const std::string& file, std::string::const_iterator& it);
+	bool parseCommand(const std::string& file, std::string::const_iterator& it);
 	void parseFormatBlock(std::string& block);
 	void parseUnitBlock(std::string& block);
 	void parseImagePolarityBlock(std::string& block);

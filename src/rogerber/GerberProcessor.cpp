@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <rogerber/GerberProcessor.hpp>
 #include "rogerber/GerberProcessor.hpp"
 #include "fmt/format.h"
 #include "fmt/ostream.h"
@@ -35,7 +36,10 @@ void GerberProcessor::EmitArc(unsigned int aperture,
 							  bool multiQuadrant,
 							  int width)
 {
-
+#ifdef ROGERBER_DEBUG
+	std::cout << fmt::format("[Processor][Emit][Arc]aperature={0},start.x={1},start.y={2},stop.x={3},stop.y={4},center.x={5},center.y",
+							 aperture, start.X, start.Y, stop.X, stop.Y, center.X, center.Y) << std::endl;
+#endif
 }
 
 void GerberProcessor::processOperationInsideRegion(OperationStatement* op, GerberCoordinate& xyCoordinate)
@@ -167,6 +171,10 @@ void GerberProcessor::Execute()
 				break;
 			case GerberCommandType::AperatureSelection:
 				currentAperture_ = static_cast<ApertureSelection*>(cmd)->GetAperture();
+#ifdef ROGERBER_DEBUG
+				std::cout << fmt::format("[Processor][Aperature][Selection]aperature={0}",
+										 currentAperture_ ) << std::endl;
+#endif
 				break;
 			case GerberCommandType::Operation:
 				{
@@ -194,6 +202,10 @@ void GerberProcessor::Execute()
 				{
 					auto aperture =  static_cast<ApertureDefinition*>(cmd);
 					registerAperture(aperture);
+#ifdef ROGERBER_DEBUG
+				std::cout << fmt::format("[Processor][Aperature][Definition]aperature={0}",
+										 aperture->GetNumber() ) << std::endl;
+#endif
 				}
 				break;
 			default:
@@ -221,7 +233,7 @@ double GerberProcessor::convertXCoordinate(const std::string& raw, double* previ
 		return *previous;	//per 4.9.1, if ommited, return the previous point
 	}
 
-	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xIntegerPositions_, coordinateSettings_.absoluteNotation_, previous);
+	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xDecimalPositions_, coordinateSettings_.absoluteNotation_, previous);
 }
 
 double GerberProcessor::convertICoordinate(const std::string& raw)
@@ -231,7 +243,7 @@ double GerberProcessor::convertICoordinate(const std::string& raw)
 		return 0.0;	//J coordinates are "optional" and default to 0 per section 4.9.1
 	}
 
-	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xIntegerPositions_,
+	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xDecimalPositions_,
 									false,
 									nullptr);
 }
@@ -243,7 +255,7 @@ double GerberProcessor::convertYCoordinate(const std::string& raw, double* previ
 		return *previous;	//per 4.9.1, if ommited, return the previous point
 	}
 
-	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yIntegerPositions_, coordinateSettings_.absoluteNotation_, previous);
+	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yDecimalPositions_, coordinateSettings_.absoluteNotation_, previous);
 }
 
 double GerberProcessor::convertJCoordinate(const std::string& raw)
@@ -253,7 +265,7 @@ double GerberProcessor::convertJCoordinate(const std::string& raw)
 		return 0.0;	//J coordinates are "optional" and default to 0 per section 4.9.1
 	}
 
-	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yIntegerPositions_,
+	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yDecimalPositions_,
 									false,
 									nullptr);
 }
@@ -273,28 +285,26 @@ double GerberProcessor::baseCoordinateConversion(const std::string& raw,
 	//leading zeros can be ommited, ensure we are at least big enough as the decimal positions defines
 	std::string decimalPortion;
 	std::string integerPortion;
+	std::string coord = raw;
+	unsigned int totalPositions = decimalPositions+integerPositions;
 	if(coordinateSettings_.leadingZeroOmission_ )
 	{
-		if(raw.length() < decimalPositions)
+		if(raw.length() < totalPositions)
 		{
-			throw GerberException("Coordinate string was smaller than defined number of decimal positions (leading zero omission)");
+			coord.insert(coord.begin(), totalPositions - coord.length(), '0');
 		}
 
-		int integerTotal = raw.length()-decimalPositions;
-		decimalPortion = raw.substr(integerTotal, decimalPositions);
-		integerPortion = raw.substr(0, integerTotal);
 	}
 	else
 	{
-		if(raw.length() < integerPositions)
+		if(raw.length() < totalPositions)
 		{
-			throw GerberException("Coordinate string was smaller than defined number of integer positions (trailing zero omission)");
+			coord.append(totalPositions - coord.length(), '0');
 		}
-
-		int decimalTotal = raw.length()-integerPositions;
-		integerPortion = raw.substr(0, integerPositions);
-		decimalPortion = raw.substr(integerPositions, decimalTotal);
 	}
+
+	integerPortion = coord.substr(0, integerPositions);
+	decimalPortion = coord.substr(integerPositions, decimalPositions);
 
 	double ret = std::stod(integerPortion);
 

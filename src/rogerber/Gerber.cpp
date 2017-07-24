@@ -34,6 +34,7 @@ void Gerber::Parse(std::string& file)
     std::string::const_iterator it = file.begin();
 
     for (; it != file.end(); ++it) {
+		bool cont = true;
 		switch(*it) {
 			case '\n':
 			case '\r':
@@ -45,8 +46,12 @@ void Gerber::Parse(std::string& file)
                 parseExtended(file, it);
 				break;
             default:
-                parseCommand(file, it);
+                cont = parseCommand(file, it);
 				break;
+		}
+
+		if(!cont) {
+			break;
 		}
 	}
 	
@@ -63,7 +68,7 @@ std::string Gerber::Dump()
 }
 
 
-void Gerber::parseCommand(const std::string& file, std::string::const_iterator& it)
+bool Gerber::parseCommand(const std::string& file, std::string::const_iterator& it)
 {
 	size_t startPos = std::distance(file.begin(), it);
 	size_t endPos = file.find_first_of('*', startPos);
@@ -88,7 +93,12 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 	std::regex regexJCoord("J([+-]?[\\d\\.]+)");
 
 	std::smatch matches;
-	if (std::regex_search(block, matches, regexGCode)) {
+
+	//end of file command
+	if(block == "M02") {
+		return false;
+	}
+	else if (std::regex_search(block, matches, regexGCode)) {
 		if(matches.size() == 2) {
 			int num = std::stoi(matches[1], nullptr);
 
@@ -108,6 +118,12 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 					break;
 				case 71:
 					result= new LegacyUnitMillimetersCommand();
+					break;
+				case 36:
+					result = new RegionStatement(true);
+					break;
+				case 37:
+					result = new RegionStatement(false);
 					break;
 				default:
 					throw GerberException("Unknown G## code encountered");
@@ -183,6 +199,8 @@ void Gerber::parseCommand(const std::string& file, std::string::const_iterator& 
 		OperationStatement* operation = new OperationStatement(type, xCoord, yCoord, jCoord, iCoord);
 		commands.push_back(operation);
 	}
+
+	return true;
 }
 
 void Gerber::parseExtended(const std::string& file, std::string::const_iterator& it)
@@ -273,46 +291,112 @@ void Gerber::parseApertureBlock(std::string& block)
 	}
 
 	int num = 0;
-	char type = 'A';
+	std::string type = "";
 
 	std::regex ap("^ADD0*(\\d{2,})([A-Za-z_\\$][\\w\\-\\.]*)(?:,((?:X?[\\d.]+)*))?");
 	std::smatch apMatch;
 	if (std::regex_search(block, apMatch, ap)) {
 		if(apMatch.size() >= 4) {
 			num = std::stoi(apMatch[1], nullptr);
-			type = apMatch[2].str()[0];
+
+			type = apMatch[2].str();
 		}
 	}
 	else {
 		//invalid format?
 	}
 
+
 	ApertureDefinition* app = nullptr;
 
-	switch(type) {
-		case 'C': {
-			if(apMatch.size() >= 4)
+	if(type == "C") {
+		if(apMatch.size() >= 4)
+		{
+			float circleDiameter = 0.0f;
+			float holeDiameter = 0.0f;
+			std::vector<std::string> dims = splitString(apMatch[3],'X');
+
+			//required
+			if(dims.size() >= 1)
 			{
-				float circleDiameter = 0.0f;
-				float holeDiameter = 0.0f;
-				std::vector<std::string> dims = splitString(apMatch[3],'X');
+				circleDiameter = std::stof(dims[0], nullptr);
+			}
+			else
+			{
+				throw GerberException("one or more required modifiers of the circle aperture definition are missing");
+			}
 
-				if(dims.size() >= 1)
-				{
-					circleDiameter = std::stof(dims[0], nullptr);
-				}
+			//optional
+			if(dims.size() >= 2)
+			{
+				holeDiameter = std::stof(dims[1], nullptr);
+			}
 
-				if(dims.size() >= 2)
-				{
-					holeDiameter = std::stof(dims[1], nullptr);
-				}
+			app = new CircleApertureDefinition(num, circleDiameter, holeDiameter);
+		}
+	} else if( type == "R" || type == "O") {
+		if (apMatch.size() >= 4) {
+			float xSize = 0.0f;
+			float ySize = 0.0f;
+			float holeDiam = 0.0f;
+			std::vector<std::string> dims = splitString(apMatch[3], 'X');
 
-				app = new CircleApertureDefinition(num, circleDiameter, holeDiameter);
+			//required
+			if (dims.size() >= 2) {
+				xSize = std::stof(dims[0], nullptr);
+				ySize = std::stof(dims[1], nullptr);
+			} else {
+				throw GerberException(
+						"one or more required modifiers of the rectangle/obround aperture definition are missing");
+			}
+
+			//optional
+			if (dims.size() >= 3) {
+				holeDiam = std::stof(dims[2], nullptr);
+			}
+
+			if (type == "R") {
+				app = new RectangleApertureDefinition(num, xSize, ySize, holeDiam);
+			} else if (type == "O") {
+				app = new ObroundApertureDefinition(num, xSize, ySize, holeDiam);
 			}
 		}
-			break;
-		case 'R':
-			break;
+	} else if( type == "P" ) {
+		if(apMatch.size() >= 4)
+		{
+			float outerDiam = 0.0f;
+			unsigned int numVerts = 0;
+			float rotation = 0.0f;
+			float holeDiam = 0.0f;
+			std::vector<std::string> dims = splitString(apMatch[3],'X');
+
+			//required
+			if(dims.size() >= 2)
+			{
+				outerDiam = std::stof(dims[0], nullptr);
+				numVerts = std::stoul(dims[1], nullptr);
+			}
+			else
+			{
+				throw GerberException("one or more required modifiers of the poly aperture definition are missing");
+			}
+
+			//optional
+			if(dims.size() >= 3)
+			{
+				rotation = std::stof(dims[2], nullptr);
+			}
+
+			if(dims.size() >= 4)
+			{
+				holeDiam = std::stof(dims[3], nullptr);
+			}
+
+			app = new PolygonAperatureDefinition(num, outerDiam, numVerts, rotation, holeDiam);
+		}
+	} else {
+		std::vector<std::string> modifiers = splitString(apMatch[3],'X');
+		app = new MacroApertureDefinition(num, type, modifiers);
 	}
 
 	if(app != nullptr)
