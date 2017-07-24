@@ -5,6 +5,7 @@
 #ifndef ROEDA_GERBERCOMMANDS_HPP
 #define ROEDA_GERBERCOMMANDS_HPP
 
+#include <vector>
 #include "rogerber/rogerber.hpp"
 
 namespace rogerber {

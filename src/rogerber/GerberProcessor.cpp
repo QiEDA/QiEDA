@@ -109,8 +109,8 @@ void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate&
 					case GerberInterpolationMode::ArcCounterClockwise:
 						{
 							GerberCoordinate center;
-							center.X = convertICoordinate(op->GetRawI());
-							center.Y = convertJCoordinate(op->GetRawJ());
+							center.X = coordinateConverter_.ConvertICoordinate(op->GetRawI());
+							center.Y = coordinateConverter_.ConvertJCoordinate(op->GetRawJ());
 							//now since the I and J are relative, add the X and Y to it
 							center.X += operationCoordinate.X;
 							center.Y += operationCoordinate.Y;
@@ -153,15 +153,18 @@ void GerberProcessor::Execute()
 			case GerberCommandType::Format:
 				{
 					FormatStatement* format = static_cast<FormatStatement*>(cmd);
-					setXCoordinateFormat(format->GetXIntegerPositions(), format->GetXDecimalPositions());
-					setYCoordinateFormat(format->GetYIntegerPositions(), format->GetYDecimalPositions());
+					coordinateConverter_.SetXCoordinateFormat(format->GetXIntegerPositions(), format->GetXDecimalPositions());
+					coordinateConverter_.SetYCoordinateFormat(format->GetYIntegerPositions(), format->GetYDecimalPositions());
 
-					coordinateSettings_.absoluteNotation_ = format->IsAbsoluteNotation();
-					coordinateSettings_.leadingZeroOmission_ = format->IsLeadingZeroOmission();
+					coordinateConverter_.SetAbsoluteNotation(format->IsAbsoluteNotation());
+					coordinateConverter_.SetLeadingZeroOmission(format->IsLeadingZeroOmission());
 				}
 				break;
 			case GerberCommandType::Unit:
-				units_ = static_cast<UnitCommand*>(cmd)->GetUnits();
+				{
+					auto units = static_cast<UnitCommand *>(cmd)->GetUnits();
+					coordinateConverter_.SetUnits(units);
+				}
 				break;
 			case GerberCommandType::Interpolation:
 				interpolationMode_ = static_cast<InterpolationMode*>(cmd)->GetMode();
@@ -181,8 +184,8 @@ void GerberProcessor::Execute()
 					OperationStatement* op = static_cast<OperationStatement *>(cmd);
 					GerberCoordinate coord;
 
-					coord.X = convertXCoordinate(op->GetRawX(), &previousPosition_.X);
-					coord.Y = convertYCoordinate(op->GetRawY(), &previousPosition_.Y);
+					coord.X = coordinateConverter_.ConvertXCoordinate(op->GetRawX(), &previousPosition_.X);
+					coord.Y = coordinateConverter_.ConvertYCoordinate(op->GetRawY(), &previousPosition_.Y);
 
 					if(insideRegion_)
 					{
@@ -212,118 +215,4 @@ void GerberProcessor::Execute()
 				throw GerberExecutorUnexpectedCommandException();
 		}
 	}
-}
-
-void GerberProcessor::setXCoordinateFormat(unsigned int integerPositions, unsigned int decimalPositions)
-{
-	coordinateSettings_.xIntegerPositions_ = integerPositions;
-	coordinateSettings_.xDecimalPositions_ = decimalPositions;
-}
-
-void GerberProcessor::setYCoordinateFormat(unsigned int integerPositions, unsigned int decimalPositions)
-{
-	coordinateSettings_.yIntegerPositions_ = integerPositions;
-	coordinateSettings_.yDecimalPositions_ = decimalPositions;
-}
-
-double GerberProcessor::convertXCoordinate(const std::string& raw, double* previous)
-{
-	if(raw.empty())
-	{
-		return *previous;	//per 4.9.1, if ommited, return the previous point
-	}
-
-	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xDecimalPositions_, coordinateSettings_.absoluteNotation_, previous);
-}
-
-double GerberProcessor::convertICoordinate(const std::string& raw)
-{
-	if(raw.empty())
-	{
-		return 0.0;	//J coordinates are "optional" and default to 0 per section 4.9.1
-	}
-
-	return baseCoordinateConversion(raw, coordinateSettings_.xIntegerPositions_, coordinateSettings_.xDecimalPositions_,
-									false,
-									nullptr);
-}
-
-double GerberProcessor::convertYCoordinate(const std::string& raw, double* previous)
-{
-	if(raw.empty())
-	{
-		return *previous;	//per 4.9.1, if ommited, return the previous point
-	}
-
-	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yDecimalPositions_, coordinateSettings_.absoluteNotation_, previous);
-}
-
-double GerberProcessor::convertJCoordinate(const std::string& raw)
-{
-	if(raw.empty())
-	{
-		return 0.0;	//J coordinates are "optional" and default to 0 per section 4.9.1
-	}
-
-	return baseCoordinateConversion(raw, coordinateSettings_.yIntegerPositions_, coordinateSettings_.yDecimalPositions_,
-									false,
-									nullptr);
-}
-
-double GerberProcessor::baseCoordinateConversion(const std::string& raw,
-												unsigned int integerPositions,
-												unsigned int decimalPositions,
-												bool absolute,
-												double* previous)
-{
-
-	if(units_ == GerberUnitMode::Unknown)
-	{
-		throw GerberException("Unknown unit mode");
-	}
-
-	//leading zeros can be ommited, ensure we are at least big enough as the decimal positions defines
-	std::string decimalPortion;
-	std::string integerPortion;
-	std::string coord = raw;
-	unsigned int totalPositions = decimalPositions+integerPositions;
-	if(coordinateSettings_.leadingZeroOmission_ )
-	{
-		if(raw.length() < totalPositions)
-		{
-			coord.insert(coord.begin(), totalPositions - coord.length(), '0');
-		}
-
-	}
-	else
-	{
-		if(raw.length() < totalPositions)
-		{
-			coord.append(totalPositions - coord.length(), '0');
-		}
-	}
-
-	integerPortion = coord.substr(0, integerPositions);
-	decimalPortion = coord.substr(integerPositions, decimalPositions);
-
-	double ret = std::stod(integerPortion);
-
-	double decimal = std::stod(decimalPortion);
-	decimal /= std::pow((double)10.0,(double)decimalPortion.length());	//now shift the decimal over to the correct position 2 => 0.2 , 312 => .312
-
-	ret += decimal;
-
-
-	if(units_ == GerberUnitMode::Inches)
-	{
-		ret *= 25.4;	//internally we treat everything as millimeters
-	}
-
-	if(!absolute && previous != nullptr)
-	{
-		//relative notation, we want to return the real absolute so
-		ret += *previous;
-	}
-
-	return ret;
 }

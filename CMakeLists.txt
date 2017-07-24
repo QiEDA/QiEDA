@@ -89,3 +89,5 @@ if (WIN32)
   install(FILES ${QT5_PPF_PATH}/qwindows.dll DESTINATION platforms)
 
 endif ()
+
+add_subdirectory(test)
