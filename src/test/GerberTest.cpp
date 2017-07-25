@@ -6,7 +6,7 @@ using namespace rogerber;
 
 int main(int argc, char *argv[]) {
     Gerber gerber;
-
+/*
     std::string str = "G75*\n"
             "G70*\n"
             "%OFA0B0*%\n"
@@ -26,8 +26,29 @@ int main(int argc, char *argv[]) {
             "X004100Y000200D01*\n"
             "M02*\n"
             "%MOMM*%";
+*/
+	std::string str = "G04 Ucamco ex. 1: Twosquare boxes*\n"
+			"%FSLAX25Y25*%\n"
+			"%MOMM*%\n"
+			"%TF.Part,Other,example*%\n"
+			"%LPD*%\n"
+			"%ADD10C,0.010*%\n"
+			"D10*\n"
+			"X0Y0D02*\n"
+			"G01*\n"
+			"X500000Y0D01*\n"
+			"Y500000D01*\n"
+			"X0D01*\n"
+			"Y0D01*\n"
+			"X600000D02*\n"
+			"X1100000D01*\n"
+			"Y500000D01*\n"
+			"X600000D01*\n"
+			"Y0D01*\n"
+			"M02*\n";
 
-    gerber.Parse(str);
+	gerber.Load("D:\\msys64\\home\\mroszko\\qieda\\src\\test\\gerbers\\polarties-apertures.gbr");
+    //gerber.Parse(str);
 
 	GerberProcessor executor(gerber);
 

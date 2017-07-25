@@ -46,7 +46,7 @@ GLPainter::~GLPainter()
 }
 
 void GLPainter::Draw() {
-    for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
+    for (auto it = registeredLayers_.rbegin(); it != registeredLayers_.rend(); ++it) {
         DrawLayer(it->first);
     }
 }

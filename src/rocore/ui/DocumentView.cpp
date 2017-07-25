@@ -12,6 +12,6 @@ DocumentView::DocumentView(QWidget* parent, Qt::WindowFlags flags)
 	setAttribute(Qt::WA_DeleteOnClose);
 	showMaximized();
 
-	glarea_ = new rocore::ui::GLWidget(this);
-	setWidget(glarea_);
+	glArea_ = new rocore::ui::GLWidget(this);
+	setWidget(glArea_);
 }

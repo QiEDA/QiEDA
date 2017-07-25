@@ -42,11 +42,11 @@ private:
 	ApertureDefinition* getApertureDefinition(unsigned int aperature);
 	void registerAperture(ApertureDefinition* def);
 protected:
-	void EmitLine(unsigned int aperture,
+	virtual void EmitLine(unsigned int aperture,
 				  GerberCoordinate& start,
 				  GerberCoordinate& stop,
 				  int width);
-	void EmitArc(unsigned int aperture,
+	virtual void EmitArc(unsigned int aperture,
 								 GerberCoordinate& start,
 								 GerberCoordinate& stop,
 								 GerberCoordinate& center,

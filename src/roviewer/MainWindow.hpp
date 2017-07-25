@@ -6,6 +6,7 @@
 #include <QMdiSubWindow>
 #include <QMenuBar>
 #include <memory>
+#include "rocore/ui/GerberDocumentView.hpp"
 #include "rocore/ui/GLScrollArea.hpp"
 #include "rocore/ui/GLWidget.hpp"
 #include "rocore/ui/QiMainWindow.hpp"
@@ -25,6 +26,7 @@ protected:
     
     rocore::ui::GLWidget* glarea;
     rocore::ui::GLScrollArea* glscrollarea;
+	rocore::ui::GerberDocumentView* doc;
 
 	void setupMenubar();
 

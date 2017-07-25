@@ -12,6 +12,7 @@ set (SRC
   main.cpp
   MainWindow.cpp
   About.cpp
+  GerberOpenGlProcessor.cpp
         )
 
 set(UI

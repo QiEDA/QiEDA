@@ -34,6 +34,7 @@ set(INC
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/GLWidget.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/QiMainWindow.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/DocumentView.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/ui/GerberDocumentView.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/ProjectView.hpp
         ${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerView.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItem.hpp
@@ -47,6 +48,7 @@ set(SRC
 		ui/GLScrollArea.cpp
 		ui/GLWidget.cpp
 		ui/DocumentView.cpp
+		ui/GerberDocumentView.cpp
         ui/QiMainWindow.cpp
 		ui/ProjectView.cpp
 		ui/LayerView.cpp

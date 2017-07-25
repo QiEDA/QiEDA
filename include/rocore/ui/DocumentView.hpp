@@ -17,8 +17,8 @@ class ROCORE_EXPORT DocumentView : public QMdiSubWindow {
 public:
 	DocumentView(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-private:
-	rocore::ui::GLWidget* glarea_;
+protected:
+	rocore::ui::GLWidget* glArea_;
 };
 
 }

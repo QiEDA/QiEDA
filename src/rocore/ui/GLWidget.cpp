@@ -96,8 +96,8 @@ void GLWidget::initializeGL() {
 
     layers_.push_back(layer);
 
-    painter_->RegisterGraphicLayer(layer);
-    painter_->RegisterGraphicLayer(test);
+   // painter_->RegisterGraphicLayer(layer);
+   painter_->RegisterGraphicLayer(test);
 
     update_timer_.start(1000 / 60.0);
 }

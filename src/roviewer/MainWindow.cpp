@@ -6,6 +6,7 @@
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDirModel>
+#include <rocore/ui/GerberDocumentView.hpp>
 #include "About.hpp"
 #include "MainWindow.hpp"
 #include "rogerber/Gerber.hpp"
@@ -13,7 +14,9 @@
 #include "rocore/ui/DocumentView.hpp"
 #include "rocore/ui/ProjectView.hpp"
 #include "rocore/ui/LayerView.hpp"
+#include "rocore/graphics/Color.hpp"
 #include "util/make_unique.hpp"
+#include "GerberOpenGlProcessor.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
         QiMainWindow("roviewer",parent)
@@ -21,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	setupMenubar();
 
     setCentralWidget(mdiArea_);
-	rocore::ui::DocumentView* doc = new rocore::ui::DocumentView(mdiArea_->viewport());
+	doc = new rocore::ui::GerberDocumentView(mdiArea_->viewport());
 	mdiArea_->addSubWindow(doc);
 
 	project_ = std::make_shared<rocore::projects::Viewer>("");
@@ -142,6 +145,18 @@ void MainWindow::LoadFile(const QString &fileName)
     QTextStream in(&file);
     QString inStr = in.readAll();
 
+
+	rogerber::Gerber gerber;
+	std::string data = inStr.toStdString();
+	gerber.Parse(data);
+
+
+	rocore::graphics::GraphicLayer* layer = new rocore::graphics::GraphicLayer(rocore::graphics::Colors::Red);
+
+	GerberOpenGlProcessor processor(gerber, layer);
+	processor.Execute();
+
+	doc->AddLayer(layer);
 }
 
 MainWindow::~MainWindow()

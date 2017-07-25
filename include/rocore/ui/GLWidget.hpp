@@ -21,6 +21,11 @@ Q_OBJECT
 public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
+	void AddLayer(rocore::graphics::GraphicLayer * layer)
+	{
+		layers_.push_back(layer);
+		painter_->RegisterGraphicLayer(layer);
+	}
 
 protected:
     void initializeGL() override;
