@@ -34,4 +34,5 @@ bool GraphicLayer::Prepare(GLPainter* painter)
 void GraphicLayer::AddItem(GraphicItem* item)
 {
     items_.push_back(item);
+    dirty_ = true;
 }

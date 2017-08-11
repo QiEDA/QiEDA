@@ -4,7 +4,26 @@ using namespace rocore::graphics;
 
 void GraphicCircle::Draw(GraphicLayer* layer)
 {
-//    painter->DrawCircle(center_, radius_, color);
+    /*
+     * Split into two triangles
+     * *-------------*
+     * | \           |
+     * |   \         |
+     * |     \       |
+     * |       \     |
+     * |         \   |
+     * |           \ |
+     * *-------------*
+     */
+    layer->AddOperation(GraphicPaintOperationCircle, 6, 1);
+    layer->AddVertex(center_.x - radius_, center_.y + radius_); //upper left corner
+    layer->AddVertex(center_.x - radius_, center_.y - radius_); //bottom left corner
+    layer->AddVertex(center_.x + radius_, center_.y - radius_); //bottom right corner
+
+    layer->AddVertex(center_.x + radius_, center_.y - radius_); //bottom right corner
+    layer->AddVertex(center_.x + radius_, center_.y + radius_); //upper right corner
+    layer->AddVertex(center_.x - radius_, center_.y + radius_); //upper left corner
+
 }
 
 BoundingBox GraphicCircle::GetBoundingBox()

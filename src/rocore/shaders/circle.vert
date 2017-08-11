@@ -1,11 +1,16 @@
-#version 120
+#version 150 core
 
-uniform vec2 iCenter;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+uniform vec4 vi_Color;
 
-varying vec4 circleOrigin;
+in vec3 vi_VertexPos;
 
-void main()
+out vec4 vo_Color;
+
+void main(void)
 {
-  gl_Position = ftransform();
-  circleOrigin = vec4(iCenter,0,0) * gl_ModelViewMatrix;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vi_VertexPos,1.0);
+    vo_Color = vi_Color;
 }

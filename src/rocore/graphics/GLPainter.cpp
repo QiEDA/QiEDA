@@ -18,7 +18,6 @@ using namespace rocore::graphics;
 
 GLPainter::GLPainter() {
     glClearColor(0,0,0,1);
-    glEnable(GL_DEPTH_TEST);
 
     GLenum err = glewInit();
     if(err != GLEW_OK)
@@ -27,11 +26,14 @@ GLPainter::GLPainter() {
     }
 
     circleShader.Load(circle_vert_shader, circle_frag_shader);
-    circleShader.RegisterUniform("iCenter");
+    circleShader.BindAttributeLocation("vi_VertexPos",0);
+    circleShader.RegisterUniform("projectionMatrix");
+    circleShader.RegisterUniform("viewMatrix");
+    circleShader.RegisterUniform("modelMatrix");
+	circleShader.RegisterUniform("vi_Color");
 
     generalShader.Load(shader_vert_shader, shader_frag_shader);
     generalShader.BindAttributeLocation("vi_VertexPos",0);
- //   generalShader.BindAttributeLocation("vi_Color",1);
     generalShader.RegisterUniform("projectionMatrix");
     generalShader.RegisterUniform("viewMatrix");
     generalShader.RegisterUniform("modelMatrix");
@@ -46,7 +48,7 @@ GLPainter::~GLPainter()
 }
 
 void GLPainter::Draw() {
-    for (auto it = registeredLayers_.rbegin(); it != registeredLayers_.rend(); ++it) {
+    for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
         DrawLayer(it->first);
     }
 }
@@ -70,11 +72,25 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
     auto paintOperations = layer->GetPaintOperations();
     for(auto cmd : paintOperations)
     {
-        glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
+		if(cmd.type == GraphicPaintOperationLine || cmd.type == GraphicPaintOperationQuad ||  cmd.type == GraphicPaintOperationPoly || cmd.type == GraphicPaintOperationPoly)
+		{
+			glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
+		}
+
+		if(cmd.type == GraphicPaintOperationCircle)
+		{
+			circleShader.Bind();
+			glUniform4f(circleShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
+		}
+
         if(cmd.type == GraphicPaintOperationLine)
         {
             glLineWidth(cmd.lineWidth);
             glDrawArrays(GL_LINES, cmd.offset, cmd.vertexCount);
+        }
+        else if(cmd.type == GraphicPaintOperationTriangles || cmd.type == GraphicPaintOperationCircle)
+        {
+            glDrawArrays(GL_TRIANGLES, cmd.offset, cmd.vertexCount);
         }
         else if(cmd.type == GraphicPaintOperationQuad)
         {
@@ -83,6 +99,12 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
 		else if(cmd.type == GraphicPaintOperationPoly)
 		{
 			glDrawArrays(GL_POLYGON, cmd.offset, cmd.vertexCount);
+		}
+
+
+		if(cmd.type == GraphicPaintOperationCircle)
+		{
+			generalShader.Bind();
 		}
     }
 
@@ -93,10 +115,17 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
 }
 
 void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
+    glDrawBuffer(GL_BACK);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
 
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom));
+
+	circleShader.Bind();
+	glUniformMatrix4fv(circleShader.GetUniformLocation("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
+	glUniformMatrix4fv(circleShader.GetUniformLocation("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
+	glUniformMatrix4fv(circleShader.GetUniformLocation("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
 
     generalShader.Bind();
     //push the transformation matrices into the general shader
@@ -141,4 +170,27 @@ void GLPainter::UnregisterGraphicLayer(GraphicLayer* layer)
     }
 
     registeredLayers_.erase(layer);
+}
+
+
+glm::vec3 GLPainter::ScreenToWorldCoordinates(const glm::ivec2 &screenCoord, float z)
+{
+	//x,y,width,height
+	GLint viewportRaw[4];
+	glGetIntegerv( GL_VIEWPORT, viewportRaw );
+
+	glm::vec2 offset = glm::vec2(viewportRaw[0],viewportRaw[1]);
+	glm::vec2 size = glm::vec2(viewportRaw[2],viewportRaw[3]);
+
+	glm::vec4 viewport = glm::vec4( offset.x, offset.y,  size.x, size.y );
+
+	// Calculate the view-projection matrix.
+	glm::mat4 transform = projectionMatrix * viewMatrix;
+
+
+	glm::vec3 near = glm::unProject( glm::vec3( screenCoord.x, size.y - screenCoord.y, 0 ), glm::mat4(), transform, viewport );
+	glm::vec3 far = glm::unProject(  glm::vec3( screenCoord.x, size.y - screenCoord.y, 1 ), glm::mat4(), transform, viewport );
+
+	// Calculate world position.
+	return glm::mix( near, far, ( z - near.z ) / ( far.z - near.z ) );
 }

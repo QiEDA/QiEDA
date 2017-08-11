@@ -23,7 +23,9 @@ namespace graphics {
     enum GraphicPaintOperationType {
 		GraphicPaintOperationPoly,
         GraphicPaintOperationQuad,
-        GraphicPaintOperationLine
+        GraphicPaintOperationLine,
+        GraphicPaintOperationTriangles,
+		GraphicPaintOperationCircle
     };
 
     struct GraphicPaintOperation {

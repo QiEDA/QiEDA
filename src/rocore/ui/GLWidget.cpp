@@ -4,6 +4,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include <QDebug>
+#include <iostream>
 #include "rocore/Units.hpp"
 #include "rocore/ui/GLWidget.hpp"
 #include "rocore/graphics/Color.hpp"
@@ -60,20 +61,20 @@ void GLWidget::initializeGL() {
     GraphicLine* gral = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
 
 
+/*
     Point p3;
     p3.x = 0;
     p3.y = 0;
     GraphicRectangle* gral2 = new GraphicRectangle(p3, Units::InchesToInternalUnits(2), Units::InchesToInternalUnits(1));
 
-
     Point p4;
     p4.x = Units::InchesToInternalUnits(1.4);
     p4.y = Units::InchesToInternalUnits(2.24);
     GraphicRectangle* gral3 = new GraphicRectangle(p4,Units::InchesToInternalUnits(0.5), Units::InchesToInternalUnits(0.5));
-
+*/
     Point p5;
-    p4.x = Units::InchesToInternalUnits(0);
-    p4.y = Units::InchesToInternalUnits(0);
+    p5.x = Units::InchesToInternalUnits(0);
+    p5.y = Units::InchesToInternalUnits(0);
     GraphicCircle* gral4 = new GraphicCircle(p5,Units::MilsToInternalUnits(300));
 
     Point p6;
@@ -88,15 +89,15 @@ void GLWidget::initializeGL() {
 
 
     layer->AddItem(gral);
-    layer->AddItem(gral2);
-    layer->AddItem(gral3);
+   // layer->AddItem(gral2);
+    //layer->AddItem(gral3);
     layer->AddItem(gral4);
     layer->AddItem(gral5);
     layer->AddItem(gral6);
 
     layers_.push_back(layer);
 
-   // painter_->RegisterGraphicLayer(layer);
+    painter_->RegisterGraphicLayer(layer);
    painter_->RegisterGraphicLayer(test);
 
     update_timer_.start(1000 / 60.0);
@@ -121,6 +122,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         panStarted_ = true;
         mouseMoveStartPos_ = event->pos();
     }
+
+    makeCurrent();
+    auto world = painter_->ScreenToWorldCoordinates( glm::ivec2(event->x(),event->y()), 0 );
+    QString str;
+    str.sprintf("Mouse click at screen %d,%d; world %f,%f,%f", event->x(), event->y(), world.x, world.y, world.z);
+    std::cout << str.toStdString();
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

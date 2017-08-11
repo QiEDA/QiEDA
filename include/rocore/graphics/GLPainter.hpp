@@ -40,6 +40,8 @@ namespace graphics {
 
         void RegisterGraphicLayer(GraphicLayer* layer);
         void UnregisterGraphicLayer(GraphicLayer* layer);
+
+        glm::vec3 ScreenToWorldCoordinates(const glm::ivec2 &mouse, float z);
     private:
         std::map<GraphicLayer*,GLLayerMeta> registeredLayers_;
         GLShader circleShader;

@@ -1,3 +1,4 @@
 /build
 /include/rocore/shaders
 /cmake-build-debug
+/.idea

@@ -1,18 +1,10 @@
-#version 120
+#version 150 core
 
-varying vec4 circleOrigin;
+out vec4 color;
 
-void main (void)
+in vec4 vo_Color;
+
+void main(void)
 {
-    vec4 loc = gl_FragCoord;
-
-    float radius=length(loc-circleOrigin);
-    if(radius < 100.0)
-    {
-        gl_FragColor = vec4(1,0,0,1);
-    }
-    else
-    {
-        discard;
-    }
+    color = vo_Color;
 }
