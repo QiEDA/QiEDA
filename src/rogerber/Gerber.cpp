@@ -455,8 +455,14 @@ void Gerber::parseFormatBlock(std::string& block)
             zo = GerberZeroOmission::Trailing;
             //trailing
             break;
+		case 'Z':
+			//Leading and Trailing zeros, thank you other CAD software!
+			//May as well catch it and barf
+			throw GerberException("Non-standard RS274 extension detected for trailing and leading zero coordinate format");
+			break;
         default:
             //invalid
+			throw GerberException("Unknown format zero omission setting");
             break;
     }
 
