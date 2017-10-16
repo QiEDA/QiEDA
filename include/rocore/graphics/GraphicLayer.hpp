@@ -34,6 +34,10 @@ namespace graphics {
         long vertexCount;
         Color fillColor;
         float lineWidth;
+        float outerRadius;
+        float innerRadius;
+        double centerX;
+        double centerY;
     };
 
 
@@ -55,10 +59,10 @@ namespace graphics {
             vertBuffer_.push_back(depth_);
         }
 
-        void AddOperation(GraphicPaintOperationType operation, int vertexCount, float lineWidth = 1)
+        void AddOperation(GraphicPaintOperationType operation, int vertexCount, float lineWidth = 1, float outerRadius = 0.0, float innerRadius = 0.0, double centerX = 0.0, double centerY = 0.0)
         {
             long offset = vertBuffer_.size() / 3;
-            paintOperations.push_back({operation, offset, vertexCount, color_, lineWidth});
+            paintOperations.push_back({operation, offset, vertexCount, color_, lineWidth,outerRadius, innerRadius, centerX, centerY});
         }
 
         void Unprepare() {

@@ -77,6 +77,11 @@ void GLWidget::initializeGL() {
     p5.y = Units::InchesToInternalUnits(0);
     GraphicCircle* gral4 = new GraphicCircle(p5,Units::MilsToInternalUnits(300));
 
+    Point p11;
+    p11.x = Units::InchesToInternalUnits(1);
+    p11.y = Units::InchesToInternalUnits(1);
+    GraphicCircle* gral111 = new GraphicCircle(p11,Units::MilsToInternalUnits(300));
+
     Point p6;
     p6.x = 20;
     p6.y = 2;
@@ -94,6 +99,7 @@ void GLWidget::initializeGL() {
     layer->AddItem(gral4);
     layer->AddItem(gral5);
     layer->AddItem(gral6);
+    layer->AddItem(gral111);
 
     layers_.push_back(layer);
 

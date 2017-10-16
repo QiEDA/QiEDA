@@ -15,7 +15,7 @@ void GraphicCircle::Draw(GraphicLayer* layer)
      * |           \ |
      * *-------------*
      */
-    layer->AddOperation(GraphicPaintOperationCircle, 6, 1);
+    layer->AddOperation(GraphicPaintOperationCircle, 6, 1, radius_,0, center_.x, center_.y);
     layer->AddVertex(center_.x - radius_, center_.y + radius_); //upper left corner
     layer->AddVertex(center_.x - radius_, center_.y - radius_); //bottom left corner
     layer->AddVertex(center_.x + radius_, center_.y - radius_); //bottom right corner

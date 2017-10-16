@@ -7,17 +7,6 @@ add_custom_target(
     shaders ALL
 )
 
-add_custom_command(
-    TARGET shaders
-    POST_BUILD
-	COMMAND ${CMAKE_COMMAND}
-        -DSOURCE_DIR="${PROJECT_SOURCE_DIR}/src/rocore/shaders/"
-		-DFILES="circle.vert;circle.frag"
-        -DDESTINATION_DIR="${PROJECT_SOURCE_DIR}/include/rocore/shaders/"
-		-P ${CMAKE_MODULE_PATH}/shaders.cmake
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-
-
 
 add_custom_command(
 		TARGET shaders

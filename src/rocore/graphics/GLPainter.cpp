@@ -8,8 +8,6 @@
 #include <gl/GL.h>
 #include "rocore/Units.hpp"
 #include "rocore/graphics/GLPainter.hpp"
-#include "rocore/shaders/circle_vert.h"
-#include "rocore/shaders/circle_frag.h"
 #include "rocore/shaders/shader_vert.h"
 #include "rocore/shaders/shader_frag.h"
 
@@ -25,19 +23,15 @@ GLPainter::GLPainter() {
         throw std::runtime_error( "glew failed to initialize!" );
     }
 
-    circleShader.Load(circle_vert_shader, circle_frag_shader);
-    circleShader.BindAttributeLocation("vi_VertexPos",0);
-    circleShader.RegisterUniform("projectionMatrix");
-    circleShader.RegisterUniform("viewMatrix");
-    circleShader.RegisterUniform("modelMatrix");
-	circleShader.RegisterUniform("vi_Color");
-
     generalShader.Load(shader_vert_shader, shader_frag_shader);
     generalShader.BindAttributeLocation("vi_VertexPos",0);
     generalShader.RegisterUniform("projectionMatrix");
     generalShader.RegisterUniform("viewMatrix");
     generalShader.RegisterUniform("modelMatrix");
     generalShader.RegisterUniform("vi_Color");
+	generalShader.RegisterUniform("un_OuterRadius");
+	generalShader.RegisterUniform("un_Options");
+	generalShader.RegisterUniform("un_Center");
 }
 
 GLPainter::~GLPainter()
@@ -72,15 +66,16 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
     auto paintOperations = layer->GetPaintOperations();
     for(auto cmd : paintOperations)
     {
-		if(cmd.type == GraphicPaintOperationLine || cmd.type == GraphicPaintOperationQuad ||  cmd.type == GraphicPaintOperationPoly || cmd.type == GraphicPaintOperationPoly)
-		{
-			glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
-		}
-
+		glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
 		if(cmd.type == GraphicPaintOperationCircle)
 		{
-			circleShader.Bind();
-			glUniform4f(circleShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
+			glUniform1f(generalShader.GetUniformLocation("un_OuterRadius"),Units::MilsToInternalUnits(250));
+			glUniform2f(generalShader.GetUniformLocation("un_Center"),cmd.centerX, cmd.centerY);
+			glUniform1i(generalShader.GetUniformLocation("un_Options"),(1 << 0));
+		}
+		else
+		{
+			glUniform1i(generalShader.GetUniformLocation("un_Options"),0);
 		}
 
         if(cmd.type == GraphicPaintOperationLine)
@@ -100,12 +95,6 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
 		{
 			glDrawArrays(GL_POLYGON, cmd.offset, cmd.vertexCount);
 		}
-
-
-		if(cmd.type == GraphicPaintOperationCircle)
-		{
-			generalShader.Bind();
-		}
     }
 
     layer->Unprepare();
@@ -121,11 +110,6 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
 
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom));
-
-	circleShader.Bind();
-	glUniformMatrix4fv(circleShader.GetUniformLocation("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
-	glUniformMatrix4fv(circleShader.GetUniformLocation("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
-	glUniformMatrix4fv(circleShader.GetUniformLocation("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
 
     generalShader.Bind();
     //push the transformation matrices into the general shader

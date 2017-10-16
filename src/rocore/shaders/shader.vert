@@ -8,9 +8,11 @@ uniform vec4 vi_Color;
 in vec3 vi_VertexPos;
 
 out vec4 vo_Color;
+out vec2 vo_Position;
 
 void main(void)
 {
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vi_VertexPos,1.0);
     vo_Color = vi_Color;
+    vo_Position = vi_VertexPos.xy;
 }
