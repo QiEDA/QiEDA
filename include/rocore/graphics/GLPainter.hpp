@@ -49,6 +49,7 @@ namespace graphics {
         glm::mat4 projectionMatrix; // Store the projection matrix
         glm::mat4 viewMatrix; // Store the view matrix
         glm::mat4 modelMatrix; // Store the model matrix
+        glm::mat4 modelViewProjectMatrix; // Store the model matrix
     };
 }
 }

@@ -28,6 +28,7 @@ GLPainter::GLPainter() {
     generalShader.RegisterUniform("projectionMatrix");
     generalShader.RegisterUniform("viewMatrix");
     generalShader.RegisterUniform("modelMatrix");
+	generalShader.RegisterUniform("mvpMatrix");
     generalShader.RegisterUniform("vi_Color");
 	generalShader.RegisterUniform("un_OuterRadius");
 	generalShader.RegisterUniform("un_Options");
@@ -110,9 +111,11 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
 
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom));
+	modelViewProjectMatrix =  projectionMatrix * viewMatrix * modelMatrix;
 
     generalShader.Bind();
     //push the transformation matrices into the general shader
+	glUniformMatrix4fv(generalShader.GetUniformLocation("mvpMatrix"), 1, GL_FALSE, &modelViewProjectMatrix[0][0]); // Send our projection matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader

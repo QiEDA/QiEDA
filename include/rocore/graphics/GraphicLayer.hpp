@@ -44,7 +44,10 @@ namespace graphics {
     class ROCORE_EXPORT GraphicLayer {
     public:
         GraphicLayer(const Color& color);
-        ~GraphicLayer();
+        virtual ~GraphicLayer()
+        {
+
+        }
 
         Color GetColor() const {
             return color_;

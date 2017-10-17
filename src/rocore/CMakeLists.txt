@@ -52,7 +52,8 @@ set(SRC
 		graphics/GLPainter.cpp
 		graphics/GLShader.cpp
 		graphics/GraphicLayer.cpp
-		graphics/GridLayer.cpp 
+		graphics/GridLayer.cpp
+		graphics/TestLayer.cpp
 		graphics/GraphicPoly.cpp
 		projects/Project.cpp
 		projects/Viewer.cpp
