@@ -1,23 +1,20 @@
-#ifndef __GRAPHIC_LINE_H
-#define __GRAPHIC_LINE_H
+#ifndef __GRAPHIC_RAWLINE_H
+#define __GRAPHIC_RAWLINE_H
 
 #include "rocore/graphics/Color.hpp"
 #include "rocore/graphics/GraphicItem.hpp"
 #include "rocore/rocore.hpp"
-#include <glm/glm.hpp>
 
 namespace rocore {
 namespace graphics {
 	
-class ROCORE_EXPORT GraphicLine : public GraphicItem {
+class ROCORE_EXPORT GraphicRawLine : public GraphicItem {
 protected:
 	Point start_;
 	Point end_;
 	double width_;
-
-	glm::highp_dvec2 getNormal() const;
 public:
-	GraphicLine(Point& start, Point& end, double width) : GraphicItem() {
+	GraphicRawLine(Point& start, Point& end, double width) : GraphicItem() {
 		start_ = start;
 		end_ = end;
 		width_ = width;

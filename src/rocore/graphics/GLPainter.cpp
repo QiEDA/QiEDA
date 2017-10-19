@@ -81,9 +81,13 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
 
         if(cmd.type == GraphicPaintOperationLine)
         {
-            glLineWidth(cmd.lineWidth);
-            glDrawArrays(GL_LINES, cmd.offset, cmd.vertexCount);
+			glLineWidth(1.0);
+            glDrawArrays(GL_TRIANGLE_STRIP, cmd.offset, cmd.vertexCount);
         }
+		if(cmd.type == GraphicPaintOperationRawLine)
+		{
+			glDrawArrays(GL_LINES, cmd.offset, cmd.vertexCount);
+		}
         else if(cmd.type == GraphicPaintOperationTriangles || cmd.type == GraphicPaintOperationCircle)
         {
             glDrawArrays(GL_TRIANGLES, cmd.offset, cmd.vertexCount);
@@ -107,6 +111,7 @@ void GLPainter::DrawLayer(GraphicLayer* layer) {
 void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glDrawBuffer(GL_BACK);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+	glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
@@ -126,7 +131,7 @@ void GLPainter::Resize(int w, int h)
 {
     glViewport(0,0,w,h);
 
-    projectionMatrix = glm::ortho(0.0f, (float)w, 0.0f, (float)h, -1.0f, 1.0f);
+    projectionMatrix = glm::ortho(0.0f, (float)w, 0.0f, (float)h, -100.0f, 100.0f);
 }
 
 

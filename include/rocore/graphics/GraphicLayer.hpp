@@ -24,6 +24,7 @@ namespace graphics {
 		GraphicPaintOperationPoly,
         GraphicPaintOperationQuad,
         GraphicPaintOperationLine,
+        GraphicPaintOperationRawLine,
         GraphicPaintOperationTriangles,
 		GraphicPaintOperationCircle
     };

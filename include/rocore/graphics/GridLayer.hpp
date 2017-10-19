@@ -12,9 +12,9 @@ namespace rocore {
 namespace graphics {
     class ROCORE_EXPORT GridLayer : public GraphicLayer {
     public:
-        GridLayer() : GraphicLayer(Colors::DarkGray) {
-        };
-        virtual bool Prepare(GLPainter* painter) override;
+        GridLayer();
+    protected:
+        void updateGrid();
     };
 }
 }

@@ -47,6 +47,7 @@ set(SRC
 		graphics/GraphicArc.cpp
 		graphics/GraphicCircle.cpp
 		graphics/GraphicLine.cpp
+		graphics/GraphicRawLine.cpp
 		graphics/GraphicRectangle.cpp
 		graphics/GraphicText.cpp
 		graphics/GLPainter.cpp

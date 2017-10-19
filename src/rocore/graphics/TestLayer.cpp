@@ -33,8 +33,14 @@ TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 	p2.x = 0;
 	p2.y = Units::InchesToInternalUnits(8);
 
-	GraphicLine* gral = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
+	GraphicLine* lineTest1 = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
 
+	p1.x = 0;
+	p1.y = 0;
+	p2.x = Units::InchesToInternalUnits(8);
+	p2.y = Units::InchesToInternalUnits(8);
+
+	GraphicLine* lineTest2 = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
 
 	Point p5;
 	p5.x = Units::InchesToInternalUnits(0);
@@ -56,7 +62,8 @@ TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 	p7.y = 10;
 	GraphicText* gral6 = new GraphicText(p7,"TESTING",12);
 
-	AddItem(gral);
+	AddItem(lineTest1);
+	AddItem(lineTest2);
 	AddItem(gral4);
 	AddItem(gral111);
 	AddItem(gral5);
