@@ -14,6 +14,7 @@ using namespace rocore::graphics;
 
 TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 
+	depth_ = -5.0;
 /*
     Point p3;
     p3.x = 0;
@@ -66,6 +67,4 @@ TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 	AddItem(lineTest2);
 	AddItem(gral4);
 	AddItem(gral111);
-	AddItem(gral5);
-	AddItem(gral6);
 }

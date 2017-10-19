@@ -115,7 +115,7 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glDisable(GL_DEPTH_TEST);
 
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
-    modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom));
+    modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom, zoom, 0.0f));
 	modelViewProjectMatrix =  projectionMatrix * viewMatrix * modelMatrix;
 
     generalShader.Bind();
