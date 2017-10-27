@@ -26,6 +26,9 @@ public:
 	}
 
 	virtual BoundingBox GetBoundingBox() = 0;
+	virtual bool ContainsPoint(Point &p) {
+		return false;
+	}
 protected:
 };
 

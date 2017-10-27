@@ -28,6 +28,7 @@ set(INC
         ${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerView.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItem.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItemModel.hpp
+		${PROJECT_SOURCE_DIR}/include/rocore/ui/InputWithUnits.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/projects/Project.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/projects/ProjectViewItemModel.hpp
 	)
@@ -43,6 +44,7 @@ set(SRC
 		ui/LayerView.cpp
 		ui/LayerViewItem.cpp
 		ui/LayerViewItemModel.cpp
+		ui/InputWithUnits.cpp
 		graphics/Color.cpp
 		graphics/GraphicArc.cpp
 		graphics/GraphicCircle.cpp
