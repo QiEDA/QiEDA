@@ -2,12 +2,9 @@
 
 using namespace rocore::graphics;
 
-void GraphicRawLine::Draw(GraphicLayer* layer)
-{
-    layer->AddOperation(GraphicPaintOperationRawLine, 2, width_);
-    layer->AddVertex(start_.x,start_.y);
-    layer->AddVertex(end_.x, end_.y);
-}
+    //layer->AddOperation(GraphicPaintOperationRawLine, 2, width_);
+   // layer->AddVertex(start_.x,start_.y);
+    //layer->AddVertex(end_.x, end_.y);
 
 BoundingBox GraphicRawLine::GetBoundingBox()
 {

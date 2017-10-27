@@ -46,14 +46,14 @@ void GLWidget::initializeGL() {
     qDebug() << "                    VERSION:      " << (const char*)glGetString(GL_VERSION);
     qDebug() << "                    GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-    auto test = new GridLayer();
+    document_ = new GraphicDocument();
 
     painter_ = new GLPainter();
 
     auto testLayer = new TestLayer();
+    document_->AddLayer(testLayer);
 
-    painter_->RegisterGraphicLayer(testLayer);
-    painter_->RegisterGraphicLayer(test);
+    painter_->SetDocument(document_);
 
     update_timer_.start(1000 / 60.0);
 }

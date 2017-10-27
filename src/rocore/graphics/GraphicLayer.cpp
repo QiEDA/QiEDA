@@ -21,7 +21,6 @@ bool GraphicLayer::Prepare(GLPainter* painter)
     if(dirty_)
     {
         for (auto it = items_.begin(); it != items_.end(); ++it) {
-            (*it)->Draw(this);
         }
 
         dirty_ = false;

@@ -38,7 +38,7 @@ public:
 		return width_;
 	}
 
-	void Draw(GraphicLayer* layer) override;
+	void Draw(GraphicPainter* painter) override;
 
 	BoundingBox GetBoundingBox() override;
 };

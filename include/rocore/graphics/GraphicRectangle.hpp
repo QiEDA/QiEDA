@@ -36,7 +36,6 @@ public:
 		return height_;
 	}
 
-	void Draw(GraphicLayer* layer) override;
 	BoundingBox GetBoundingBox() override;
 };
 

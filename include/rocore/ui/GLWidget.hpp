@@ -23,8 +23,8 @@ public:
     ~GLWidget();
 	void AddLayer(rocore::graphics::GraphicLayer * layer)
 	{
-		layers_.push_back(layer);
-		painter_->RegisterGraphicLayer(layer);
+		//layers_.push_back(layer);
+		//painter_->RegisterGraphicLayer(layer);
 	}
 
 protected:
@@ -39,8 +39,7 @@ protected:
     void drawGrid();
     QPoint mouseMoveStartPos_;
     graphics::GLPainter* painter_;
-
-    std::list<rocore::graphics::GraphicLayer *> layers_;
+	graphics::GraphicDocument* document_;
 
     float panX_;
     float panY_;

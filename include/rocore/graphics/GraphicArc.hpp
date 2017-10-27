@@ -12,14 +12,14 @@ class ROCORE_EXPORT GraphicArc : public GraphicItem {
 protected:
 	Point center_;
 	float radius_;
-    float angle0_;
-    float angle1_;
+    float angleStart_;
+    float angleEnd_;
 public:
-	GraphicArc(Point& center, float radius, float angle0, float angle1) : GraphicItem() {
+	GraphicArc(Point& center, float radius, float angleStart, float angleEnd) : GraphicItem() {
 		center_ = center;
 		radius_ = radius;
-        angle0_ = angle0;
-        angle1_ = angle1;
+		angleStart_ = angleStart;
+		angleEnd_ = angleEnd;
 	}
 
 	const Point& GetCenter()
@@ -32,8 +32,6 @@ public:
 		return radius_;
 	}
 
-
-	void Draw(GraphicLayer* layer) override;
 	BoundingBox GetBoundingBox() override;
 };
 

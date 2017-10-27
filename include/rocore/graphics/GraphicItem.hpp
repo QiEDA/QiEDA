@@ -11,6 +11,7 @@ namespace rocore {
 namespace graphics {
 
 class GLPainter;
+class GraphicPainter;
 class GraphicLayer;
 
 class ROCORE_EXPORT GraphicItem {
@@ -20,7 +21,9 @@ public:
 
 	virtual ~GraphicItem() {}
 
-	virtual void Draw(GraphicLayer* layer)  = 0;
+	virtual void Draw(GraphicPainter* painter) {
+
+	}
 
 	virtual BoundingBox GetBoundingBox() = 0;
 protected:

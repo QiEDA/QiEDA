@@ -2,11 +2,6 @@
 
 using namespace rocore::graphics;
 
-void GraphicArc::Draw(GraphicLayer* layer)
-{
-}
-
-
 BoundingBox GraphicArc::GetBoundingBox()
 {
     Point corner(radius_, radius_);

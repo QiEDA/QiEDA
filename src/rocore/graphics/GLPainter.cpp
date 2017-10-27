@@ -14,7 +14,7 @@
 using namespace rocore::graphics;
 
 
-GLPainter::GLPainter() {
+GLPainter::GLPainter() : GraphicPainter() {
     glClearColor(0,0,0,1);
 
     GLenum err = glewInit();
@@ -24,87 +24,159 @@ GLPainter::GLPainter() {
     }
 
     generalShader.Load(shader_vert_shader, shader_frag_shader);
-    generalShader.BindAttributeLocation("vi_VertexPos",0);
+    generalShader.RegisterAttribute("vi_VertexPos");
+	generalShader.RegisterAttribute("vi_Params");
+	generalShader.RegisterAttribute("vi_Flags");
     generalShader.RegisterUniform("projectionMatrix");
     generalShader.RegisterUniform("viewMatrix");
     generalShader.RegisterUniform("modelMatrix");
 	generalShader.RegisterUniform("mvpMatrix");
     generalShader.RegisterUniform("vi_Color");
-	generalShader.RegisterUniform("un_OuterRadius");
-	generalShader.RegisterUniform("un_Options");
-	generalShader.RegisterUniform("un_Center");
 }
 
 GLPainter::~GLPainter()
 {
-    for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
-        UnregisterGraphicLayer(it->first);
+    for (auto it = installedLayers_.begin(); it != installedLayers_.end(); ++it) {
+        uninstallGraphicLayer(it->first);
     }
 }
 
+void GLPainter::DrawLine(Point& start, Point& end, double width) {
+
+	// Get the normal of the line
+	double dx = end.x - start.x;
+	double dy = end.y - start.y;
+
+	auto normal = glm::normalize(glm::highp_dvec2(-dy, dx));
+
+	//use the normal to calculate the locations of the vertices of the line being drawn as a narrow rectangle
+	//setup for triangle fan
+	auto pointA = glm::highp_dvec2(start.x,start.y) - (normal * width);
+	auto pointB = glm::highp_dvec2(start.x,start.y) + (normal * width);
+	auto pointC = glm::highp_dvec2(end.x,end.y) - (normal * width);
+	auto pointD = glm::highp_dvec2(end.x,end.y) + (normal * width);
+	/*
+	 * Split into two triangles
+	 * start
+	 * A-------------B
+	 * | \           |
+	 * |   \         |
+	 * |     \       |
+	 * |       \     |
+	 * |         \   |
+	 * |           \ |
+	 * C-------------D
+	 * end
+	 */
+
+	buildBuffer_->SetFlags(GLLayerBuildBuffer::Line);
+	buildBuffer_->SetParams(width);
+	buildBuffer_->AddVertex(pointA.x, pointA.y);
+	buildBuffer_->AddVertex(pointB.x, pointB.y);
+	buildBuffer_->AddVertex(pointD.x, pointD.y);
+	buildBuffer_->AddVertex(pointC.x, pointC.y);
+	buildBuffer_->AddVertex(pointD.x, pointD.y);
+	buildBuffer_->AddVertex(pointA.x, pointA.y);
+}
+
+void GLPainter::DrawCircle(Point& center, double radius) {
+	/*
+	 * Split into two triangles
+	 * *-------------*
+	 * | \           |
+	 * |   \         |
+	 * |     \       |
+	 * |       \     |
+	 * |         \   |
+	 * |           \ |
+	 * *-------------*
+	 */
+
+	buildBuffer_->SetFlags(GLLayerBuildBuffer::FilledCircle);
+	buildBuffer_->SetParams(center.x, center.y, radius);	//centerx, centery, outer radius, inner radius?
+
+	buildBuffer_->AddVertex(center.x - radius, center.y + radius); //upper left corner
+	buildBuffer_->AddVertex(center.x - radius, center.y - radius); //bottom left corner
+	buildBuffer_->AddVertex(center.x + radius, center.y - radius); //bottom right corner
+	buildBuffer_->AddVertex(center.x + radius, center.y - radius); //bottom right corner
+	buildBuffer_->AddVertex(center.x + radius, center.y + radius); //upper right corner
+	buildBuffer_->AddVertex(center.x - radius, center.y + radius); //upper left corner
+}
+
 void GLPainter::Draw() {
-    for (auto it = registeredLayers_.begin(); it != registeredLayers_.end(); ++it) {
-        DrawLayer(it->first);
+	//dont crash
+	if(document_ == nullptr) {
+		return;
+	}
+
+	auto layers = document_->GetLayers();
+    for (auto layer : layers) {
+        DrawLayer(layer);
     }
+}
+
+
+void GLPainter::drawItems(GraphicLayer* layer, GLInstalledLayer* meta) {
+	auto items = layer->GetItems();
+
+	for (auto item : items) {
+		item->Draw(this);
+	}
+
+	auto verts = buildBuffer_->GetVerts();
+	glBindBuffer(GL_ARRAY_BUFFER, meta->bufferName);
+	glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLdouble), verts.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(generalShader.GetAttribLocation("vi_VertexPos"), 3, GL_DOUBLE, GL_FALSE, 0, 0);
+
+	auto params = buildBuffer_->GetParams();
+	glBindBuffer(GL_ARRAY_BUFFER, meta->paramsBufferName);
+	glBufferData(GL_ARRAY_BUFFER, params.size()*sizeof(GLdouble), params.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(generalShader.GetAttribLocation("vi_Params"), 4, GL_DOUBLE, GL_FALSE, 0, 0);
+
+	auto flags = buildBuffer_->GetFlags();
+	glBindBuffer(GL_ARRAY_BUFFER, meta->flagsBufferName);
+	glBufferData(GL_ARRAY_BUFFER, flags.size()*sizeof(GL_INT), flags.data(), GL_STATIC_DRAW);
+	glVertexAttribIPointer(generalShader.GetAttribLocation("vi_Flags"), 1, GL_INT, 0, 0);
+
+
+	glEnableVertexAttribArray(generalShader.GetAttribLocation("vi_VertexPos"));
+	glEnableVertexAttribArray(generalShader.GetAttribLocation("vi_Params"));
+	glEnableVertexAttribArray(generalShader.GetAttribLocation("vi_Flags"));
+
+	meta->vertexCount = verts.size();
 }
 
 void GLPainter::DrawLayer(GraphicLayer* layer) {
 
-    GLLayerMeta* meta = &registeredLayers_[layer];
+	//layer isn't cached yet?
+	if(installedLayers_.find(layer) == installedLayers_.end()) {
+		installGraphicLayer(layer);
+	}
+	GLInstalledLayer* meta = &installedLayers_[layer];
 
-    glBindVertexArray(meta->arrayName);
-    glBindBuffer(GL_ARRAY_BUFFER, meta->bufferName);
+	glBindVertexArray(meta->arrayName);
 
-    if(layer->Prepare(this))
+    if(layer->IsDirty())
     {
-        auto verts = layer->GetVertices();
-        glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLdouble), &verts[0], GL_STREAM_DRAW);
-        glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 0, 0);;
+		buildBuffer_.reset(new GLLayerBuildBuffer(layer->GetDepth(), layer->GetColor()));
+		drawItems(layer, meta);
+		layer->ResetDirty();
+		buildBuffer_.release();
     }
 
-    glEnableVertexAttribArray(0);
-
-    auto paintOperations = layer->GetPaintOperations();
-    for(auto cmd : paintOperations)
-    {
-		glUniform4f(generalShader.GetUniformLocation("vi_Color"), cmd.fillColor.redf(), cmd.fillColor.greenf(), cmd.fillColor.bluef(), cmd.fillColor.alphaf());
-		if(cmd.type == GraphicPaintOperationCircle)
-		{
-			glUniform1f(generalShader.GetUniformLocation("un_OuterRadius"),Units::MilsToInternalUnits(250));
-			glUniform2f(generalShader.GetUniformLocation("un_Center"),cmd.centerX, cmd.centerY);
-			glUniform1i(generalShader.GetUniformLocation("un_Options"),(1 << 0));
-		}
-		else
-		{
-			glUniform1i(generalShader.GetUniformLocation("un_Options"),0);
-		}
-
-        if(cmd.type == GraphicPaintOperationLine)
-        {
-			glLineWidth(1.0);
-            glDrawArrays(GL_TRIANGLE_STRIP, cmd.offset, cmd.vertexCount);
-        }
+	auto color = layer->GetColor();
+	glUniform4f(generalShader.GetUniformLocation("vi_Color"), color.redf(), color.greenf(), color.bluef(), color.alphaf());
+	glDrawArrays(GL_TRIANGLES, 0, meta->vertexCount);
+	/*
 		if(cmd.type == GraphicPaintOperationRawLine)
 		{
+			glLineWidth(1.0);
 			glDrawArrays(GL_LINES, cmd.offset, cmd.vertexCount);
 		}
-        else if(cmd.type == GraphicPaintOperationTriangles || cmd.type == GraphicPaintOperationCircle)
-        {
-            glDrawArrays(GL_TRIANGLES, cmd.offset, cmd.vertexCount);
-        }
-        else if(cmd.type == GraphicPaintOperationQuad)
-        {
-            glDrawArrays(GL_QUADS, cmd.offset, cmd.vertexCount);
-        }
-		else if(cmd.type == GraphicPaintOperationPoly)
-		{
-			glDrawArrays(GL_POLYGON, cmd.offset, cmd.vertexCount);
-		}
     }
-
+*/
     layer->Unprepare();
 
-    glDisableVertexAttribArray(0);
     glBindVertexArray(0);
 }
 
@@ -119,7 +191,7 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
 	modelViewProjectMatrix =  projectionMatrix * viewMatrix * modelMatrix;
 
     generalShader.Bind();
-    //push the transformation matrices into the general shader
+
 	glUniformMatrix4fv(generalShader.GetUniformLocation("mvpMatrix"), 1, GL_FALSE, &modelViewProjectMatrix[0][0]); // Send our projection matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
     glUniformMatrix4fv(generalShader.GetUniformLocation("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
@@ -135,22 +207,24 @@ void GLPainter::Resize(int w, int h)
 }
 
 
-void GLPainter::RegisterGraphicLayer(GraphicLayer* layer)
+void GLPainter::installGraphicLayer(GraphicLayer* layer)
 {
-    auto l = registeredLayers_.find(layer);
+    auto l = installedLayers_.find(layer);
 
-    if(l == registeredLayers_.end()) {
-        GLLayerMeta meta;
+    if(l == installedLayers_.end()) {
+		GLInstalledLayer meta;
         glGenVertexArrays(1, &meta.arrayName);
         glGenBuffers(1, &meta.bufferName);
+		glGenBuffers(1, &meta.paramsBufferName);
+		glGenBuffers(1, &meta.flagsBufferName);
 
-        registeredLayers_[layer] = meta;
+		installedLayers_[layer] = meta;
     }
 }
 
-void GLPainter::UnregisterGraphicLayer(GraphicLayer* layer)
+void GLPainter::uninstallGraphicLayer(GraphicLayer* layer)
 {
-    GLLayerMeta* meta = &registeredLayers_[layer];
+	GLInstalledLayer* meta = &installedLayers_[layer];
     if(meta->bufferName != 0)
     {
         glDeleteBuffers(1, &meta->bufferName);
@@ -161,7 +235,7 @@ void GLPainter::UnregisterGraphicLayer(GraphicLayer* layer)
         glDeleteVertexArrays(1, &meta->arrayName);
     }
 
-    registeredLayers_.erase(layer);
+	installedLayers_.erase(layer);
 }
 
 

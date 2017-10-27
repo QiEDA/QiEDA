@@ -1,18 +1,14 @@
 #version 150 core
 
-#define OPTIONS_TYPE_FILLED_CIRCLE (1 << 0)
-#define OPTIONS_TYPE_HOLLOW_CIRCLE (1 << 1)
-
-uniform float un_OuterRadius;
-uniform float un_InnerRadius;
-uniform vec2 un_Center;
-uniform int un_Options;
-
-
+#define FLAGS_TYPE_FILLED_CIRCLE (1 << 0)
+#define FLAGS_TYPE_HOLLOW_CIRCLE (1 << 1)
 out vec4 color;
 
 in vec4 vo_Color;
 in vec2 vo_Position;
+
+flat in vec4 vo_Params;
+flat in int vo_Flags;
 
 float distanceSquared(vec2 position, vec2 center)
 {
@@ -31,18 +27,23 @@ void main(void)
 {
     color = vo_Color;
 
-    if((un_Options & OPTIONS_TYPE_FILLED_CIRCLE) == OPTIONS_TYPE_FILLED_CIRCLE)
+    if((vo_Flags & FLAGS_TYPE_FILLED_CIRCLE) == FLAGS_TYPE_FILLED_CIRCLE)
     {
-        if(distanceSquared(vo_Position, un_Center) > pow(un_OuterRadius,2))
+        vec2 center = vec2(vo_Params[0], vo_Params[1]);
+        float outerRadius = vo_Params[2];
+        if(distanceSquared(vo_Position, center) > pow(outerRadius,2))
         {
             discard;
         }
     }
-    else if((un_Options & OPTIONS_TYPE_HOLLOW_CIRCLE) == OPTIONS_TYPE_HOLLOW_CIRCLE)
+    else if((vo_Flags & FLAGS_TYPE_HOLLOW_CIRCLE) == FLAGS_TYPE_HOLLOW_CIRCLE)
     {
-        float sqrdDistance = distanceSquared(vo_Position, un_Center);
-        if(sqrdDistance > pow(un_OuterRadius,2) ||
-            sqrdDistance < pow(un_InnerRadius,2) )
+        vec2 center = vec2(vo_Params[0], vo_Params[1]);
+        float outerRadius = vo_Params[2];
+        float innerRadius = vo_Params[3];
+        float sqrdDistance = distanceSquared(vo_Position, center);
+        if(sqrdDistance > pow(outerRadius,2) ||
+            sqrdDistance < pow(innerRadius,2) )
         {
             discard;
         }

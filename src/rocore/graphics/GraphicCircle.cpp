@@ -2,28 +2,10 @@
 
 using namespace rocore::graphics;
 
-void GraphicCircle::Draw(GraphicLayer* layer)
+
+void GraphicCircle::Draw(GraphicPainter* painter)
 {
-    /*
-     * Split into two triangles
-     * *-------------*
-     * | \           |
-     * |   \         |
-     * |     \       |
-     * |       \     |
-     * |         \   |
-     * |           \ |
-     * *-------------*
-     */
-    layer->AddOperation(GraphicPaintOperationCircle, 6, 1, radius_,0, center_.x, center_.y);
-    layer->AddVertex(center_.x - radius_, center_.y + radius_); //upper left corner
-    layer->AddVertex(center_.x - radius_, center_.y - radius_); //bottom left corner
-    layer->AddVertex(center_.x + radius_, center_.y - radius_); //bottom right corner
-
-    layer->AddVertex(center_.x + radius_, center_.y - radius_); //bottom right corner
-    layer->AddVertex(center_.x + radius_, center_.y + radius_); //upper right corner
-    layer->AddVertex(center_.x - radius_, center_.y + radius_); //upper left corner
-
+    painter->DrawCircle(center_, radius_);
 }
 
 BoundingBox GraphicCircle::GetBoundingBox()

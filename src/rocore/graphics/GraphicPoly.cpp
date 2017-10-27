@@ -7,14 +7,6 @@
 
 using namespace rocore::graphics;
 
-void GraphicPoly::Draw(GraphicLayer* layer)
-{
-	layer->AddOperation(GraphicPaintOperationPoly, points_.size(), 1);
-	for (auto it=points_.begin(); it != points_.end(); ++it)
-	{
-		layer->AddVertex((*it).x,(*it).y);
-	}
-}
 
 BoundingBox GraphicPoly::GetBoundingBox()
 {
