@@ -199,7 +199,13 @@ void GLPainter::PrepareDraw(float panX, float panY, float zoom) {
     glDrawBuffer(GL_BACK);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 	glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
+
+	glEnable( GL_DEPTH_TEST );
+	glDepthFunc( GL_LEQUAL );
+
+	glEnable( GL_BLEND );
+	//Per Khronos notes: Transparency is best implemented using blend function (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) with primitives sorted from farthest to nearest.
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(panX, panY, 0.0f));
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoom, zoom, 0.0f));

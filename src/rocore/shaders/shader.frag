@@ -73,6 +73,7 @@ void main(void)
                                cartesianX > 0.0 ? vo_Position.x * cartesianX : 0.5,
                                cartesianY > 0.0 ? vo_Position.y * cartesianY : 0.5
                              ), 1.0);
-        color = vec4(mix(vec3(vo_Color.xyz), vec3(0), g), 1);
+
+        color = vec4(mix(vec3(vo_Color.xyz), vec3(0), g), vo_Color.a);
     }
 }
