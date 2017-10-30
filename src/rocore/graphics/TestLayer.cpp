@@ -32,26 +32,26 @@ TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 	p1.y = 0;
 	Point p2;
 	p2.x = 0;
-	p2.y = Units::InchesToInternalUnits(8);
+	p2.y = Units::InchesToInternalUnits(2);
 
 	GraphicLine* lineTest1 = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
 
 	p1.x = 0;
 	p1.y = 0;
-	p2.x = Units::InchesToInternalUnits(8);
-	p2.y = Units::InchesToInternalUnits(8);
+	p2.x = Units::InchesToInternalUnits(2);
+	p2.y = Units::InchesToInternalUnits(2);
 
 	GraphicLine* lineTest2 = new GraphicLine(p1,p2, Units::MilsToInternalUnits(40));
 
 	Point p5;
 	p5.x = Units::InchesToInternalUnits(0);
 	p5.y = Units::InchesToInternalUnits(0);
-	GraphicCircle* circleTest1 = new GraphicCircle(p5,Units::MilsToInternalUnits(300));
+	GraphicCircle* circleTest1 = new GraphicCircle(p5,Units::MilsToInternalUnits(100));
 
 	Point p11;
 	p11.x = Units::InchesToInternalUnits(1);
 	p11.y = Units::InchesToInternalUnits(1);
-	GraphicCircle* circleTest2 = new GraphicCircle(p11,Units::MilsToInternalUnits(300));
+	GraphicCircle* circleTest2 = new GraphicCircle(p11,Units::MilsToInternalUnits(100));
 
 	Point p6;
 	p6.x = 20;

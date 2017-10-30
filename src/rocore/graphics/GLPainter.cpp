@@ -47,6 +47,8 @@ void GLPainter::DrawLine(Point& start, Point& end, double width) {
 	double dx = end.x - start.x;
 	double dy = end.y - start.y;
 
+	width /= 2;
+
 	auto normal = glm::normalize(glm::highp_dvec2(-dy, dx));
 
 	//use the normal to calculate the locations of the vertices of the line being drawn as a narrow rectangle
@@ -101,6 +103,19 @@ void GLPainter::DrawCircle(Point& center, double radius) {
 	buildBuffer_->AddVertex(center.x + radius, center.y - radius); //bottom right corner
 	buildBuffer_->AddVertex(center.x + radius, center.y + radius); //upper right corner
 	buildBuffer_->AddVertex(center.x - radius, center.y + radius); //upper left corner
+}
+
+void GLPainter::DrawCartesianGrid(double minX, double maxX, double minY, double maxY, double xInterval, double yInterval)
+{
+	buildBuffer_->SetFlags(GLLayerBuildBuffer::CartesianGrid);
+	buildBuffer_->SetParams(xInterval, yInterval);
+	buildBuffer_->AddVertex(minX, minY);
+	buildBuffer_->AddVertex(minX, maxY);
+	buildBuffer_->AddVertex(maxX, minY);
+
+	buildBuffer_->AddVertex(maxX, minY);
+	buildBuffer_->AddVertex(minX, maxY);
+	buildBuffer_->AddVertex(maxX, maxY);
 }
 
 void GLPainter::Draw() {

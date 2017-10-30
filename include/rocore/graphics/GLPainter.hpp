@@ -41,6 +41,7 @@ namespace graphics {
         const static GLint FilledCircle = (1 << 0);
         const static GLint HollowCircle = (1 << 1);
         const static GLint Line = (1 << 2);
+        const static GLint CartesianGrid = (1 << 4);
 
         GLLayerBuildBuffer(double depth, Color color) : depth_(depth), color_(color){
         }
@@ -118,6 +119,7 @@ namespace graphics {
         glm::vec3 ScreenToWorldCoordinates(const glm::ivec2 &mouse, float z);
         void DrawLine(Point& start, Point& end, double width) override;
         void DrawCircle(Point& center, double radius) override;
+        void DrawCartesianGrid(double minX, double maxX, double minY, double maxY, double xInterval, double yInterval) override;
 
     protected:
         void drawItems(GraphicLayer* layer, GLInstalledLayer* meta);

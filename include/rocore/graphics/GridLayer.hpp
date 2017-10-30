@@ -13,8 +13,6 @@ namespace graphics {
     class ROCORE_EXPORT GridLayer : public GraphicLayer {
     public:
         GridLayer();
-    protected:
-        void updateGrid();
     };
 }
 }

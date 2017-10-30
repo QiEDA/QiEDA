@@ -50,6 +50,7 @@ set(SRC
 		graphics/GraphicCircle.cpp
 		graphics/GraphicLine.cpp
 		graphics/GraphicRawLine.cpp
+		graphics/GraphicGrid.cpp
 		graphics/GraphicDocument.cpp
 		graphics/GraphicRectangle.cpp
 		graphics/GraphicText.cpp

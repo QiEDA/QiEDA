@@ -2,6 +2,9 @@
 
 #define FLAGS_TYPE_FILLED_CIRCLE (1 << 0)
 #define FLAGS_TYPE_HOLLOW_CIRCLE (1 << 1)
+#define FLAGS_TYPE_GRID (1 << 4)
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
 out vec4 color;
 
 in vec4 vo_Color;
@@ -22,6 +25,19 @@ float distanceSquared(vec2 position, vec2 center)
 
     return tmpX + tmpY;
 }
+
+/*
+ * Borrowed function from https://github.com/rreusser/glsl-solid-wireframe
+ * © Ricky Reusser 2016. MIT License.
+ */
+float gridFactor(vec2 parameter, float width) {
+    vec2 d = fwidth(parameter);
+    vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);
+    vec2 a2 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);
+
+    return min(a2.x, a2.y);
+}
+
 
 void main(void)
 {
@@ -47,5 +63,16 @@ void main(void)
         {
             discard;
         }
+    }
+    else if((vo_Flags & FLAGS_TYPE_GRID) == FLAGS_TYPE_GRID)
+    {
+        float cartesianX = 1/vo_Params[0];
+        float cartesianY = 1/vo_Params[1];
+
+        float g = gridFactor(vec2(
+                               cartesianX > 0.0 ? vo_Position.x * cartesianX : 0.5,
+                               cartesianY > 0.0 ? vo_Position.y * cartesianY : 0.5
+                             ), 1.0);
+        color = vec4(mix(vec3(vo_Color.xyz), vec3(0), g), 1);
     }
 }
