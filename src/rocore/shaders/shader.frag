@@ -2,7 +2,10 @@
 
 #define FLAGS_TYPE_FILLED_CIRCLE (1 << 0)
 #define FLAGS_TYPE_HOLLOW_CIRCLE (1 << 1)
-#define FLAGS_TYPE_GRID (1 << 4)
+#define FLAGS_TYPE_LINE          (1 << 2)
+#define FLAGS_TYPE_FILLED_ARC    (1 << 3)
+#define FLAGS_TYPE_LINE_ARC      (1 << 4)
+#define FLAGS_TYPE_GRID (1 << 10)
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 out vec4 color;
@@ -52,7 +55,8 @@ void main(void)
             discard;
         }
     }
-    else if((vo_Flags & FLAGS_TYPE_HOLLOW_CIRCLE) == FLAGS_TYPE_HOLLOW_CIRCLE)
+    else if((vo_Flags & FLAGS_TYPE_HOLLOW_CIRCLE) == FLAGS_TYPE_HOLLOW_CIRCLE ||
+        (vo_Flags & FLAGS_TYPE_LINE_ARC) == FLAGS_TYPE_LINE_ARC)
     {
         vec2 center = vec2(vo_Params[0], vo_Params[1]);
         float outerRadius = vo_Params[2];

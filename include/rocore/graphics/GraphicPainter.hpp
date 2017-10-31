@@ -21,8 +21,9 @@ namespace graphics {
 
 	public:
 		virtual void DrawLine(Point& start, Point& end, double width) = 0;
-		virtual void DrawCircle(Point& center, double radius) = 0;
+		virtual void DrawCircle(Point& center, double radius, bool filled = false) = 0;
 		virtual void DrawCartesianGrid(double minX, double maxX, double minY, double maxY, double xInterval, double yInterval) = 0;
+		virtual void DrawArc(Point& center, double radius, double startAngle, double endAngle, double lineWidth, bool filled = false) = 0;
 	};
 }
 }

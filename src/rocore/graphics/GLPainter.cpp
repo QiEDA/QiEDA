@@ -42,7 +42,6 @@ GLPainter::~GLPainter()
 }
 
 void GLPainter::DrawLine(Point& start, Point& end, double width) {
-
 	// Get the normal of the line
 	double dx = end.x - start.x;
 	double dy = end.y - start.y;
@@ -61,12 +60,12 @@ void GLPainter::DrawLine(Point& start, Point& end, double width) {
 	 * Split into two triangles
 	 * start
 	 * A-------------B
-	 * | \           |
-	 * |   \         |
-	 * |     \       |
-	 * |       \     |
-	 * |         \   |
-	 * |           \ |
+	 * |          /  |
+	 * |        /    |
+	 * |      /      |
+	 * |    /        |
+	 * |  /          |
+	 * |/            |
 	 * C-------------D
 	 * end
 	 */
@@ -75,13 +74,14 @@ void GLPainter::DrawLine(Point& start, Point& end, double width) {
 	buildBuffer_->SetParams(width);
 	buildBuffer_->AddVertex(pointA.x, pointA.y);
 	buildBuffer_->AddVertex(pointB.x, pointB.y);
-	buildBuffer_->AddVertex(pointD.x, pointD.y);
+	buildBuffer_->AddVertex(pointC.x, pointC.y);
+
 	buildBuffer_->AddVertex(pointC.x, pointC.y);
 	buildBuffer_->AddVertex(pointD.x, pointD.y);
-	buildBuffer_->AddVertex(pointA.x, pointA.y);
+	buildBuffer_->AddVertex(pointB.x, pointB.y);
 }
 
-void GLPainter::DrawCircle(Point& center, double radius) {
+void GLPainter::DrawCircle(Point& center, double radius, bool filled) {
 	/*
 	 * Split into two triangles
 	 * *-------------*
@@ -116,6 +116,73 @@ void GLPainter::DrawCartesianGrid(double minX, double maxX, double minY, double 
 	buildBuffer_->AddVertex(maxX, minY);
 	buildBuffer_->AddVertex(minX, maxY);
 	buildBuffer_->AddVertex(maxX, maxY);
+}
+
+void GLPainter::DrawArc(Point& center, double radius, double startAngle, double endAngle, double lineWidth, bool filled)
+{
+	//make sure angles are positive
+	while (startAngle < 0) {
+		startAngle += M_PI;
+	}
+
+	while (endAngle < 0) {
+		endAngle += M_PI;
+	}
+
+	startAngle = fmod(startAngle,M_PI);
+	endAngle = fmod(endAngle,M_PI);
+
+	if (endAngle == startAngle) {
+		endAngle += M_PI;
+	}
+
+	double increment = (endAngle-startAngle)/100;
+
+	double theta;
+	/*
+	if(filled) {
+		Point p1;
+		p1.x = (radius * cos(startAngle)) + center.x;
+		p1.y = (radius * sin(startAngle)) + center.y;
+
+		for (theta = startAngle + increment; theta <= endAngle; theta += increment) {
+			Point p2;
+
+			p2.x = (radius * cos(theta)) + center.x;
+			p2.y = (radius * sin(theta)) + center.y;
+
+			DrawLine(p1, p2, lineWidth);
+
+			p1 = p2;
+		}
+
+		if(theta != endAngle) {
+			Point p2;
+
+			p2.x = (radius * cos(endAngle)) + center.x;
+			p2.y = (radius * sin(endAngle)) + center.y;
+
+			DrawLine(p1, p2, lineWidth);
+		}
+	} else {*/
+		if(filled) {
+			buildBuffer_->SetFlags(GLLayerBuildBuffer::FilledArc);
+		} else {
+			buildBuffer_->SetFlags(GLLayerBuildBuffer::LineArc);
+		}
+		buildBuffer_->SetParams(center.x,center.y, radius+lineWidth/2, radius-lineWidth/2);
+		for(theta = startAngle; (theta+increment) < endAngle; ){
+
+			buildBuffer_->AddVertex(center.x, center.y);
+			buildBuffer_->AddVertex((radius * cos(theta)) + center.x, (radius * sin(theta)) + center.y);
+			theta += increment;
+			buildBuffer_->AddVertex((radius * cos(theta)) + center.x, (radius * sin(theta)) + center.y);
+		}
+
+		buildBuffer_->AddVertex(center.x, center.y); //upper left corner
+		buildBuffer_->AddVertex((radius * cos(theta)) + center.x, (radius * sin(theta)) + center.y);
+		buildBuffer_->AddVertex((radius * cos(endAngle)) + center.x, (radius * sin(endAngle)) + center.y);
+	//}
 }
 
 void GLPainter::Draw() {
