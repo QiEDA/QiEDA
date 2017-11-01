@@ -7,6 +7,7 @@
 
 #include <QMdiSubWindow>
 #include "rocore/ui/GLWidget.hpp"
+#include "rocore/graphics/GraphicDocument.hpp"
 
 namespace rocore {
 namespace ui {
@@ -19,6 +20,7 @@ public:
 
 protected:
 	rocore::ui::GLWidget* glArea_;
+	rocore::graphics::GraphicDocument* document_;
 };
 
 }

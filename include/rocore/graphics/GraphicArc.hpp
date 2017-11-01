@@ -15,11 +15,16 @@ protected:
 	double angleStart_;
 	double angleEnd_;
 	bool filled_;
+	double thickness_;
 public:
-	GraphicArc(Point& center, double radius, double angle0, double angle1, bool filled) : GraphicItem() {
+	GraphicArc(Point& center, double radius, double angle0, double angle1, double thickness) : GraphicArc(center, radius, angle0, angle1) {
+		thickness_ = thickness;
+		filled_ = false;
+	}
+	GraphicArc(Point& center, double radius, double angle0, double angle1) : GraphicItem() {
 		center_ = center;
 		radius_ = radius;
-		filled_ = filled;
+		filled_ = true;
 		if(angle0 < angle1) {
 			angleStart_ = angle0;
 			angleEnd_ = angle1;

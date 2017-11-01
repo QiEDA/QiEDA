@@ -9,6 +9,7 @@
 #include <list>
 #include "rocore/rocore.hpp"
 #include "rocore/graphics/GraphicItem.hpp"
+#include "rocore/graphics/GraphicDocument.hpp"
 #include "rocore/graphics/GLPainter.hpp"
 
 namespace rocore {
@@ -19,7 +20,7 @@ friend class GLScrollArea;
 Q_OBJECT
 
 public:
-    explicit GLWidget(QWidget *parent = 0);
+    explicit GLWidget(rocore::graphics::GraphicDocument* document, QWidget *parent = 0);
     ~GLWidget();
 	void AddLayer(rocore::graphics::GraphicLayer * layer)
 	{

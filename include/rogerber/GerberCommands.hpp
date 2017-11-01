@@ -173,6 +173,10 @@ public:
 		holeDiameter_ = holeDiameter;
 	}
 
+	float GetDiameter() {
+		return diameter_;
+	}
+
 private:
 	float diameter_;
 	float holeDiameter_;

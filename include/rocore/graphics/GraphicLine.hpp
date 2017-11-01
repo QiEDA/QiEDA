@@ -14,13 +14,15 @@ protected:
 	Point start_;
 	Point end_;
 	double width_;
+	bool capped_;
 
 	glm::highp_dvec2 getNormal() const;
 public:
-	GraphicLine(Point& start, Point& end, double width) : GraphicItem() {
+	GraphicLine(Point& start, Point& end, double width, bool capped = false) : GraphicItem() {
 		start_ = start;
 		end_ = end;
 		width_ = width;
+		capped_ = capped;
 	}
 
 	const Point& GetStart()

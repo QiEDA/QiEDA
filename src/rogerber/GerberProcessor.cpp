@@ -19,7 +19,7 @@ using namespace rogerber;
 void GerberProcessor::EmitLine(unsigned int aperture,
 		                      GerberCoordinate& start,
 							  GerberCoordinate& stop,
-							  int width)
+							   double width)
 {
 #ifdef ROGERBER_DEBUG
 	std::cout << fmt::format("[Processor][Emit][Line]aperature={0},start.x={1},start.y={2},stop.x={3},stop.y={4},width={5}",
@@ -34,7 +34,7 @@ void GerberProcessor::EmitArc(unsigned int aperture,
 							  GerberCoordinate& center,
 							  bool clockwise,
 							  bool multiQuadrant,
-							  int width)
+							  double width)
 {
 #ifdef ROGERBER_DEBUG
 	std::cout << fmt::format("[Processor][Emit][Arc]aperature={0},start.x={1},start.y={2},stop.x={3},stop.y={4},center.x={5},center.y",
@@ -102,12 +102,20 @@ void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate&
 				}
 
 				switch (interpolationMode_) {
-					case GerberInterpolationMode::Linear:
-						EmitLine(currentAperture_, previousPosition_, operationCoordinate, 1);
+					case GerberInterpolationMode::Linear: {
+							double width = 1.0f;
+							if (properties->GetPrimitive() == GerberAperturePrimitive::Circle) {
+								auto circleAp = static_cast<CircleApertureDefinition *>(properties);
+								width = circleAp->GetDiameter();
+								if (units_ == GerberUnitMode::Inches) {
+									width *= 25.4;    //internally we treat everything as millimeters
+								}
+							}
+							EmitLine(currentAperture_, previousPosition_, operationCoordinate, width);
+						}
 						break;
 					case GerberInterpolationMode::ArcClockwise:
-					case GerberInterpolationMode::ArcCounterClockwise:
-						{
+					case GerberInterpolationMode::ArcCounterClockwise: {
 							GerberCoordinate center;
 							center.X = coordinateConverter_.ConvertICoordinate(op->GetRawI());
 							center.Y = coordinateConverter_.ConvertJCoordinate(op->GetRawJ());
@@ -115,9 +123,18 @@ void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate&
 							center.X += operationCoordinate.X;
 							center.Y += operationCoordinate.Y;
 
+							double width = 1.0f;
+							if(properties->GetPrimitive() == GerberAperturePrimitive::Circle) {
+								auto circleAp = static_cast<CircleApertureDefinition*>(properties);
+								width = circleAp->GetDiameter();
+								if(units_ == GerberUnitMode::Inches) {
+									width *= 25.4;	//internally we treat everything as millimeters
+								}
+							}
+
 							EmitArc(currentAperture_, previousPosition_, operationCoordinate,
 									center, (interpolationMode_ == GerberInterpolationMode::ArcClockwise),
-									quadrantMode_ == GerberQuadrantMode::Multi, 1);
+									quadrantMode_ == GerberQuadrantMode::Multi, width);
 						}
 						break;
 				}
@@ -163,6 +180,7 @@ void GerberProcessor::Execute()
 			case GerberCommandType::Unit:
 				{
 					auto units = static_cast<UnitCommand *>(cmd)->GetUnits();
+					units_ = units;
 					coordinateConverter_.SetUnits(units);
 				}
 				break;

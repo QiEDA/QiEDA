@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 			"Y0D01*\n"
 			"M02*\n";
 
-	gerber.Load("D:\\msys64\\home\\mroszko\\qieda\\src\\test\\gerbers\\polarties-apertures.gbr");
+	gerber.Load("D:\\msys64\\home\\mroszko\\qieda\\test\\gerbers\\polarties-apertures.gbr");
     //gerber.Parse(str);
 
 	GerberProcessor executor(gerber);

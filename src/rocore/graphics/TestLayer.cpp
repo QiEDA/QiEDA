@@ -56,12 +56,12 @@ TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 	Point p6;
 	p6.x = Units::InchesToInternalUnits(2);
 	p6.y = Units::InchesToInternalUnits(2);
-	GraphicArc* arcTest1 = new GraphicArc(p6,Units::MilsToInternalUnits(300),M_PI/4, M_PI/2, false);
+	GraphicArc* arcTest1 = new GraphicArc(p6,Units::MilsToInternalUnits(300),M_PI/4, M_PI/2, Units::MilsToInternalUnits(40));
 
 	Point p8;
 	p8.x = Units::InchesToInternalUnits(1);
 	p8.y = Units::InchesToInternalUnits(2);
-	GraphicArc* arcTest2 = new GraphicArc(p8,Units::MilsToInternalUnits(300),M_PI/4, M_PI/2, true);
+	GraphicArc* arcTest2 = new GraphicArc(p8,Units::MilsToInternalUnits(300),M_PI/4, M_PI/2);
 
 	Point p7;
 	p7.x = 15;

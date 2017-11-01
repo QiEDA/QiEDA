@@ -20,7 +20,7 @@ public:
 
 	void AddLayer(rocore::graphics::GraphicLayer* layer)
 	{
-		glArea_->AddLayer(layer);
+		document_->AddLayer(layer);
 	}
 };
 

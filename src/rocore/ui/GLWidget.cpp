@@ -20,8 +20,9 @@
 using namespace rocore::ui;
 using namespace rocore::graphics;
 
-GLWidget::GLWidget(QWidget *parent): QOpenGLWidget (parent) {
+GLWidget::GLWidget(GraphicDocument* document, QWidget *parent): QOpenGLWidget (parent) {
     connect(&update_timer_, SIGNAL(timeout()), this, SLOT(update()));
+    document_ = document;
     panX_ = 0;
     panY_ = 0;
     zoom_ = 10000;
@@ -46,7 +47,6 @@ void GLWidget::initializeGL() {
     qDebug() << "                    VERSION:      " << (const char*)glGetString(GL_VERSION);
     qDebug() << "                    GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-    document_ = new GraphicDocument();
 
     painter_ = new GLPainter();
 

@@ -122,21 +122,21 @@ void GLPainter::DrawArc(Point& center, double radius, double startAngle, double 
 {
 	//make sure angles are positive
 	while (startAngle < 0) {
-		startAngle += M_PI;
+		startAngle += 2*M_PI;
 	}
 
 	while (endAngle < 0) {
-		endAngle += M_PI;
+		endAngle += 2*M_PI;
 	}
 
-	startAngle = fmod(startAngle,M_PI);
-	endAngle = fmod(endAngle,M_PI);
+	startAngle = fmod(startAngle,2*M_PI);
+	endAngle = fmod(endAngle,2*M_PI);
 
 	if (endAngle == startAngle) {
-		endAngle += M_PI;
+		endAngle += 2*M_PI;
 	}
 
-	double increment = (endAngle-startAngle)/100;
+	double increment = (endAngle-startAngle)/160;
 
 	double theta;
 	/*
@@ -318,7 +318,17 @@ void GLPainter::uninstallGraphicLayer(GraphicLayer* layer)
         glDeleteBuffers(1, &meta->bufferName);
     }
 
-    if(meta->arrayName != 0)
+	if(meta->flagsBufferName != 0)
+	{
+		glDeleteBuffers(1, &meta->flagsBufferName);
+	}
+
+	if(meta->paramsBufferName != 0)
+	{
+		glDeleteBuffers(1, &meta->paramsBufferName);
+	}
+
+	if(meta->arrayName != 0)
     {
         glDeleteVertexArrays(1, &meta->arrayName);
     }

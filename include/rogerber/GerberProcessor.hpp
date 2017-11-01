@@ -45,14 +45,14 @@ protected:
 	virtual void EmitLine(unsigned int aperture,
 				  GerberCoordinate& start,
 				  GerberCoordinate& stop,
-				  int width);
+						  double width);
 	virtual void EmitArc(unsigned int aperture,
 								 GerberCoordinate& start,
 								 GerberCoordinate& stop,
 								 GerberCoordinate& center,
 								 bool clockwise,
 								 bool multiQuadrant,
-								 int width);
+						 double width);
 
 	const Gerber &gerber_;
 
@@ -61,7 +61,7 @@ protected:
 	GerberQuadrantMode quadrantMode_;
 	bool insideRegion_ = false;
 	bool exposureOn_ = true;
-
+	GerberUnitMode units_;
 	unsigned int currentAperture_ = 0;
 
 	GerberCoordinate previousPosition_;

@@ -13,5 +13,5 @@ BoundingBox GraphicArc::GetBoundingBox()
 
 void GraphicArc::Draw(GraphicPainter* painter)
 {
-    painter->DrawArc(center_, radius_, angleStart_, angleEnd_, Units::MilsToInternalUnits(10), filled_);
+    painter->DrawArc(center_, radius_, angleStart_, angleEnd_, thickness_, filled_);
 }

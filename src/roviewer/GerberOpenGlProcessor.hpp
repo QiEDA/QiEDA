@@ -20,14 +20,14 @@ protected:
 	virtual void EmitLine(unsigned int aperture,
 				  rogerber::GerberCoordinate& start,
 				  rogerber::GerberCoordinate& stop,
-				  int width) override;
+						  double width) override;
 	virtual void EmitArc(unsigned int aperture,
 				 rogerber::GerberCoordinate& start,
 				 rogerber::GerberCoordinate& stop,
 				 rogerber::GerberCoordinate& center,
 				 bool clockwise,
 				 bool multiQuadrant,
-				 int width) override;
+						 double width) override;
 };
 
 #endif //ROEDA_GERBEROPENGLPROCESSOR_HPP
