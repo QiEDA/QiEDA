@@ -42,6 +42,32 @@ void GerberProcessor::EmitArc(unsigned int aperture,
 #endif
 }
 
+
+void GerberProcessor::EmitCircle(unsigned int aperture,
+						GerberCoordinate& center,
+						double diameter,
+						double holeDiameter)
+{
+#ifdef ROGERBER_DEBUG
+	std::cout << fmt::format("[Processor][Emit][Circle]aperature={0},center.x={1},center.y={2},diameter={3},holeDiameter={4}",
+							 aperture, center.X, center.Y, diameter, holeDiameter) << std::endl;
+#endif
+}
+
+void GerberProcessor::EmitRectangle(unsigned int aperture, GerberCoordinate &center, double xSize, double ySize){
+#ifdef ROGERBER_DEBUG
+	std::cout << fmt::format("[Processor][Emit][Rectangle]aperature={0},center.x={1},center.y={2},xSize={3},ySize={4}",
+							 aperture, center.X, center.Y, xSize, ySize) << std::endl;
+#endif
+}
+
+void GerberProcessor::EmitObround(unsigned int aperture, GerberCoordinate &center, double xSize, double ySize,double holeDiameter){
+#ifdef ROGERBER_DEBUG
+	std::cout << fmt::format("[Processor][Emit][Obround]aperature={0},center.x={1},center.y={2},xSize={3},ySize={4},holeDiameter={5}",
+							 aperture, center.X, center.Y, xSize, ySize, holeDiameter) << std::endl;
+#endif
+}
+
 void GerberProcessor::processOperationInsideRegion(OperationStatement* op, GerberCoordinate& xyCoordinate)
 {
 	switch(op->GetOperationType())
@@ -79,69 +105,68 @@ void GerberProcessor::registerAperture(ApertureDefinition* def)
 	currentApertures_[def->GetNumber()] = def;
 }
 
+double GerberProcessor::getWidthFromAperture(ApertureDefinition* def)
+{
+	double width = 1.0f;
+	if (def->GetPrimitive() == GerberAperturePrimitive::Circle) {
+		auto circleAp = static_cast<CircleApertureDefinition *>(def);
+		width = circleAp->GetDiameter();
+		if (units_ == GerberUnitMode::Inches) {
+			width *= 25.4;    //internally we treat everything as millimeters
+		}
+	}
+
+	return width;
+}
+
 void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate& operationCoordinate)
 {
 	switch(op->GetOperationType())
 	{
-		case GerberOperationType::Interpolate:
-			{
+		case GerberOperationType::Interpolate: {
 #ifdef ROGERBER_DEBUG
-				std::cout << fmt::format("[Processor][Operation][Interpolate]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
+			std::cout << fmt::format("[Processor][Operation][Interpolate]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
 #endif
-				exposureOn_ = true;
+			exposureOn_ = true;
 
-				if (!IS_APERTURE_LOADED()) {
-					throw GerberException("No aperture loaded");
-				}
-
-				auto properties = getApertureDefinition(currentAperture_);
-
-				if(properties == nullptr)
-				{
-					throw GerberException("Could not find aperture definition when trying to use it");
-				}
-
-				switch (interpolationMode_) {
-					case GerberInterpolationMode::Linear: {
-							double width = 1.0f;
-							if (properties->GetPrimitive() == GerberAperturePrimitive::Circle) {
-								auto circleAp = static_cast<CircleApertureDefinition *>(properties);
-								width = circleAp->GetDiameter();
-								if (units_ == GerberUnitMode::Inches) {
-									width *= 25.4;    //internally we treat everything as millimeters
-								}
-							}
-							EmitLine(currentAperture_, previousPosition_, operationCoordinate, width);
-						}
-						break;
-					case GerberInterpolationMode::ArcClockwise:
-					case GerberInterpolationMode::ArcCounterClockwise: {
-							GerberCoordinate center;
-							center.X = coordinateConverter_.ConvertICoordinate(op->GetRawI());
-							center.Y = coordinateConverter_.ConvertJCoordinate(op->GetRawJ());
-							//now since the I and J are relative, add the X and Y to it
-							center.X += operationCoordinate.X;
-							center.Y += operationCoordinate.Y;
-
-							double width = 1.0f;
-							if(properties->GetPrimitive() == GerberAperturePrimitive::Circle) {
-								auto circleAp = static_cast<CircleApertureDefinition*>(properties);
-								width = circleAp->GetDiameter();
-								if(units_ == GerberUnitMode::Inches) {
-									width *= 25.4;	//internally we treat everything as millimeters
-								}
-							}
-
-							EmitArc(currentAperture_, previousPosition_, operationCoordinate,
-									center, (interpolationMode_ == GerberInterpolationMode::ArcClockwise),
-									quadrantMode_ == GerberQuadrantMode::Multi, width);
-						}
-						break;
-				}
-
-				previousPosition_ = operationCoordinate;
+			if (!IS_APERTURE_LOADED()) {
+				throw GerberException("No aperture loaded");
 			}
-			break;
+
+			auto apertureProperties = getApertureDefinition(currentAperture_);
+
+			if(apertureProperties == nullptr)
+			{
+				throw GerberException("Could not find aperture definition when trying to use it");
+			}
+
+			switch (interpolationMode_) {
+				case GerberInterpolationMode::Linear: {
+					double width = getWidthFromAperture(apertureProperties);
+					EmitLine(currentAperture_, previousPosition_, operationCoordinate, width);
+				}
+				break;
+				case GerberInterpolationMode::ArcClockwise:
+				case GerberInterpolationMode::ArcCounterClockwise: {
+					GerberCoordinate center;
+					center.X = coordinateConverter_.ConvertICoordinate(op->GetRawI());
+					center.Y = coordinateConverter_.ConvertJCoordinate(op->GetRawJ());
+					//now since the I and J are relative, add the X and Y to it
+					center.X += operationCoordinate.X;
+					center.Y += operationCoordinate.Y;
+
+					double width = getWidthFromAperture(apertureProperties);
+
+					EmitArc(currentAperture_, previousPosition_, operationCoordinate,
+							center, (interpolationMode_ == GerberInterpolationMode::ArcClockwise),
+							quadrantMode_ == GerberQuadrantMode::Multi, width);
+				}
+				break;
+			}
+
+			previousPosition_ = operationCoordinate;
+		}
+		break;
 		case GerberOperationType::Move:
 			//moving causes nothing to be generated, simply updating the previousPosition
 			exposureOn_ = false;
@@ -149,12 +174,67 @@ void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate&
 #ifdef ROGERBER_DEBUG
 			std::cout << fmt::format("[Processor][Operation][Move]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
 #endif
-			break;
-		case GerberOperationType::Flash:
+		break;
+		case GerberOperationType::Flash: {
 #ifdef ROGERBER_DEBUG
-			std::cout << fmt::format("[Processor][Operation][Flash]coord.x={0},coord.y={1}",operationCoordinate.X, operationCoordinate.Y) << std::endl;
+			std::cout << fmt::format("[Processor][Operation][Flash]coord.x={0},coord.y={1}", operationCoordinate.X,
+									 operationCoordinate.Y) << std::endl;
 #endif
-			break;
+
+			auto apertureProperties = getApertureDefinition(currentAperture_);
+			if (apertureProperties == nullptr) {
+				throw GerberException("Could not find aperture definition when trying to use it");
+			}
+
+			switch (apertureProperties->GetPrimitive()) {
+				case GerberAperturePrimitive::Circle: {
+					auto circleAp = static_cast<CircleApertureDefinition *>(apertureProperties);
+
+					double diameter = circleAp->GetDiameter();
+					if (units_ == GerberUnitMode::Inches) {
+						diameter *= 25.4;    //internally we treat everything as millimeters
+					}
+
+					double holeDiameter = circleAp->GetHoleDiameter();
+					if (units_ == GerberUnitMode::Inches) {
+						holeDiameter *= 25.4;    //internally we treat everything as millimeters
+					}
+
+					EmitCircle(currentAperture_, operationCoordinate, diameter, holeDiameter);
+				}
+				break;
+				case GerberAperturePrimitive::Rectangle: {
+					auto rectAp = static_cast<RectangleApertureDefinition *>(apertureProperties);
+
+					auto xSize = rectAp->GetXSize();
+					auto ySize = rectAp->GetYSize();
+					if (units_ == GerberUnitMode::Inches) {
+						xSize *= 25.4;    //internally we treat everything as millimeters
+						ySize *= 25.4;    //internally we treat everything as millimeters
+					}
+
+					EmitRectangle(currentAperture_, operationCoordinate, xSize, ySize);
+				}
+				break;
+				case GerberAperturePrimitive::Obround: {
+					auto rectAp = static_cast<ObroundApertureDefinition *>(apertureProperties);
+
+					auto xSize = rectAp->GetXSize();
+					auto ySize = rectAp->GetYSize();;
+					auto holeDiam = rectAp->GetHoleDiameter();
+					if (units_ == GerberUnitMode::Inches) {
+						xSize *= 25.4;    //internally we treat everything as millimeters
+						ySize *= 25.4;    //internally we treat everything as millimeters
+						holeDiam *= 25.4;    //internally we treat everything as millimeters
+					}
+
+					EmitObround(currentAperture_, operationCoordinate, xSize, ySize, holeDiam);
+				}
+					break;
+			}
+			previousPosition_ = operationCoordinate;
+		}
+		break;
 		default:
 			throw GerberException("Unknown operation type");
 	}

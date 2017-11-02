@@ -8,3 +8,8 @@ BoundingBox GraphicRectangle::GetBoundingBox()
 {
     return BoundingBox(start_,width_,height_);
 }
+
+
+void GraphicRectangle::Draw(GraphicPainter* painter) {
+    painter->DrawRectangle(this->start_, width_, height_);
+}

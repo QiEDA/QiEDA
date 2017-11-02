@@ -43,6 +43,7 @@ namespace graphics {
         const static GLint Line = (1 << 2);
 		const static GLint FilledArc = (1 << 3);
 		const static GLint LineArc = (1 << 4);
+        const static GLint Rectangle = (1 << 5);
         const static GLint CartesianGrid = (1 << 10);
 
         GLLayerBuildBuffer(double depth, Color color) : depth_(depth), color_(color){
@@ -120,9 +121,10 @@ namespace graphics {
 
         glm::vec3 ScreenToWorldCoordinates(const glm::ivec2 &mouse, float z);
         void DrawLine(Point& start, Point& end, double width) override;
-        void DrawCircle(Point& center, double radius, bool filled = false) override;
+        void DrawCircle(Point& center, double radius, double holeRadius = 0.0, bool filled = false) override;
         void DrawCartesianGrid(double minX, double maxX, double minY, double maxY, double xInterval, double yInterval) override;
 		void DrawArc(Point& center, double radius, double startAngle, double endAngle, double lineWidth, bool filled = false) override;
+        void DrawRectangle(Point& start, double xSize, double ySize) override;
 
     protected:
         void drawItems(GraphicLayer* layer, GLInstalledLayer* meta);

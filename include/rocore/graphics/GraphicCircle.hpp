@@ -12,10 +12,18 @@ class ROCORE_EXPORT GraphicCircle : public GraphicItem {
 protected:
 	Point center_;
 	float radius_;
+	float holeRadius_;
+	bool hasHole_;
 public:
     GraphicCircle(Point& center, float radius) : GraphicItem() {
 		center_ = center;
 		radius_ = radius;
+		hasHole_ = false;
+	}
+
+	GraphicCircle(Point& center, float radius, float holeRadius) : GraphicCircle(center, radius) {
+		holeRadius_ = holeRadius;
+		hasHole_ = true;
 	}
 
 	const Point& GetCenter()
@@ -23,11 +31,20 @@ public:
 		return center_;
 	}
 
-	const float GetRadius()
+	float GetRadius() const
 	{
 		return radius_;
 	}
 
+	float GetHoleRadius() const
+	{
+		return holeRadius_;
+	}
+
+	bool GetHasHole() const
+	{
+		return hasHole_;
+	}
 
 	void Draw(GraphicPainter* painter) override;
 	BoundingBox GetBoundingBox() override;

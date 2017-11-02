@@ -36,6 +36,7 @@ public:
 		return height_;
 	}
 
+	void Draw(GraphicPainter* painter) override;
 	BoundingBox GetBoundingBox() override;
 };
 

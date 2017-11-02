@@ -28,6 +28,16 @@ protected:
 				 bool clockwise,
 				 bool multiQuadrant,
 						 double width) override;
+
+	virtual void EmitCircle(unsigned int aperture,
+							rogerber::GerberCoordinate& center,
+										   double diameter,
+										   double holeDiameter) override;
+
+	virtual void EmitRectangle(unsigned int aperture,
+							   rogerber::GerberCoordinate &center,
+							   double length,
+							   double width) override;
 };
 
 #endif //ROEDA_GERBEROPENGLPROCESSOR_HPP

@@ -81,7 +81,7 @@ void GLPainter::DrawLine(Point& start, Point& end, double width) {
 	buildBuffer_->AddVertex(pointB.x, pointB.y);
 }
 
-void GLPainter::DrawCircle(Point& center, double radius, bool filled) {
+void GLPainter::DrawCircle(Point& center, double radius, double holeRadius, bool filled) {
 	/*
 	 * Split into two triangles
 	 * *-------------*
@@ -183,6 +183,18 @@ void GLPainter::DrawArc(Point& center, double radius, double startAngle, double 
 		buildBuffer_->AddVertex((radius * cos(theta)) + center.x, (radius * sin(theta)) + center.y);
 		buildBuffer_->AddVertex((radius * cos(endAngle)) + center.x, (radius * sin(endAngle)) + center.y);
 	//}
+}
+
+void GLPainter::DrawRectangle(Point& start, double xSize, double ySize)
+{
+	buildBuffer_->SetFlags(GLLayerBuildBuffer::Rectangle);
+	buildBuffer_->AddVertex(start.x, start.y);
+	buildBuffer_->AddVertex(start.x + xSize, start.y);
+	buildBuffer_->AddVertex(start.x, start.y + ySize);
+
+	buildBuffer_->AddVertex(start.x, start.y + ySize);
+	buildBuffer_->AddVertex(start.x + xSize, start.y);
+	buildBuffer_->AddVertex(start.x + xSize, start.y + ySize);
 }
 
 void GLPainter::Draw() {

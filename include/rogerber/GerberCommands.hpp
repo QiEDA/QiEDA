@@ -173,10 +173,13 @@ public:
 		holeDiameter_ = holeDiameter;
 	}
 
-	float GetDiameter() {
+	float GetDiameter() const {
 		return diameter_;
 	}
 
+	float GetHoleDiameter() const {
+		return holeDiameter_;
+	}
 private:
 	float diameter_;
 	float holeDiameter_;
@@ -209,6 +212,17 @@ public:
 		holeDiameter_ = holeDiameter;
 	}
 
+	float GetXSize() const {
+		return xSize_;
+	}
+
+	float GetYSize() const {
+		return ySize_;
+	}
+
+	float GetHoleDiameter() const {
+		return holeDiameter_;
+	}
 private:
 	float xSize_;
 	float ySize_;
@@ -222,6 +236,14 @@ public:
 		xSize_ = xSize;
 		ySize_ = ySize;
 		holeDiameter_ = holeDiameter;
+	}
+
+	float GetXSize() const {
+		return xSize_;
+	}
+
+	float GetYSize() const {
+		return ySize_;
 	}
 
 private:

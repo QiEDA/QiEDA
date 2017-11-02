@@ -41,6 +41,7 @@ private:
 
 	ApertureDefinition* getApertureDefinition(unsigned int aperature);
 	void registerAperture(ApertureDefinition* def);
+	double getWidthFromAperture(ApertureDefinition *def);
 protected:
 	virtual void EmitLine(unsigned int aperture,
 				  GerberCoordinate& start,
@@ -54,6 +55,21 @@ protected:
 								 bool multiQuadrant,
 						 double width);
 
+	virtual void EmitCircle(unsigned int aperture,
+								GerberCoordinate& center,
+								double radius,
+								double holeRadius);
+
+	virtual void EmitRectangle(unsigned int aperture,
+								GerberCoordinate &center,
+								double length,
+								double width);
+
+	virtual void EmitObround(unsigned int aperture,
+							   GerberCoordinate &center,
+							   double length,
+							   double width,
+							   double holeDiameter);
 	const Gerber &gerber_;
 
 	CoordinateConverter coordinateConverter_;

@@ -5,7 +5,12 @@ using namespace rocore::graphics;
 
 void GraphicCircle::Draw(GraphicPainter* painter)
 {
-    painter->DrawCircle(center_, radius_);
+    if(hasHole_) {
+        painter->DrawCircle(center_, radius_, holeRadius_, true);
+    }
+    else {
+        painter->DrawCircle(center_, radius_);
+    }
 }
 
 BoundingBox GraphicCircle::GetBoundingBox()

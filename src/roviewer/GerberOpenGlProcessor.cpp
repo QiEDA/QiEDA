@@ -3,6 +3,8 @@
 #include "rocore/Units.hpp"
 #include "rocore/graphics/GraphicLine.hpp"
 #include "rocore/graphics/GraphicArc.hpp"
+#include "rocore/graphics/GraphicCircle.hpp"
+#include "rocore/graphics/GraphicRectangle.hpp"
 
 void GerberOpenGlProcessor::EmitArc(unsigned int aperture, rogerber::GerberCoordinate &start,
 									rogerber::GerberCoordinate &stop, rogerber::GerberCoordinate &center,
@@ -27,7 +29,7 @@ void GerberOpenGlProcessor::EmitArc(unsigned int aperture, rogerber::GerberCoord
 	p1.x = rocore::Units::MillimetersToInternalUnits(center.X);
 	p1.y = rocore::Units::MillimetersToInternalUnits(center.Y);
 
-	rocore::graphics::GraphicArc* gral = new rocore::graphics::GraphicArc(p1, rocore::Units::MillimetersToInternalUnits(radius), startAngle, stopAngle, rocore::Units::MillimetersToInternalUnits(width));
+	auto gral = new rocore::graphics::GraphicArc(p1, rocore::Units::MillimetersToInternalUnits(radius), startAngle, stopAngle, rocore::Units::MillimetersToInternalUnits(width));
 	layer_->AddItem(gral);
 }
 
@@ -42,7 +44,39 @@ void GerberOpenGlProcessor::EmitLine(unsigned int aperture, rogerber::GerberCoor
 	p2.x = rocore::Units::MillimetersToInternalUnits(stop.X);
 	p2.y = rocore::Units::MillimetersToInternalUnits(stop.Y);
 
-	rocore::graphics::GraphicLine* gral = new rocore::graphics::GraphicLine(p1,p2, rocore::Units::MillimetersToInternalUnits(width), true);
+	auto gral = new rocore::graphics::GraphicLine(p1,p2, rocore::Units::MillimetersToInternalUnits(width), true);
 
 	layer_->AddItem(gral);
+}
+
+void GerberOpenGlProcessor::EmitCircle(unsigned int aperture,
+									   rogerber::GerberCoordinate& center,
+								 double diameter,
+								 double holeDiameter)
+{
+	rocore::graphics::Point p1;
+	p1.x = rocore::Units::MillimetersToInternalUnits(center.X);
+	p1.y = rocore::Units::MillimetersToInternalUnits(center.Y);
+
+	rocore::graphics::GraphicCircle* circle;
+	if(holeDiameter != 0.0) {
+		circle = new rocore::graphics::GraphicCircle(p1, rocore::Units::MillimetersToInternalUnits(diameter/2), rocore::Units::MillimetersToInternalUnits(holeDiameter/2) );
+	}
+	circle = new rocore::graphics::GraphicCircle(p1, rocore::Units::MillimetersToInternalUnits(diameter/2));
+
+	layer_->AddItem(circle);
+}
+
+void GerberOpenGlProcessor::EmitRectangle(unsigned int aperture,
+												  rogerber::GerberCoordinate &center,
+						   double xSize,
+						   double ySize) {
+
+	rocore::graphics::Point p1;
+	p1.x = rocore::Units::MillimetersToInternalUnits(center.X - xSize/2);
+	p1.y = rocore::Units::MillimetersToInternalUnits(center.Y - ySize/2);
+
+	auto rect = new rocore::graphics::GraphicRectangle(p1, rocore::Units::MillimetersToInternalUnits(xSize), rocore::Units::MillimetersToInternalUnits(ySize));
+
+	layer_->AddItem(rect);
 }
