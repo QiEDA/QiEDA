@@ -196,6 +196,21 @@ public:
 		holeDiameter_ = holeDiameter;
 	}
 
+	float GetOuterDiameter() const {
+		return outerDiameter_;
+	}
+
+	int GetNumberOfVertices() const {
+		return numberVerts_;
+	}
+
+	float GetRotationAngle() const {
+		return rotationAngle_;
+	}
+
+	float GetHoleDiameter() const {
+		return holeDiameter_;
+	}
 private:
 	float outerDiameter_;
 	unsigned int numberVerts_;

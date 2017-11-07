@@ -45,6 +45,7 @@ set(SRC
 		ui/LayerViewItem.cpp
 		ui/LayerViewItemModel.cpp
 		ui/InputWithUnits.cpp
+		graphics/clip2tri.cpp
 		graphics/Color.cpp
 		graphics/GraphicArc.cpp
 		graphics/GraphicCircle.cpp
@@ -68,10 +69,12 @@ set(SRC
 
 
 include_directories(${PROJECT_SOURCE_DIR}/deps/rapidjson/include)
+include_directories(${PROJECT_SOURCE_DIR}/deps/clipper)
+include_directories(${PROJECT_SOURCE_DIR}/deps/poly2tri)
 add_library(rocore SHARED ${SRC} ${INC})
 
 target_link_libraries(
-    rocore ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARY} )
+    rocore ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARY} polyclipping poly2tri )
 add_dependencies(rocore shaders)
 
 

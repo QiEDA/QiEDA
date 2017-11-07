@@ -8,8 +8,7 @@
 using namespace rocore::graphics;
 
 
-BoundingBox GraphicPoly::GetBoundingBox()
-{
+BoundingBox GraphicPoly::GetBoundingBox() {
 	double minX = DBL_MAX;
 	double minY = DBL_MAX;
 	double maxX = DBL_MIN;
@@ -28,4 +27,8 @@ BoundingBox GraphicPoly::GetBoundingBox()
 	start.y = minY;
 
 	return BoundingBox(start,std::fabs(maxX-minY),std::fabs(maxY-minY));
+}
+
+void GraphicPoly::Draw(GraphicPainter* painter) {
+	painter->DrawPolygon(points_);
 }

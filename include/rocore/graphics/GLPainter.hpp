@@ -49,6 +49,10 @@ namespace graphics {
         GLLayerBuildBuffer(double depth, Color color) : depth_(depth), color_(color){
         }
 
+        void AddVertex(Point& p) {
+            AddVertex(p.x, p.y);
+        }
+
         void AddVertex(double x, double y) {
             vertBuffer_.push_back(x);
             vertBuffer_.push_back(y);
@@ -125,6 +129,7 @@ namespace graphics {
         void DrawCartesianGrid(double minX, double maxX, double minY, double maxY, double xInterval, double yInterval) override;
 		void DrawArc(Point& center, double radius, double startAngle, double endAngle, double lineWidth, bool filled = false) override;
         void DrawRectangle(Point& start, double xSize, double ySize) override;
+        void DrawPolygon(std::vector<Point>& vertices) override;
 
     protected:
         void drawItems(GraphicLayer* layer, GLInstalledLayer* meta);

@@ -22,6 +22,7 @@ namespace graphics {
 		virtual void DrawCartesianGrid(double minX, double maxX, double minY, double maxY, double xInterval, double yInterval) = 0;
 		virtual void DrawArc(Point& center, double radius, double startAngle, double endAngle, double lineWidth, bool filled = false) = 0;
 		virtual void DrawRectangle(Point& start, double xSize, double ySize) = 0;
+		virtual void DrawPolygon(std::vector<Point>& vertices) = 0;
 	};
 }
 }

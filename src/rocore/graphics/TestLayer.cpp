@@ -7,6 +7,7 @@
 #include "rocore/graphics/GraphicCircle.hpp"
 #include "rocore/graphics/GraphicArc.hpp"
 #include "rocore/graphics/GraphicText.hpp"
+#include "rocore/graphics/GraphicPoly.hpp"
 #include "rocore/Units.hpp"
 
 using namespace rocore::graphics;
@@ -68,10 +69,35 @@ TestLayer::TestLayer() : GraphicLayer(Colors::Blue) {
 	p7.y = 10;
 	GraphicText* textTest = new GraphicText(p7,"TESTING",12);
 
+	Point pp1;
+	pp1.x = Units::MilsToInternalUnits(500);
+	pp1.y = Units::MilsToInternalUnits(0);
+
+	Point pp2;
+	pp2.x = Units::MilsToInternalUnits(700);
+	pp2.y = Units::MilsToInternalUnits(0);
+
+	Point pp3;
+	pp3.x = Units::MilsToInternalUnits(900);
+	pp3.y = Units::MilsToInternalUnits(100);
+
+	Point pp4;
+	pp4.x = Units::MilsToInternalUnits(300);
+	pp4.y = Units::MilsToInternalUnits(100);
+
+	std::vector<Point> polyVector;
+	polyVector.push_back(pp1);
+	polyVector.push_back(pp2);
+	polyVector.push_back(pp3);
+	polyVector.push_back(pp4);
+
+	GraphicPoly* polyTest = new GraphicPoly(polyVector);
+
 	AddItem(lineTest1);
 	AddItem(lineTest2);
 	AddItem(circleTest1);
 	AddItem(circleTest2);
 	AddItem(arcTest1);
 	AddItem(arcTest2);
+	AddItem(polyTest);
 }

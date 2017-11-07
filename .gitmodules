@@ -7,3 +7,6 @@
 [submodule "deps/googletest"]
 	path = deps/googletest
 	url = https://github.com/google/googletest.git
+[submodule "deps/poly2tri"]
+	path = deps/poly2tri
+	url = https://github.com/roEDA/poly2tri.git

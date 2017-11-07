@@ -70,6 +70,14 @@ protected:
 							   double length,
 							   double width,
 							   double holeDiameter);
+
+	virtual void EmitRegularPolygon(unsigned int aperture,
+									GerberCoordinate &center,
+									double outerDiam, int
+									numberOfVerts,
+									float rotationAngle,
+									double holeDiam);
+
 	const Gerber &gerber_;
 
 	CoordinateConverter coordinateConverter_;

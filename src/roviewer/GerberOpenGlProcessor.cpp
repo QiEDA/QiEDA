@@ -5,6 +5,7 @@
 #include "rocore/graphics/GraphicArc.hpp"
 #include "rocore/graphics/GraphicCircle.hpp"
 #include "rocore/graphics/GraphicRectangle.hpp"
+#include "rocore/graphics/GraphicPoly.hpp"
 
 void GerberOpenGlProcessor::EmitArc(unsigned int aperture, rogerber::GerberCoordinate &start,
 									rogerber::GerberCoordinate &stop, rogerber::GerberCoordinate &center,
@@ -79,4 +80,26 @@ void GerberOpenGlProcessor::EmitRectangle(unsigned int aperture,
 	auto rect = new rocore::graphics::GraphicRectangle(p1, rocore::Units::MillimetersToInternalUnits(xSize), rocore::Units::MillimetersToInternalUnits(ySize));
 
 	layer_->AddItem(rect);
+}
+
+
+void GerberOpenGlProcessor::EmitRegularPolygon(unsigned int aperture, rogerber::GerberCoordinate &center, double outerDiam, int numberOfVerts, float rotationAngle, double holeDiam){
+	double angularSpacing = 360 / numberOfVerts;
+
+	double radius = outerDiam/2;
+
+	std::vector<rocore::graphics::Point> verts;
+	for(int i = 0; i < numberOfVerts; i++) {
+		rocore::graphics::Point p1;
+		p1.x = center.X + radius*cos(getRadians(rotationAngle + i*angularSpacing));
+		p1.y = center.Y + radius*sin(getRadians(rotationAngle + i*angularSpacing));
+
+		p1.x = rocore::Units::MillimetersToInternalUnits(p1.x);
+		p1.y = rocore::Units::MillimetersToInternalUnits(p1.y);
+		verts.push_back(p1);
+	}
+
+	auto poly = new rocore::graphics::GraphicPoly(verts);
+
+	layer_->AddItem(poly);
 }

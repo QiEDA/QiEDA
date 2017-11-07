@@ -17,6 +17,10 @@ public:
 private:
 	rocore::graphics::GraphicLayer* layer_;
 protected:
+	double getRadians(double degrees) {
+		return (degrees * M_PI) / 180;
+	}
+
 	virtual void EmitLine(unsigned int aperture,
 				  rogerber::GerberCoordinate& start,
 				  rogerber::GerberCoordinate& stop,
@@ -38,6 +42,13 @@ protected:
 							   rogerber::GerberCoordinate &center,
 							   double length,
 							   double width) override;
+
+	virtual void EmitRegularPolygon(unsigned int aperture,
+									rogerber::GerberCoordinate &center,
+									double outerDiam, int
+									numberOfVerts,
+									float rotationAngle,
+									double holeDiam) override;
 };
 
 #endif //ROEDA_GERBEROPENGLPROCESSOR_HPP

@@ -15,13 +15,14 @@ namespace graphics {
 
 class ROCORE_EXPORT GraphicPoly : public GraphicItem {
 protected:
-	std::list<Point> points_;
+	std::vector<Point> points_;
 public:
-	GraphicPoly(std::list<Point>& points) : GraphicItem() {
+	GraphicPoly(std::vector<Point>& points) : GraphicItem() {
 		points_ = points;
 	}
 
 	BoundingBox GetBoundingBox() override;
+	void Draw(GraphicPainter* painter) override;
 };
 
 }

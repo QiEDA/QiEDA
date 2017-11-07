@@ -10,6 +10,7 @@
 #include "rocore/graphics/GLPainter.hpp"
 #include "rocore/shaders/shader_vert.h"
 #include "rocore/shaders/shader_frag.h"
+#include "rocore/graphics/clip2tri.hpp"
 
 using namespace rocore::graphics;
 
@@ -195,6 +196,30 @@ void GLPainter::DrawRectangle(Point& start, double xSize, double ySize)
 	buildBuffer_->AddVertex(start.x, start.y + ySize);
 	buildBuffer_->AddVertex(start.x + xSize, start.y);
 	buildBuffer_->AddVertex(start.x + xSize, start.y + ySize);
+}
+
+void GLPainter::DrawPolygon(std::vector<Point>& vertices) {
+	if(vertices.size() < 3) {
+		throw std::out_of_range("Minimum of 3 vertices are required to draw a polygon");
+	}
+
+	std::vector<std::vector<Point> > inputPolygons;
+
+	inputPolygons.push_back(vertices);
+
+	c2t::clip2tri clip2tri;
+
+	std::vector<Point> outputTriangles;  // Every 3 points is a triangle
+
+	std::vector<Point> boundingPolygon;
+
+	clip2tri.triangulate(inputPolygons, outputTriangles, boundingPolygon);
+
+	buildBuffer_->SetFlags(GLLayerBuildBuffer::Rectangle);
+
+	for(auto v: outputTriangles) {
+		buildBuffer_->AddVertex(v);
+	}
 }
 
 void GLPainter::Draw() {

@@ -68,6 +68,13 @@ void GerberProcessor::EmitObround(unsigned int aperture, GerberCoordinate &cente
 #endif
 }
 
+void GerberProcessor::EmitRegularPolygon(unsigned int aperture, GerberCoordinate &center, double outerDiam, int numberOfVerts, float rotationAngle, double holeDiam){
+#ifdef ROGERBER_DEBUG
+	std::cout << fmt::format("[Processor][Emit][RegularPolygon]aperature={0},center.x={1},center.y={2},outerDiam={3},numberOfVerts={4},rotationAngle={5},holeDiameter={6}",
+							 aperture, center.X, center.Y, outerDiam, numberOfVerts, rotationAngle, holeDiam) << std::endl;
+#endif
+}
+
 void GerberProcessor::processOperationInsideRegion(OperationStatement* op, GerberCoordinate& xyCoordinate)
 {
 	switch(op->GetOperationType())
@@ -230,7 +237,22 @@ void GerberProcessor::processOperation(OperationStatement* op, GerberCoordinate&
 
 					EmitObround(currentAperture_, operationCoordinate, xSize, ySize, holeDiam);
 				}
-					break;
+				break;
+				case GerberAperturePrimitive::Polygon: {
+					auto ap = static_cast<PolygonAperatureDefinition *>(apertureProperties);
+
+					auto outDiam = ap->GetOuterDiameter();
+					auto verts = ap->GetNumberOfVertices();
+					auto angle = ap->GetRotationAngle();
+					auto holeDiam = ap->GetHoleDiameter();
+					if (units_ == GerberUnitMode::Inches) {
+						outDiam *= 25.4;    //internally we treat everything as millimeters
+						holeDiam *= 25.4;    //internally we treat everything as millimeters
+					}
+
+					EmitRegularPolygon(currentAperture_, operationCoordinate, outDiam, verts, angle, holeDiam);
+				}
+				break;
 			}
 			previousPosition_ = operationCoordinate;
 		}
