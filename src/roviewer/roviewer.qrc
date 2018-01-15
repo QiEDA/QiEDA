@@ -2,4 +2,7 @@
   <qresource prefix="/logo">
     <file alias="logo.png">./img/logo.png</file>
   </qresource>
+  <qresource prefix="/icons">
+    <file alias="folder.png">./icons/folder.png</file>
+  </qresource>
 </RCC>

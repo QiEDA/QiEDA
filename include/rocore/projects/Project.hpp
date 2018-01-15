@@ -8,6 +8,8 @@
 #include <string>
 #include <QObject>
 #include "rocore/rocore.hpp"
+#include "rocore/projects/ProjectException.hpp"
+#include "rapidjson/document.h"
 
 namespace rocore {
 namespace projects {
@@ -18,6 +20,7 @@ private:
 	std::string filename_;
 	bool dirty_ = false;
 	QString name_;
+	QString file_;
 
 signals:
 	void DirtyChanged(bool isDirty);
@@ -41,6 +44,16 @@ public:
 	bool IsDirty() const {
 		return dirty_;
 	}
+
+	void LoadFromFile(QString filename);
+
+	void SaveToFile(QString filename);
+
+protected:
+	template <typename Writer>
+	void Serialize(Writer& writer) const;
+
+	void Deserialize(rapidjson::Document& document);
 };
 }
 }

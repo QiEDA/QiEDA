@@ -13,20 +13,20 @@
 #include "rocore/projects/Project.hpp"
 
 namespace rocore {
-namespace projects {
+namespace ui {
 
-class ProjectViewItem;
+class ProjectExplorerItem;
 
-class ROCORE_EXPORT ProjectViewItemModel : public QStandardItemModel {
+class ROCORE_EXPORT ProjectExplorerItemModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
-	ProjectViewItemModel(std::shared_ptr<Project> project_,
+	ProjectExplorerItemModel(std::shared_ptr<rocore::projects::Project> project_,
 					 QObject *parent = 0);
 
 
 private:
-	std::shared_ptr<Project> project_;
+	std::shared_ptr<rocore::projects::Project> project_;
 };
 
 }

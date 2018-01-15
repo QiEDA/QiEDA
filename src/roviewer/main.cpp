@@ -35,6 +35,11 @@ int main(int argc, char *argv[])
 
 	qInstallMessageHandler(qtMessageHandler);
 	QApplication app(argc, argv);
+	app.setApplicationName("roeda");
+	app.setOrganizationName("roeda");
+	app.setOrganizationDomain("roeda.org");
+
+	app.setWindowIcon(QIcon(":/logo/logo.png"));
 
 	MainWindow window;
 	window.show();

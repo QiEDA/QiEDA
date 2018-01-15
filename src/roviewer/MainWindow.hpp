@@ -10,7 +10,8 @@
 #include "rocore/ui/GLScrollArea.hpp"
 #include "rocore/ui/GLWidget.hpp"
 #include "rocore/ui/QiMainWindow.hpp"
-#include "rocore/projects/Viewer.hpp"
+#include "rocore/ui/ProjectExplorer.hpp"
+#include "rocore/projects/Project.hpp"
 
 class MainWindow : public QiMainWindow
 {
@@ -20,29 +21,36 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 	void LoadFile(const QString &fileName);
+	void LoadProject(const QString &fileName);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
-    
-    rocore::ui::GLWidget* glarea;
-    rocore::ui::GLScrollArea* glscrollarea;
 	rocore::ui::GerberDocumentView* doc;
+	rocore::ui::ProjectExplorer* projectView;
 
 	void setupMenubar();
+	void setProject(std::shared_ptr<rocore::projects::Project> project);
 
 private slots:
 	void open();
 	bool save();
 	bool saveAs();
 	void about();
+	void openRecentProject();
 
 public slots:
 	void projectNameChanged(QString name);
 
 private:
-	std::shared_ptr<rocore::projects::Viewer> project_;
-	void setupProjectView();
+	std::shared_ptr<rocore::projects::Project> project_ = nullptr;
+	void setupProjectExplorer();
 	void setupLayerView();
+	void setupProjectSignals();
+	void updateRecentFileActions();
+	QString strippedName(const QString &fullFileName);
+
+
+	QAction *recentFileActs[5];
 };
 
 #endif // MAINWINDOW_H

@@ -2,6 +2,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+
 #add shader precompile as a custom target + "post-build" of the target
 add_custom_target(
     shaders ALL
@@ -24,27 +25,30 @@ set(INC
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/QiMainWindow.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/DocumentView.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/GerberDocumentView.hpp
-		${PROJECT_SOURCE_DIR}/include/rocore/ui/ProjectView.hpp
+        ${PROJECT_SOURCE_DIR}/include/rocore/ui/ProjectExplorer.hpp
         ${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerView.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItem.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/LayerViewItemModel.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/ui/InputWithUnits.hpp
 		${PROJECT_SOURCE_DIR}/include/rocore/projects/Project.hpp
-		${PROJECT_SOURCE_DIR}/include/rocore/projects/ProjectViewItemModel.hpp
+        ${PROJECT_SOURCE_DIR}/include/rocore/ui/ProjectExplorerItemModel.hpp
 	)
 
 
 set(SRC
+		Settings.cpp
 		ui/GLScrollArea.cpp
 		ui/GLWidget.cpp
 		ui/DocumentView.cpp
 		ui/GerberDocumentView.cpp
         ui/QiMainWindow.cpp
-		ui/ProjectView.cpp
+        ui/ProjectExplorer.cpp
 		ui/LayerView.cpp
 		ui/LayerViewItem.cpp
 		ui/LayerViewItemModel.cpp
 		ui/InputWithUnits.cpp
+		ui/ProjectExplorerItem.cpp
+		ui/ProjectExplorerItemModel.cpp
 		graphics/clip2tri.cpp
 		graphics/Color.cpp
 		graphics/GraphicArc.cpp
@@ -61,12 +65,9 @@ set(SRC
 		graphics/GridLayer.cpp
 		graphics/TestLayer.cpp
 		graphics/GraphicPoly.cpp
+		projects/Loader.cpp
 		projects/Project.cpp
-		projects/Viewer.cpp
-		projects/ProjectViewItem.cpp
-		projects/ProjectViewItemModel.cpp
 )
-
 
 include_directories(${PROJECT_SOURCE_DIR}/deps/rapidjson/include)
 include_directories(${PROJECT_SOURCE_DIR}/deps/clipper)
