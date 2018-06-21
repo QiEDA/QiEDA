@@ -20,7 +20,7 @@ set(UI
   )
   
 # Qt resource files
-set(RSRC roviewer.qrc)
+set(RSRC roeda.qrc)
 
 qt5_wrap_ui(UI_INC ${UI})
 qt5_add_resources(RSRC_SRC ${RSRC})
@@ -29,7 +29,7 @@ source_group("Resources"           FILES ${RSRC})
 source_group("Generated Files\\ui" FILES ${UI_INC})
 
 
-add_executable(roviewer WIN32
+add_executable(roeda WIN32
   ${INC}
   ${SRC}
   ${MOC}
@@ -39,8 +39,8 @@ add_executable(roviewer WIN32
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/deps/rapidjson/include)
-target_link_libraries(roviewer rocore rogerber)
+target_link_libraries(roeda rocore rogerber)
 
-qt5_use_modules(roviewer Widgets)
+qt5_use_modules(roeda Widgets)
 
-install(TARGETS roviewer RUNTIME DESTINATION ${QIEDA_BIN})
+install(TARGETS roeda RUNTIME DESTINATION ${QIEDA_BIN})

@@ -20,7 +20,7 @@
 #include "rocore/Settings.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
-        QiMainWindow("roviewer",parent)
+        QiMainWindow("roeda",parent)
 {
 	setupMenubar();
 
@@ -58,7 +58,7 @@ void MainWindow::setProject(std::shared_ptr<rocore::projects::Project> project) 
 
 
 void MainWindow::projectNameChanged(QString name) {
-    setWindowTitle("roviewer - " + name);
+    setWindowTitle("roeda - " + name);
 }
 
 void MainWindow::setupProjectExplorer()
